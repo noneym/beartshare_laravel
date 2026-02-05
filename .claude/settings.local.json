@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(composer require:*)",
+      "Bash(php artisan:*)",
+      "Bash(php artisan make:migration:*)",
+      "Bash(composer remove:*)",
+      "Bash(curl:*)",
+      "WebFetch(domain:beartshare.com)",
+      "Bash(timeout:*)",
+      "Bash(mysql:*)",
+      "Bash(php:*)",
+      "Bash(dir \"C:\\\\projects\\\\beartshare-laravel-10\\\\storage\\\\framework\\\\views\" /b)",
+      "Bash(docker ps:*)"
+    ]
+  }
+}

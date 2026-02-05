@@ -1,4 +1,8 @@
-<x-layouts.app title="ArtPuan - BeArtShare">
+<x-layouts.app
+    title="ArtPuan Sadakat Programı | BeArtShare - Sanat Alışverişinde Kazan"
+    metaDescription="ArtPuan ile sanat alışverişlerinizde puan kazanın, indirimlerden yararlanın. BeArtShare sadakat programı avantajlarını keşfedin."
+    metaKeywords="artpuan, sadakat programı, sanat alışverişi puan, beartshare puan, sanat indirimi, referans programı"
+>
     <!-- Page Header -->
     <section class="bg-brand-black100 py-16 relative overflow-hidden">
         <div class="absolute inset-0 opacity-5">

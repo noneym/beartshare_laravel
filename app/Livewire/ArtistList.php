@@ -29,6 +29,11 @@ class ArtistList extends Component
 
         return view('livewire.artist-list', [
             'artists' => $artists,
+        ])->layoutData([
+            'title' => 'Sanatçılar | BeArtShare - Türk ve Uluslararası Sanatçılar',
+            'metaDescription' => 'BeArtShare\'de Türkiye\'nin ve dünyanın en değerli sanatçılarını keşfedin. Sanatçı profilleri, biyografileri ve orijinal eserleri.',
+            'metaKeywords' => 'türk sanatçılar, çağdaş sanatçılar, ressam, heykeltıraş, sanatçı profilleri, sanat eserleri',
+            'ogType' => 'website',
         ]);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\BlogPost;
+use Illuminate\Support\Str;
 use Livewire\Component;
 
 class BlogDetail extends Component
@@ -28,8 +29,54 @@ class BlogDetail extends Component
             ->take(3)
             ->get();
 
+        $post = $this->post;
+        $description = Str::limit(
+            strip_tags(html_entity_decode($post->content, ENT_QUOTES, 'UTF-8')),
+            160
+        );
+        $categoryName = $post->category ? $post->category->title : 'Blog';
+        $imageUrl = $post->image_url;
+        $publishDate = $post->created_at?->toIso8601String();
+
+        $jsonLd = json_encode([
+            '@context' => 'https://schema.org',
+            '@type' => 'Article',
+            'headline' => $post->title,
+            'description' => $description,
+            'image' => $imageUrl,
+            'datePublished' => $publishDate,
+            'dateModified' => $post->updated_at?->toIso8601String(),
+            'author' => [
+                '@type' => 'Organization',
+                'name' => 'BeArtShare',
+                'url' => config('app.url'),
+            ],
+            'publisher' => [
+                '@type' => 'Organization',
+                'name' => 'BeArtShare',
+                'logo' => [
+                    '@type' => 'ImageObject',
+                    'url' => asset('images/logo.svg'),
+                ],
+            ],
+            'mainEntityOfPage' => [
+                '@type' => 'WebPage',
+                '@id' => url()->current(),
+            ],
+            'articleSection' => $categoryName,
+        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
         return view('livewire.blog-detail', [
             'relatedPosts' => $relatedPosts,
-        ])->layout('components.layouts.app');
+        ])->layoutData([
+            'title' => "{$post->title} | BeArtShare Blog",
+            'metaDescription' => $description,
+            'metaKeywords' => implode(', ', array_filter([$post->title, $categoryName, 'sanat blogu', 'beartshare'])),
+            'ogType' => 'article',
+            'ogTitle' => $post->title,
+            'ogDescription' => $description,
+            'ogImage' => $imageUrl,
+            'jsonLd' => $jsonLd,
+        ]);
     }
 }

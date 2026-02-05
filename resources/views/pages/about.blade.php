@@ -1,4 +1,8 @@
-<x-layouts.app title="Hakkımızda - BeArtShare">
+<x-layouts.app
+    title="Hakkımızda | BeArtShare - Yeni Çağın Sanat Galerisi"
+    metaDescription="BeArtShare hakkında bilgi edinin. Türkiye'nin güvenilir online sanat galerisi olarak misyonumuz, vizyonumuz ve sanat dünyasına katkılarımız."
+    metaKeywords="beartshare hakkında, online sanat galerisi, sanat platformu, misyon, vizyon, türk sanat galerisi"
+>
     <!-- Page Header -->
     <section class="bg-brand-black100 py-16">
         <div class="container mx-auto px-4">

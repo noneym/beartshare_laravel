@@ -57,6 +57,11 @@ class BlogList extends Component
         return view('livewire.blog-list', [
             'posts' => $posts,
             'categories' => $categories,
-        ])->layout('components.layouts.app');
+        ])->layoutData([
+            'title' => 'Sanat Blogu | BeArtShare - Sanat Haberleri ve Yazıları',
+            'metaDescription' => 'BeArtShare sanat blogunda güncel sanat haberleri, sanatçı röportajları, koleksiyon tavsiyeleri ve sanat dünyasından son gelişmeleri okuyun.',
+            'metaKeywords' => 'sanat blogu, sanat haberleri, sanat yazıları, sanatçı röportajları, sanat dünyası, koleksiyon, sanat piyasası',
+            'ogType' => 'blog',
+        ]);
     }
 }

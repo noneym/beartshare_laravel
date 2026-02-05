@@ -77,6 +77,11 @@ class ArtworkList extends Component
             'artworks' => $artworks,
             'artists' => $artists,
             'categories' => $categories,
+        ])->layoutData([
+            'title' => 'Sanat Eserleri | BeArtShare - Online Sanat Galerisi',
+            'metaDescription' => 'BeArtShare online sanat galerisinde yağlı boya tablolar, heykeller, baskılar ve daha fazlasını keşfedin. Orijinal sanat eserlerini güvenle satın alın.',
+            'metaKeywords' => 'sanat eserleri, tablo satın al, yağlı boya, akrilik, heykel, baskı, orijinal eser, sanat galerisi',
+            'ogType' => 'website',
         ]);
     }
 }

@@ -1,14 +1,69 @@
+@props([
+    'title' => null,
+    'metaDescription' => null,
+    'metaKeywords' => null,
+    'metaRobots' => null,
+    'canonical' => null,
+    'ogType' => null,
+    'ogTitle' => null,
+    'ogDescription' => null,
+    'ogUrl' => null,
+    'ogImage' => null,
+    'twitterCard' => null,
+    'jsonLd' => null,
+])
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <!-- SEO Meta Tags -->
     <title>{{ $title ?? 'BeArtShare - Yeni Çağın Sanat Galerisi' }}</title>
+    <meta name="description" content="{{ $metaDescription ?? 'BeArtShare ile Türkiye\'nin en değerli sanatçılarının orijinal eserlerine güvenle ulaşın. Online sanat galerisi, tablo, heykel ve daha fazlası.' }}">
+    <meta name="keywords" content="{{ $metaKeywords ?? 'sanat galerisi, online sanat, tablo satın al, orijinal eser, türk sanatçılar, yağlı boya tablo, heykel, sanat yatırımı' }}">
+    <meta name="robots" content="{{ $metaRobots ?? 'index, follow' }}">
+    <link rel="canonical" href="{{ $canonical ?? url()->current() }}">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="{{ $ogType ?? 'website' }}">
+    <meta property="og:url" content="{{ $ogUrl ?? url()->current() }}">
+    <meta property="og:title" content="{{ $ogTitle ?? $title ?? 'BeArtShare - Yeni Çağın Sanat Galerisi' }}">
+    <meta property="og:description" content="{{ $ogDescription ?? $metaDescription ?? 'BeArtShare ile Türkiye\'nin en değerli sanatçılarının orijinal eserlerine güvenle ulaşın.' }}">
+    <meta property="og:image" content="{{ $ogImage ?? asset('images/og-default.jpg') }}">
+    <meta property="og:site_name" content="BeArtShare">
+    <meta property="og:locale" content="tr_TR">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="{{ $twitterCard ?? 'summary_large_image' }}">
+    <meta name="twitter:title" content="{{ $ogTitle ?? $title ?? 'BeArtShare - Yeni Çağın Sanat Galerisi' }}">
+    <meta name="twitter:description" content="{{ $ogDescription ?? $metaDescription ?? 'BeArtShare ile Türkiye\'nin en değerli sanatçılarının orijinal eserlerine güvenle ulaşın.' }}">
+    <meta name="twitter:image" content="{{ $ogImage ?? asset('images/og-default.jpg') }}">
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+
+    <!-- JSON-LD Structured Data -->
+    @if(isset($jsonLd))
+        <script type="application/ld+json">{!! $jsonLd !!}</script>
+    @else
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "BeArtShare",
+            "url": "{{ config('app.url') }}",
+            "description": "Yeni Çağın Sanat Galerisi - Online sanat eseri satın alma platformu",
+            "potentialAction": {
+                "@type": "SearchAction",
+                "target": "{{ url('/eserler') }}?search={search_term_string}",
+                "query-input": "required name=search_term_string"
+            }
+        }
+        </script>
+    @endif
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>

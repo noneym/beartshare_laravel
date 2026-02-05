@@ -27,7 +27,7 @@ class ArtworkDetail extends Component
     public function addToCart()
     {
         if ($this->artwork->is_sold) {
-            session()->flash('error', 'Bu eser satılmıştır.');
+            $this->dispatch('cart-error', message: 'Bu eser satılmıştır.');
             return;
         }
 
@@ -45,7 +45,7 @@ class ArtworkDetail extends Component
             ->exists();
 
         if ($exists) {
-            session()->flash('info', 'Bu eser zaten sepetinizde.');
+            $this->dispatch('cart-info', message: 'Bu eser zaten sepetinizde.');
             return;
         }
 
@@ -56,7 +56,7 @@ class ArtworkDetail extends Component
         ]);
 
         $this->dispatch('cart-updated');
-        session()->flash('success', 'Eser sepete eklendi.');
+        $this->dispatch('cart-added', message: 'Eser sepete eklendi!');
     }
 
     public function render()

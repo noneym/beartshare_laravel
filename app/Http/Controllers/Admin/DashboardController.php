@@ -17,7 +17,7 @@ class DashboardController extends Controller
             'artworks' => Artwork::count(),
             'orders' => Order::count(),
             'users' => User::count(),
-            'total_sales' => Order::where('status', 'delivered')->sum('total_tl'),
+            'total_sales' => Order::whereIn('status', ['confirmed', 'shipped', 'delivered'])->sum('total_tl'),
             'pending_orders' => Order::where('status', 'pending')->count(),
         ];
 

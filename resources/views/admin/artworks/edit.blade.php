@@ -116,5 +116,40 @@
                 </div>
             </div>
         </form>
+
+        <!-- Favoriye Ekleyenler -->
+        <div class="bg-white rounded-xl shadow-sm mt-8">
+            <div class="p-5 border-b border-gray-100 flex items-center justify-between">
+                <h2 class="text-sm font-semibold text-gray-900 uppercase tracking-wider flex items-center gap-2">
+                    <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                    Favoriye Ekleyenler
+                </h2>
+                <span class="text-xs text-gray-400 font-normal">{{ $favoritedBy->count() }} kullanici</span>
+            </div>
+            @if($favoritedBy->count() > 0)
+                <div class="divide-y divide-gray-100">
+                    @foreach($favoritedBy as $favUser)
+                        <div class="px-5 py-3 flex items-center justify-between hover:bg-gray-50">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-500">
+                                    {{ strtoupper(mb_substr($favUser->name, 0, 1)) }}
+                                </div>
+                                <div>
+                                    <a href="{{ route('admin.users.show', $favUser) }}" class="text-sm font-medium text-gray-900 hover:text-blue-600 transition">{{ $favUser->name }}</a>
+                                    <p class="text-xs text-gray-500">{{ $favUser->email }}</p>
+                                </div>
+                            </div>
+                            <span class="text-xs text-gray-400">{{ $favUser->pivot->created_at ? \Carbon\Carbon::parse($favUser->pivot->created_at)->format('d.m.Y H:i') : '' }}</span>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="px-5 py-8 text-center">
+                    <p class="text-sm text-gray-400">Bu eseri henuz kimse favoriye eklemedi.</p>
+                </div>
+            @endif
+        </div>
     </div>
 </x-admin.layouts.app>

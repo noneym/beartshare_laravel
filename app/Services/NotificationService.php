@@ -128,6 +128,14 @@ class NotificationService
         }
     }
 
+    /**
+     * Admin panelden e-posta gonder ve logla (public)
+     */
+    public function sendAdminEmail(string $to, string $subject, string $htmlBody, ?int $userId = null): void
+    {
+        $this->sendEmailAndLog($to, $subject, $htmlBody, 'admin_email', null, $userId);
+    }
+
     // ── Bildirim Methodlari ──
 
     /**

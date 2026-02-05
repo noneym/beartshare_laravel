@@ -82,6 +82,8 @@ class NotificationLog extends Model
             'favorite_reserved' => 'Favori Rezerve',
             'sms_verification' => 'SMS Dogrulama',
             'sms_verification_resend' => 'SMS Dogrulama (Tekrar)',
+            'admin_sms' => 'Admin SMS',
+            'admin_email' => 'Admin E-posta',
             default => $this->type,
         };
     }
@@ -94,6 +96,8 @@ class NotificationLog extends Model
             'referrer_artpuan' => 'bg-blue-100 text-blue-800',
             'favorite_reserved' => 'bg-pink-100 text-pink-800',
             'sms_verification', 'sms_verification_resend' => 'bg-indigo-100 text-indigo-800',
+            'admin_sms' => 'bg-cyan-100 text-cyan-800',
+            'admin_email' => 'bg-fuchsia-100 text-fuchsia-800',
             default => 'bg-gray-100 text-gray-800',
         };
     }

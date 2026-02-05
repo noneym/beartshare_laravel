@@ -1,0 +1,19 @@
+{
+    frankenphp
+    order php_server before file_server
+}
+
+:80 {
+    encode zstd br gzip
+    root * /app/public
+
+    php_server {
+        index index.php
+    }
+
+    file_server
+
+    request_body {
+        max_size 50MB
+    }
+}

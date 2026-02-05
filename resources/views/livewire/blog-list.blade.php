@@ -78,7 +78,7 @@
                                 </p>
 
                                 <div class="flex items-center text-xs text-gray-400 gap-3">
-                                    <span>{{ $post->created_at->format('d M Y') }}</span>
+                                    <span>{{ $post->created_at->translatedFormat('d F Y') }}</span>
                                     <span>&middot;</span>
                                     <span>{{ $post->read_time }}</span>
                                 </div>

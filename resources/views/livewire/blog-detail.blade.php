@@ -15,7 +15,7 @@
             <h1 class="text-2xl md:text-4xl font-semibold text-white leading-tight">{{ $post->title }}</h1>
 
             <div class="flex items-center gap-4 mt-4 text-sm text-white/50">
-                <span>{{ $post->created_at->format('d F Y') }}</span>
+                <span>{{ $post->created_at->translatedFormat('d F Y') }}</span>
                 <span>&middot;</span>
                 <span>{{ $post->read_time }}</span>
                 @if($post->category)

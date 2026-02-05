@@ -6,8 +6,12 @@ use App\Livewire\ArtistDetail;
 use App\Livewire\ArtworkList;
 use App\Livewire\ArtworkDetail;
 use App\Livewire\Cart;
+use App\Livewire\Checkout;
+use App\Livewire\AddressManager;
+use App\Livewire\MyAccount;
 use App\Livewire\BlogList;
 use App\Livewire\BlogDetail;
+use App\Livewire\Favorites;
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
 use Illuminate\Support\Facades\Auth;
@@ -37,13 +41,14 @@ Route::get('/sepet', Cart::class)->name('cart');
 Route::view('/hakkimizda', 'pages.about')->name('about');
 Route::view('/iletisim', 'pages.contact')->name('contact');
 Route::view('/artpuan', 'pages.artpuan')->name('artpuan');
+Route::view('/banka-hesaplari', 'pages.banka-hesaplari')->name('banka-hesaplari');
 
 // Blog
 Route::get('/blog', BlogList::class)->name('blog');
 Route::get('/blog/{slug}', BlogDetail::class)->name('blog.detail');
 
 // Checkout
-Route::view('/odeme', 'pages.checkout')->name('checkout');
+Route::get('/odeme', Checkout::class)->middleware('auth')->name('checkout');
 
 // Auth Routes
 Route::middleware('guest')->group(function () {
@@ -58,13 +63,17 @@ Route::post('/cikis', function () {
     return redirect('/');
 })->middleware('auth')->name('logout');
 
-Route::view('/profil', 'pages.profile')->middleware('auth')->name('profile');
+Route::get('/hesabim/{tab?}', MyAccount::class)->middleware('auth')->name('profile');
+Route::get('/favorilerim', Favorites::class)->middleware('auth')->name('favorites');
+Route::get('/adreslerim', AddressManager::class)->middleware('auth')->name('addresses');
 
 // Admin Routes
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
     Route::resource('artists', App\Http\Controllers\Admin\ArtistController::class)->except(['show']);
     Route::resource('artworks', App\Http\Controllers\Admin\ArtworkController::class)->except(['show']);
     Route::resource('categories', App\Http\Controllers\Admin\CategoryController::class)->except(['show']);
     Route::resource('orders', App\Http\Controllers\Admin\OrderController::class)->only(['index', 'show', 'update']);
+    Route::get('art-puan-logs', [App\Http\Controllers\Admin\ArtPuanLogController::class, 'index'])->name('art-puan-logs.index');
+    Route::get('notification-logs', [App\Http\Controllers\Admin\NotificationLogController::class, 'index'])->name('notification-logs.index');
 });

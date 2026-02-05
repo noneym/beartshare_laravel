@@ -51,6 +51,8 @@
                         <div class="relative bg-gray-50 overflow-hidden aspect-[4/3] mb-4">
                             @if($artwork->is_sold)
                                 <span class="absolute top-3 left-3 bg-red-500 text-white text-[10px] px-3 py-1 z-10 uppercase tracking-wider">Satıldı</span>
+                            @elseif($artwork->is_reserved)
+                                <span class="absolute top-3 left-3 bg-amber-500 text-white text-[10px] px-3 py-1 z-10 uppercase tracking-wider">Rezerve</span>
                             @endif
                             @if($artwork->first_image)
                                 <img src="{{ $artwork->first_image_url }}" alt="{{ $artwork->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">

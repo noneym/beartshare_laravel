@@ -31,4 +31,10 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'netgsm' => [
+        'username' => env('NETGSM_USERNAME'),
+        'password' => env('NETGSM_PASSWORD'),
+        'header' => env('NETGSM_HEADER', 'BEARTSHARE'),
+    ],
+
 ];

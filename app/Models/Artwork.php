@@ -25,6 +25,7 @@ class Artwork extends Model
         'is_sold',
         'is_active',
         'is_featured',
+        'is_reserved',
         'type',
         'sort_order',
         'old_id',
@@ -35,6 +36,7 @@ class Artwork extends Model
         'is_sold' => 'boolean',
         'is_active' => 'boolean',
         'is_featured' => 'boolean',
+        'is_reserved' => 'boolean',
         'images' => 'array',
         'price_tl' => 'decimal:2',
         'price_usd' => 'decimal:2',
@@ -117,11 +119,24 @@ class Artwork extends Model
 
     public function scopeAvailable($query)
     {
-        return $query->where('is_sold', false)->where('is_active', true);
+        return $query->where('is_sold', false)->where('is_reserved', false)->where('is_active', true);
     }
 
     public function scopeFeatured($query)
     {
         return $query->where('is_featured', true);
+    }
+
+    public function scopeReserved($query)
+    {
+        return $query->where('is_reserved', true);
+    }
+
+    /**
+     * Bu eseri favorilerine eklemiş kullanıcılar
+     */
+    public function favoritedBy()
+    {
+        return $this->belongsToMany(User::class, 'favorites')->withTimestamps();
     }
 }

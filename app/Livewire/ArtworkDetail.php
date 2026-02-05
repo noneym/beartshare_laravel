@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Artwork;
 use App\Models\CartItem;
+use App\Models\Favorite;
 use Illuminate\Support\Str;
 use Livewire\Component;
 
@@ -11,12 +12,17 @@ class ArtworkDetail extends Component
 {
     public Artwork $artwork;
     public $currentImage = 0;
+    public bool $isFavorited = false;
 
     public function mount($slug)
     {
         $this->artwork = Artwork::with('artist', 'category')
             ->where('slug', $slug)
             ->firstOrFail();
+
+        if (auth()->check()) {
+            $this->isFavorited = auth()->user()->hasFavorited($this->artwork->id);
+        }
     }
 
     public function setImage($index)
@@ -24,10 +30,43 @@ class ArtworkDetail extends Component
         $this->currentImage = $index;
     }
 
+    public function toggleFavorite()
+    {
+        if (!auth()->check()) {
+            $this->dispatch('show-login-modal');
+            return;
+        }
+
+        $userId = auth()->id();
+        $artworkId = $this->artwork->id;
+
+        $existing = Favorite::where('user_id', $userId)
+            ->where('artwork_id', $artworkId)
+            ->first();
+
+        if ($existing) {
+            $existing->delete();
+            $this->isFavorited = false;
+            $this->dispatch('toast', message: 'Favorilerden kaldırıldı.', type: 'info');
+        } else {
+            Favorite::create([
+                'user_id' => $userId,
+                'artwork_id' => $artworkId,
+            ]);
+            $this->isFavorited = true;
+            $this->dispatch('toast', message: 'Favorilere eklendi!', type: 'success');
+        }
+    }
+
     public function addToCart()
     {
         if ($this->artwork->is_sold) {
             $this->dispatch('cart-error', message: 'Bu eser satılmıştır.');
+            return;
+        }
+
+        if ($this->artwork->is_reserved) {
+            $this->dispatch('cart-error', message: 'Bu eser rezerve edilmiştir.');
             return;
         }
 
@@ -94,7 +133,7 @@ class ArtworkDetail extends Component
                 'priceCurrency' => 'TRY',
                 'availability' => $artwork->is_sold
                     ? 'https://schema.org/SoldOut'
-                    : 'https://schema.org/InStock',
+                    : ($artwork->is_reserved ? 'https://schema.org/LimitedAvailability' : 'https://schema.org/InStock'),
                 'seller' => [
                     '@type' => 'Organization',
                     'name' => 'BeArtShare',

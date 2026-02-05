@@ -13,18 +13,30 @@ class Order extends Model
         'user_id',
         'order_number',
         'status',
+        'payment_method',
+        'payment_code',
         'total_tl',
         'total_usd',
         'customer_name',
         'customer_email',
         'customer_phone',
+        'tc_no',
         'shipping_address',
+        'billing_address',
+        'city',
+        'district',
         'notes',
+        'confirmed_at',
+        'artpuan_used',
+        'discount_tl',
     ];
 
     protected $casts = [
         'total_tl' => 'decimal:2',
         'total_usd' => 'decimal:2',
+        'artpuan_used' => 'decimal:2',
+        'discount_tl' => 'decimal:2',
+        'confirmed_at' => 'datetime',
     ];
 
     protected static function boot()
@@ -51,12 +63,45 @@ class Order extends Model
     public function getStatusLabelAttribute()
     {
         return match($this->status) {
-            'pending' => 'Beklemede',
+            'pending' => 'Ödeme Bekleniyor',
             'confirmed' => 'Onaylandı',
             'shipped' => 'Kargoda',
             'delivered' => 'Teslim Edildi',
             'cancelled' => 'İptal Edildi',
             default => $this->status,
         };
+    }
+
+    public function getStatusColorAttribute()
+    {
+        return match($this->status) {
+            'pending' => 'yellow',
+            'confirmed' => 'blue',
+            'shipped' => 'purple',
+            'delivered' => 'green',
+            'cancelled' => 'red',
+            default => 'gray',
+        };
+    }
+
+    public function getPaymentMethodLabelAttribute()
+    {
+        return match($this->payment_method) {
+            'havale' => 'Havale / EFT',
+            'kredi_karti' => 'Kredi Kartı',
+            default => $this->payment_method,
+        };
+    }
+
+    /**
+     * Benzersiz havale ödeme kodu oluştur
+     */
+    public static function generatePaymentCode(): string
+    {
+        do {
+            $code = 'BA-' . strtoupper(substr(uniqid(), -6));
+        } while (self::where('payment_code', $code)->exists());
+
+        return $code;
     }
 }

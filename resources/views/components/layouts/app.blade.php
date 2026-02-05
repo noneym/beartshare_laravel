@@ -257,7 +257,7 @@
                 </div>
             </div>
 
-            <!-- Search Bar (Expandable) -->
+            <!-- Search Bar (Expandable) with Live Search -->
             <div x-show="searchOpen"
                  x-cloak
                  x-transition:enter="transition ease-out duration-200"
@@ -267,17 +267,136 @@
                  x-transition:leave-start="opacity-100 translate-y-0"
                  x-transition:leave-end="opacity-0 -translate-y-1"
                  class="border-t border-gray-100 bg-white"
+                 x-data="{
+                     query: '{{ request('search') }}',
+                     results: { artworks: [], artists: [] },
+                     loading: false,
+                     showResults: false,
+                     debounceTimer: null,
+                     fetchResults() {
+                         clearTimeout(this.debounceTimer);
+                         if (this.query.length < 2) {
+                             this.results = { artworks: [], artists: [] };
+                             this.showResults = false;
+                             return;
+                         }
+                         this.loading = true;
+                         this.debounceTimer = setTimeout(() => {
+                             fetch('{{ route('api.search') }}?q=' + encodeURIComponent(this.query))
+                                 .then(r => r.json())
+                                 .then(data => {
+                                     this.results = data;
+                                     this.showResults = (data.artworks.length > 0 || data.artists.length > 0);
+                                     this.loading = false;
+                                 })
+                                 .catch(() => { this.loading = false; });
+                         }, 300);
+                     },
+                     goTo(url) {
+                         this.showResults = false;
+                         window.location.href = url;
+                     }
+                 }"
+                 @click.away="showResults = false"
             >
                 <div class="container mx-auto px-4 py-3">
-                    <div class="relative max-w-xl mx-auto">
+                    <form action="{{ route('artworks') }}" method="GET" class="relative max-w-xl mx-auto" @submit="showResults = false">
                         <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
                         </svg>
-                        <input type="text" placeholder="Eser, sanatçı veya kategori ara..." class="w-full pl-10 pr-10 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all bg-gray-50 focus:bg-white">
-                        <button @click="searchOpen = false" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-black100 transition-colors">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                        </button>
-                    </div>
+                        <input type="text" name="search" placeholder="Eser, sanatci veya kategori ara..."
+                               x-model="query"
+                               @input="fetchResults()"
+                               @focus="if(query.length >= 2) showResults = true"
+                               @keydown.escape="showResults = false; searchOpen = false"
+                               x-ref="searchInput"
+                               x-effect="if(searchOpen) setTimeout(() => $refs.searchInput.focus(), 150)"
+                               autocomplete="off"
+                               class="w-full pl-10 pr-20 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all bg-gray-50 focus:bg-white">
+                        <div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                            <!-- Loading spinner -->
+                            <svg x-show="loading" class="w-4 h-4 animate-spin text-primary" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                            </svg>
+                            <button type="submit" class="p-1.5 text-gray-400 hover:text-primary transition-colors" title="Ara">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+                            </button>
+                            <button type="button" @click="searchOpen = false; showResults = false" class="p-1.5 text-gray-400 hover:text-brand-black100 transition-colors" title="Kapat">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </div>
+
+                        <!-- Live Search Results Dropdown -->
+                        <div x-show="showResults"
+                             x-cloak
+                             x-transition:enter="transition ease-out duration-150"
+                             x-transition:enter-start="opacity-0 translate-y-1"
+                             x-transition:enter-end="opacity-100 translate-y-0"
+                             x-transition:leave="transition ease-in duration-100"
+                             x-transition:leave-start="opacity-100 translate-y-0"
+                             x-transition:leave-end="opacity-0 translate-y-1"
+                             class="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-50 max-h-[420px] overflow-y-auto"
+                        >
+                            <!-- Sanatcilar -->
+                            <template x-if="results.artists.length > 0">
+                                <div>
+                                    <div class="px-4 py-2 bg-gray-50 border-b border-gray-100">
+                                        <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Sanatcilar</p>
+                                    </div>
+                                    <template x-for="artist in results.artists" :key="'a-'+artist.id">
+                                        <a :href="artist.url" class="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors cursor-pointer border-b border-gray-50" @click.prevent="goTo(artist.url)">
+                                            <template x-if="artist.image">
+                                                <img :src="artist.image" :alt="artist.name" class="w-9 h-9 rounded-full object-cover flex-shrink-0">
+                                            </template>
+                                            <template x-if="!artist.image">
+                                                <div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                                    <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                                </div>
+                                            </template>
+                                            <div class="min-w-0">
+                                                <p class="text-sm font-medium text-gray-800 truncate" x-text="artist.name"></p>
+                                                <p class="text-[11px] text-gray-400"><span x-text="artist.artwork_count"></span> eser</p>
+                                            </div>
+                                        </a>
+                                    </template>
+                                </div>
+                            </template>
+
+                            <!-- Eserler -->
+                            <template x-if="results.artworks.length > 0">
+                                <div>
+                                    <div class="px-4 py-2 bg-gray-50 border-b border-gray-100">
+                                        <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Eserler</p>
+                                    </div>
+                                    <template x-for="artwork in results.artworks" :key="'w-'+artwork.id">
+                                        <a :href="artwork.url" class="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors cursor-pointer border-b border-gray-50" @click.prevent="goTo(artwork.url)">
+                                            <template x-if="artwork.image">
+                                                <img :src="artwork.image" :alt="artwork.title" class="w-10 h-10 rounded-lg object-cover flex-shrink-0">
+                                            </template>
+                                            <template x-if="!artwork.image">
+                                                <div class="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                                                    <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                                </div>
+                                            </template>
+                                            <div class="min-w-0 flex-1">
+                                                <p class="text-sm font-medium text-gray-800 truncate" x-text="artwork.title"></p>
+                                                <p class="text-[11px] text-gray-400 truncate" x-text="artwork.artist"></p>
+                                            </div>
+                                            <span class="text-xs font-semibold text-primary whitespace-nowrap" x-text="artwork.price"></span>
+                                        </a>
+                                    </template>
+                                </div>
+                            </template>
+
+                            <!-- Tum sonuclar linki -->
+                            <div class="px-4 py-3 bg-gray-50 border-t border-gray-100 text-center">
+                                <button type="submit" class="text-xs font-medium text-primary hover:text-primary-dark transition-colors">
+                                    Tum sonuclari gor &rarr;
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </header>
@@ -484,6 +603,7 @@
                         <li><a href="{{ route('about') }}" class="hover:text-white transition">Hakkımızda</a></li>
                         <li><a href="{{ route('blog') }}" class="hover:text-white transition">Blog</a></li>
                         <li><a href="{{ route('artpuan') }}" class="hover:text-white transition">ArtPuan</a></li>
+                        <li><a href="{{ route('eser-kabulu') }}" class="hover:text-white transition">Eser Kabulu</a></li>
                     </ul>
                 </div>
 

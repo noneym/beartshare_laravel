@@ -11,7 +11,18 @@
       "Bash(mysql:*)",
       "Bash(php:*)",
       "Bash(dir \"C:\\\\projects\\\\beartshare-laravel-10\\\\storage\\\\framework\\\\views\" /b)",
-      "Bash(docker ps:*)"
+      "Bash(docker ps:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push)",
+      "Bash(git reset:*)",
+      "Bash(findstr:*)",
+      "Bash(nslookup:*)",
+      "Bash(del C:projectsbeartshare-laravel-10list_users.php C:projectsbeartshare-laravel-10set_admin.php)",
+      "Bash(npm install:*)",
+      "WebFetch(domain:cdn.tiny.cloud)",
+      "Bash(git push:*)",
+      "WebFetch(domain:beartshare-beartshare-laravel-webserver.dv3n9h.easypanel.host)"
     ]
   }
 }

@@ -162,7 +162,7 @@
                                         </h2>
                                     </div>
                                     <div class="slide-btn mt-8">
-                                        <a href="#" class="inline-flex items-center bg-white text-gray-800 pl-7 pr-5 py-3 rounded-full text-sm font-semibold hover:shadow-xl hover:scale-[1.02] transition-all duration-300 shadow-lg group">
+                                        <a href="{{ route('eser-kabulu') }}" class="inline-flex items-center bg-white text-gray-800 pl-7 pr-5 py-3 rounded-full text-sm font-semibold hover:shadow-xl hover:scale-[1.02] transition-all duration-300 shadow-lg group">
                                             Eser Kabulü
                                             <svg class="w-4 h-4 ml-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
                                         </a>
@@ -221,7 +221,7 @@
                                         </h2>
                                     </div>
                                     <div class="slide-btn mt-8">
-                                        <a href="#" class="inline-flex items-center bg-white text-gray-800 pl-7 pr-5 py-3 rounded-full text-sm font-semibold hover:shadow-xl hover:scale-[1.02] transition-all duration-300 shadow-lg group">
+                                        <a href="{{ route('artpuan') }}" class="inline-flex items-center bg-white text-gray-800 pl-7 pr-5 py-3 rounded-full text-sm font-semibold hover:shadow-xl hover:scale-[1.02] transition-all duration-300 shadow-lg group">
                                             ArtPuan
                                             <svg class="w-4 h-4 ml-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
                                         </a>

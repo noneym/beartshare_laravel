@@ -166,8 +166,8 @@
     </div>
 
     <!-- Header -->
-    <div x-data="{ mobileMenu: false, searchOpen: false }">
-        <header class="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
+    <div x-data="{ mobileMenu: false, searchOpen: false }" class="sticky top-0 z-50">
+        <header class="bg-white border-b border-gray-100 shadow-sm">
             <div class="container mx-auto px-4">
                 <div class="flex items-center justify-between h-16 lg:h-[72px]">
 
@@ -258,7 +258,8 @@
             </div>
         </header>
 
-        <!-- Mobile Menu (Outside header to avoid stacking context issues) -->
+        <!-- Mobile Menu (Teleported to body to avoid stacking context issues) -->
+        <template x-teleport="body">
         <div x-show="mobileMenu"
              x-cloak
              class="lg:hidden fixed inset-0 z-[60]"
@@ -353,6 +354,7 @@
                 </div>
             </div>
         </div>
+        </template>
     </div>
 
     <!-- Flash Messages -->

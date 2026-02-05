@@ -8,6 +8,9 @@ use App\Livewire\ArtworkDetail;
 use App\Livewire\Cart;
 use App\Livewire\BlogList;
 use App\Livewire\BlogDetail;
+use App\Livewire\Auth\Login;
+use App\Livewire\Auth\Register;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -42,10 +45,20 @@ Route::get('/blog/{slug}', BlogDetail::class)->name('blog.detail');
 // Checkout
 Route::view('/odeme', 'pages.checkout')->name('checkout');
 
-// Auth Routes (placeholder)
-Route::view('/giris', 'auth.login')->name('login');
-Route::view('/kayit', 'auth.register')->name('register');
-Route::view('/profil', 'pages.profile')->name('profile');
+// Auth Routes
+Route::middleware('guest')->group(function () {
+    Route::get('/giris', Login::class)->name('login');
+    Route::get('/kayit', Register::class)->name('register');
+});
+
+Route::post('/cikis', function () {
+    Auth::logout();
+    session()->invalidate();
+    session()->regenerateToken();
+    return redirect('/');
+})->middleware('auth')->name('logout');
+
+Route::view('/profil', 'pages.profile')->middleware('auth')->name('profile');
 
 // Admin Routes
 Route::prefix('admin')->name('admin.')->group(function () {

@@ -156,10 +156,22 @@
                     <span class="w-px h-3 bg-white/20"></span>
                     <a href="{{ route('contact') }}" class="text-white/60 hover:text-primary transition-colors">İletişim</a>
                     <span class="w-px h-3 bg-white/20"></span>
-                    <a href="{{ route('login') }}" class="flex items-center gap-1.5 text-white/60 hover:text-primary transition-colors">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                        Giriş Yap
-                    </a>
+                    @auth
+                        <a href="{{ route('profile') }}" class="flex items-center gap-1.5 text-white/60 hover:text-primary transition-colors">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                            {{ auth()->user()->name }}
+                        </a>
+                        <span class="w-px h-3 bg-white/20"></span>
+                        <form method="POST" action="{{ route('logout') }}" class="inline">
+                            @csrf
+                            <button type="submit" class="text-white/60 hover:text-primary transition-colors">Çıkış</button>
+                        </form>
+                    @else
+                        <a href="{{ route('login') }}" class="flex items-center gap-1.5 text-white/60 hover:text-primary transition-colors">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                            Giriş Yap
+                        </a>
+                    @endauth
                 </div>
             </div>
         </div>
@@ -299,15 +311,35 @@
 
                 <!-- User Section -->
                 <div class="p-4 bg-gray-50 border-b border-gray-100">
-                    <a href="{{ route('login') }}" class="flex items-center gap-3" @click="mobileMenu = false">
-                        <div class="w-9 h-9 rounded-full bg-brand-black100 flex items-center justify-center">
-                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    @auth
+                        <div class="flex items-center justify-between">
+                            <a href="{{ route('profile') }}" class="flex items-center gap-3" @click="mobileMenu = false">
+                                <div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center">
+                                    <span class="text-sm font-semibold text-white">{{ mb_substr(auth()->user()->name, 0, 1) }}</span>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-brand-black100">{{ auth()->user()->name }}</p>
+                                    <p class="text-[10px] text-gray-400">{{ auth()->user()->email }}</p>
+                                </div>
+                            </a>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" @click="mobileMenu = false" class="text-xs text-gray-400 hover:text-red-500 transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                                </button>
+                            </form>
                         </div>
-                        <div>
-                            <p class="text-sm font-medium text-brand-black100">Giriş Yap</p>
-                            <p class="text-[10px] text-gray-400">veya hesap oluştur</p>
-                        </div>
-                    </a>
+                    @else
+                        <a href="{{ route('login') }}" class="flex items-center gap-3" @click="mobileMenu = false">
+                            <div class="w-9 h-9 rounded-full bg-brand-black100 flex items-center justify-center">
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-brand-black100">Giriş Yap</p>
+                                <p class="text-[10px] text-gray-400">veya hesap oluştur</p>
+                            </div>
+                        </a>
+                    @endauth
                 </div>
 
                 <!-- Navigation Links -->

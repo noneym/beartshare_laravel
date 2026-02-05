@@ -111,156 +111,172 @@
     </div>
 
     <!-- Header -->
-    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100/80 shadow-sm" x-data="{ mobileMenu: false, searchOpen: false }">
-        <div class="container mx-auto px-4">
-            <div class="flex items-center justify-between h-16 lg:h-[72px]">
+    <div x-data="{ mobileMenu: false, searchOpen: false }">
+        <header class="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
+            <div class="container mx-auto px-4">
+                <div class="flex items-center justify-between h-16 lg:h-[72px]">
 
-                <!-- Mobile: Hamburger (Left) -->
-                <button @click="mobileMenu = !mobileMenu" class="lg:hidden p-2 -ml-2 text-brand-black100 hover:text-primary transition-colors">
-                    <svg x-show="!mobileMenu" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/>
-                    </svg>
-                    <svg x-show="mobileMenu" x-cloak class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
+                    <!-- Mobile: Hamburger (Left) -->
+                    <button @click="mobileMenu = !mobileMenu" class="lg:hidden p-2 -ml-2 text-brand-black100 hover:text-primary transition-colors">
+                        <svg x-show="!mobileMenu" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                        <svg x-show="mobileMenu" x-cloak class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
 
-                <!-- Logo -->
-                <a href="/" class="flex items-center gap-2 group">
-                    <img alt="BeArtShare Logo" src="{{ asset('images/logo.svg') }}" class="h-10 lg:h-12 w-auto transition-transform duration-300 group-hover:scale-105" width="65" height="65">
-                    <span class="hidden xl:inline-block text-[10px] text-gray-400 font-light tracking-wider border-l border-gray-200 pl-2 ml-0.5 leading-tight">Yeni Çağın<br>Sanat Galerisi</span>
-                </a>
+                    <!-- Logo -->
+                    <a href="/" class="flex items-center gap-2 group">
+                        <img alt="BeArtShare Logo" src="{{ asset('images/logo.svg') }}" class="h-10 lg:h-12 w-auto transition-transform duration-300 group-hover:scale-105" width="65" height="65">
+                        <span class="hidden xl:inline-block text-[10px] text-gray-400 font-light tracking-wider border-l border-gray-200 pl-2 ml-0.5 leading-tight">Yeni Çağın<br>Sanat Galerisi</span>
+                    </a>
 
-                <!-- Desktop Navigation -->
-                <nav class="hidden lg:flex items-center">
-                    <div class="flex items-center gap-1">
-                        <a href="{{ route('artworks') }}" class="nav-link px-3 py-2 text-[13px] text-brand-black100 hover:text-primary transition-colors relative group">
-                            Eserler
-                            <span class="absolute bottom-0 left-3 right-3 h-[2px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
+                    <!-- Desktop Navigation -->
+                    <nav class="hidden lg:flex items-center">
+                        <div class="flex items-center gap-1">
+                            <a href="{{ route('artworks') }}" class="nav-link px-3 py-2 text-[13px] text-brand-black100 hover:text-primary transition-colors relative group">
+                                Eserler
+                                <span class="absolute bottom-0 left-3 right-3 h-[2px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
+                            </a>
+                            <a href="{{ route('artists') }}" class="nav-link px-3 py-2 text-[13px] text-brand-black100 hover:text-primary transition-colors relative group">
+                                Sanatçılar
+                                <span class="absolute bottom-0 left-3 right-3 h-[2px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
+                            </a>
+                            <a href="{{ route('about') }}" class="nav-link px-3 py-2 text-[13px] text-brand-black100 hover:text-primary transition-colors relative group">
+                                Hakkımızda
+                                <span class="absolute bottom-0 left-3 right-3 h-[2px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
+                            </a>
+                            <a href="{{ route('blog') }}" class="nav-link px-3 py-2 text-[13px] text-brand-black100 hover:text-primary transition-colors relative group">
+                                Blog
+                                <span class="absolute bottom-0 left-3 right-3 h-[2px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
+                            </a>
+                        </div>
+                    </nav>
+
+                    <!-- Right Actions -->
+                    <div class="flex items-center gap-1 lg:gap-2">
+                        <!-- Search Toggle -->
+                        <button @click="searchOpen = !searchOpen" class="p-2 text-brand-black100 hover:text-primary transition-colors rounded-full hover:bg-gray-50">
+                            <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
+                            </svg>
+                        </button>
+
+                        <!-- User (Mobile) -->
+                        <a href="{{ route('login') }}" class="lg:hidden p-2 text-brand-black100 hover:text-primary transition-colors rounded-full hover:bg-gray-50">
+                            <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
                         </a>
-                        <a href="{{ route('artists') }}" class="nav-link px-3 py-2 text-[13px] text-brand-black100 hover:text-primary transition-colors relative group">
-                            Sanatçılar
-                            <span class="absolute bottom-0 left-3 right-3 h-[2px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
-                        </a>
-                        <a href="{{ route('about') }}" class="nav-link px-3 py-2 text-[13px] text-brand-black100 hover:text-primary transition-colors relative group">
-                            Hakkımızda
-                            <span class="absolute bottom-0 left-3 right-3 h-[2px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
-                        </a>
-                        <a href="{{ route('blog') }}" class="nav-link px-3 py-2 text-[13px] text-brand-black100 hover:text-primary transition-colors relative group">
-                            Blog
-                            <span class="absolute bottom-0 left-3 right-3 h-[2px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
+
+                        <!-- Cart -->
+                        <a href="{{ route('cart') }}" class="p-2 text-brand-black100 hover:text-primary transition-colors rounded-full hover:bg-gray-50 relative">
+                            @livewire('cart-icon')
                         </a>
                     </div>
-                </nav>
+                </div>
+            </div>
 
-                <!-- Right Actions -->
-                <div class="flex items-center gap-1 lg:gap-2">
-                    <!-- Search Toggle -->
-                    <button @click="searchOpen = !searchOpen" class="p-2 text-brand-black100 hover:text-primary transition-colors rounded-full hover:bg-gray-50">
-                        <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <!-- Search Bar (Expandable) -->
+            <div x-show="searchOpen"
+                 x-cloak
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 -translate-y-1"
+                 x-transition:enter-end="opacity-100 translate-y-0"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100 translate-y-0"
+                 x-transition:leave-end="opacity-0 -translate-y-1"
+                 class="border-t border-gray-100 bg-white"
+            >
+                <div class="container mx-auto px-4 py-3">
+                    <div class="relative max-w-xl mx-auto">
+                        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
                         </svg>
-                    </button>
-
-                    <!-- User (Mobile) -->
-                    <a href="{{ route('login') }}" class="lg:hidden p-2 text-brand-black100 hover:text-primary transition-colors rounded-full hover:bg-gray-50">
-                        <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                        </svg>
-                    </a>
-
-                    <!-- Cart -->
-                    <a href="{{ route('cart') }}" class="p-2 text-brand-black100 hover:text-primary transition-colors rounded-full hover:bg-gray-50 relative">
-                        @livewire('cart-icon')
-                    </a>
+                        <input type="text" placeholder="Eser, sanatçı veya kategori ara..." class="w-full pl-10 pr-10 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all bg-gray-50 focus:bg-white">
+                        <button @click="searchOpen = false" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-black100 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </header>
 
-        <!-- Search Bar (Expandable) -->
-        <div x-show="searchOpen"
-             x-cloak
-             x-transition:enter="transition ease-out duration-200"
-             x-transition:enter-start="opacity-0 -translate-y-1"
-             x-transition:enter-end="opacity-100 translate-y-0"
-             x-transition:leave="transition ease-in duration-150"
-             x-transition:leave-start="opacity-100 translate-y-0"
-             x-transition:leave-end="opacity-0 -translate-y-1"
-             class="border-t border-gray-100 bg-white"
-        >
-            <div class="container mx-auto px-4 py-3">
-                <div class="relative max-w-xl mx-auto">
-                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
-                    </svg>
-                    <input type="text" placeholder="Eser, sanatçı veya kategori ara..." class="w-full pl-10 pr-10 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all bg-gray-50 focus:bg-white">
-                    <button @click="searchOpen = false" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-black100 transition-colors">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Mobile Menu -->
+        <!-- Mobile Menu (Outside header to avoid stacking context issues) -->
         <div x-show="mobileMenu"
              x-cloak
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0"
-             x-transition:enter-end="opacity-100"
-             x-transition:leave="transition ease-in duration-200"
-             x-transition:leave-start="opacity-100"
-             x-transition:leave-end="opacity-0"
-             class="lg:hidden fixed inset-0 top-16 z-40"
+             class="lg:hidden fixed inset-0 z-[60]"
+             style="display: none;"
         >
             <!-- Overlay -->
-            <div class="absolute inset-0 bg-black/20 backdrop-blur-sm" @click="mobileMenu = false"></div>
+            <div x-show="mobileMenu"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="absolute inset-0 bg-black/30"
+                 @click="mobileMenu = false"
+            ></div>
 
             <!-- Menu Panel -->
             <div x-show="mobileMenu"
                  x-transition:enter="transition ease-out duration-300"
                  x-transition:enter-start="-translate-x-full"
                  x-transition:enter-end="translate-x-0"
-                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave="transition ease-in duration-250"
                  x-transition:leave-start="translate-x-0"
                  x-transition:leave-end="-translate-x-full"
-                 class="relative w-[280px] h-full bg-white shadow-2xl overflow-y-auto"
+                 class="absolute top-0 left-0 w-[280px] h-full bg-white shadow-2xl overflow-y-auto"
             >
+                <!-- Close + Logo -->
+                <div class="flex items-center justify-between p-4 border-b border-gray-100">
+                    <a href="/" class="flex items-center gap-2" @click="mobileMenu = false">
+                        <img alt="BeArtShare" src="{{ asset('images/logo.svg') }}" class="h-8 w-auto" width="65" height="65">
+                    </a>
+                    <button @click="mobileMenu = false" class="p-1 text-gray-400 hover:text-brand-black100 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+
                 <!-- User Section -->
-                <div class="p-5 bg-brand-black100">
+                <div class="p-4 bg-gray-50 border-b border-gray-100">
                     <a href="{{ route('login') }}" class="flex items-center gap-3" @click="mobileMenu = false">
-                        <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                            <svg class="w-5 h-5 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                        <div class="w-9 h-9 rounded-full bg-brand-black100 flex items-center justify-center">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                         </div>
                         <div>
-                            <p class="text-sm text-white font-medium">Giriş Yap</p>
-                            <p class="text-[10px] text-white/40">veya hesap oluştur</p>
+                            <p class="text-sm font-medium text-brand-black100">Giriş Yap</p>
+                            <p class="text-[10px] text-gray-400">veya hesap oluştur</p>
                         </div>
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
                 <nav class="py-2">
-                    <a href="{{ route('artworks') }}" class="mobile-nav-link flex items-center gap-3 px-5 py-3.5 text-sm text-brand-black100 hover:bg-gray-50 hover:text-primary transition-all" @click="mobileMenu = false">
+                    <a href="{{ route('artworks') }}" class="flex items-center gap-3 px-5 py-3 text-sm text-brand-black100 hover:bg-gray-50 hover:text-primary transition-all" @click="mobileMenu = false">
                         <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                         Eserler
                     </a>
-                    <a href="{{ route('artists') }}" class="mobile-nav-link flex items-center gap-3 px-5 py-3.5 text-sm text-brand-black100 hover:bg-gray-50 hover:text-primary transition-all" @click="mobileMenu = false">
+                    <a href="{{ route('artists') }}" class="flex items-center gap-3 px-5 py-3 text-sm text-brand-black100 hover:bg-gray-50 hover:text-primary transition-all" @click="mobileMenu = false">
                         <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                         Sanatçılar
                     </a>
-                    <a href="{{ route('about') }}" class="mobile-nav-link flex items-center gap-3 px-5 py-3.5 text-sm text-brand-black100 hover:bg-gray-50 hover:text-primary transition-all" @click="mobileMenu = false">
+                    <a href="{{ route('about') }}" class="flex items-center gap-3 px-5 py-3 text-sm text-brand-black100 hover:bg-gray-50 hover:text-primary transition-all" @click="mobileMenu = false">
                         <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         Hakkımızda
                     </a>
-                    <a href="{{ route('artpuan') }}" class="mobile-nav-link flex items-center gap-3 px-5 py-3.5 text-sm text-brand-black100 hover:bg-gray-50 hover:text-primary transition-all" @click="mobileMenu = false">
+                    <a href="{{ route('artpuan') }}" class="flex items-center gap-3 px-5 py-3 text-sm hover:bg-gray-50 transition-all" @click="mobileMenu = false">
                         <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
                         <span class="text-primary font-medium">ArtPuan</span>
                     </a>
-                    <a href="{{ route('blog') }}" class="mobile-nav-link flex items-center gap-3 px-5 py-3.5 text-sm text-brand-black100 hover:bg-gray-50 hover:text-primary transition-all" @click="mobileMenu = false">
+                    <a href="{{ route('blog') }}" class="flex items-center gap-3 px-5 py-3 text-sm text-brand-black100 hover:bg-gray-50 hover:text-primary transition-all" @click="mobileMenu = false">
                         <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
                         Blog
                     </a>
-                    <a href="{{ route('contact') }}" class="mobile-nav-link flex items-center gap-3 px-5 py-3.5 text-sm text-brand-black100 hover:bg-gray-50 hover:text-primary transition-all" @click="mobileMenu = false">
+                    <a href="{{ route('contact') }}" class="flex items-center gap-3 px-5 py-3 text-sm text-brand-black100 hover:bg-gray-50 hover:text-primary transition-all" @click="mobileMenu = false">
                         <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                         İletişim
                     </a>
@@ -282,7 +298,7 @@
                 </div>
             </div>
         </div>
-    </header>
+    </div>
 
     <!-- Flash Messages -->
     @if(session()->has('success'))

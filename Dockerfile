@@ -32,7 +32,7 @@ RUN apk update && apk add --no-cache \
     # Intl extension
     icu-dev icu-data-full
 
-# PHP eklentileri (sadece gerekli olanlar)
+# PHP eklentileri (opcache FrankenPHP imajında zaten mevcut)
 RUN docker-php-ext-configure gd \
         --with-freetype --with-jpeg --with-webp && \
     docker-php-ext-install -j$(nproc) \
@@ -40,8 +40,7 @@ RUN docker-php-ext-configure gd \
         gd \
         intl \
         zip \
-        exif \
-        opcache
+        exif
 
 # Build dependency temizliği
 RUN apk del --no-cache \

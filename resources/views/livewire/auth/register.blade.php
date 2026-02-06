@@ -144,8 +144,8 @@
                     <label class="flex items-start">
                         <input type="checkbox" wire:model="terms" class="rounded border-gray-300 text-brand-black100 focus:ring-brand-black100 mt-0.5">
                         <span class="ml-2 text-gray-400 text-xs leading-relaxed">
-                            <a href="{{ route('teslimat-iade') }}" target="_blank" class="text-brand-black100 hover:underline">Kullanım şartlarını</a> ve
-                            <a href="{{ route('gizlilik-kvkk') }}" target="_blank" class="text-brand-black100 hover:underline">gizlilik politikasını</a> okudum, kabul ediyorum.
+                            <a href="{{ route('kullanim-kosullari') }}" target="_blank" class="text-brand-black100 hover:underline">Kullanım koşullarını</a> ve
+                            <a href="{{ route('gizlilik-kvkk') }}" target="_blank" class="text-brand-black100 hover:underline">KVKK ve Gizlilik Sözleşmesini</a> okudum, kabul ediyorum.
                         </span>
                     </label>
                     @error('terms') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror

@@ -22,7 +22,11 @@
       "Bash(npm install:*)",
       "WebFetch(domain:cdn.tiny.cloud)",
       "Bash(git push:*)",
-      "WebFetch(domain:beartshare-beartshare-laravel-webserver.dv3n9h.easypanel.host)"
+      "WebFetch(domain:beartshare-beartshare-laravel-webserver.dv3n9h.easypanel.host)",
+      "Bash(1 <<'TINKER'\n$order = App\\\\Models\\\\Order::latest\\(\\)->first\\(\\);\necho \"Order #{$order->id} - {$order->order_number} - Status: {$order->status}\\\\n\";\nforeach\\($order->items as $item\\) {\n    $artwork = $item->artwork;\n    $reserved = $artwork ? \\($artwork->is_reserved ? 'true' : 'false'\\) : 'N/A';\n    echo \"  - {$item->artwork_title} \\(id: {$item->artwork_id}\\) - reserved: {$reserved}\\\\n\";\n}\nexit;\nTINKER)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:api.github.com)"
     ]
   }
 }

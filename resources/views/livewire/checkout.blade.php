@@ -353,13 +353,21 @@
                                 </div>
                             </label>
 
-                            {{-- Kredi Kartı (Yapım Aşamasında) --}}
-                            <label class="flex items-start gap-3 p-4 border border-gray-100 bg-gray-50/50 cursor-not-allowed opacity-60">
-                                <input type="radio" disabled class="mt-0.5">
+                            {{-- Kredi Kartı (3D Secure) --}}
+                            <label class="flex items-start gap-3 p-4 border cursor-pointer transition
+                                {{ $payment_method === 'kredi_karti' ? 'border-brand-black100 bg-gray-50' : 'border-gray-200 hover:border-gray-300' }}">
+                                <input type="radio" wire:model.live="payment_method" value="kredi_karti"
+                                       class="mt-0.5 text-brand-black100 focus:ring-brand-black100">
                                 <div class="flex-1">
-                                    <span class="text-sm font-medium text-gray-400">Kredi Kartı</span>
-                                    <span class="ml-2 text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 uppercase tracking-wider">Yakında</span>
-                                    <p class="text-xs text-gray-300 mt-1">Kredi kartı ile ödeme seçeneği yakında aktif olacaktır.</p>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-sm font-medium text-brand-black100">Kredi Kartı</span>
+                                        <span class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 uppercase tracking-wider font-medium">3D Secure</span>
+                                    </div>
+                                    <p class="text-xs text-gray-400 mt-1">Garanti Bankası güvenli ödeme altyapısı ile kredi kartınızla güvenle ödeme yapabilirsiniz.</p>
+                                    <div class="flex items-center gap-3 mt-2">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/80px-Visa_Inc._logo.svg.png" alt="Visa" class="h-4 opacity-60">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/80px-Mastercard-logo.svg.png" alt="Mastercard" class="h-4 opacity-60">
+                                    </div>
                                 </div>
                             </label>
                         </div>

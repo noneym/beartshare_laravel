@@ -94,7 +94,7 @@ class Checkout extends Component
             'customer_email' => 'required|email',
             'customer_phone' => 'required|string',
             'selectedShippingAddressId' => 'required|exists:addresses,id',
-            'payment_method' => 'required|in:havale',
+            'payment_method' => 'required|in:havale,kredi_karti',
             'mesafeli_satis' => 'accepted',
             'on_bilgilendirme' => 'accepted',
         ];
@@ -343,9 +343,19 @@ class Checkout extends Component
                 ]);
             }
 
-            CartItem::where('user_id', $user->id)->delete();
+            // Kredi kartı ödemesinde sepeti henüz silme, ödeme sonucu gelince sileceğiz
+            if ($this->payment_method !== 'kredi_karti') {
+                CartItem::where('user_id', $user->id)->delete();
+            }
 
             DB::commit();
+
+            // Kredi kartı seçilmişse ödeme sayfasına yönlendir
+            if ($this->payment_method === 'kredi_karti') {
+                // Session'a order_id'yi kaydet
+                session(['pending_payment_order_id' => $order->id]);
+                return redirect()->route('payment.initiate', ['order_id' => $order->id]);
+            }
 
             try {
                 $notificationService = new NotificationService();

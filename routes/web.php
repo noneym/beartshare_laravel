@@ -15,6 +15,7 @@ use App\Livewire\Favorites;
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
 use App\Http\Controllers\ArtworkSubmissionController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\SearchController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -59,6 +60,15 @@ Route::get('/blog/{slug}', BlogDetail::class)->name('blog.detail');
 
 // Checkout
 Route::get('/odeme', Checkout::class)->middleware('auth')->name('checkout');
+
+// Payment (Garanti OOS)
+Route::middleware('auth')->group(function () {
+    Route::match(['get', 'post'], '/payment/initiate', [PaymentController::class, 'initiate'])->name('payment.initiate');
+    Route::get('/payment/success/{order}', [PaymentController::class, 'success'])->name('payment.success');
+    Route::get('/payment/failed/{order}', [PaymentController::class, 'failed'])->name('payment.failed');
+});
+// Callback CSRF'siz olmalı (banka tarafından POST edilir)
+Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback')->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
 
 // Auth Routes
 Route::middleware('guest')->group(function () {

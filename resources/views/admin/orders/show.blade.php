@@ -24,7 +24,7 @@
         <!-- Order Info -->
         <div class="lg:col-span-2 space-y-6">
 
-            {{-- Sipariş Onaylama Kartı (Pending ise) --}}
+            {{-- Sipariş Onaylama Kartı (Pending ise - Havale) --}}
             @if($order->status === 'pending')
             <div class="bg-amber-50 border border-amber-200 rounded-xl p-6">
                 <div class="flex items-start gap-4">
@@ -64,6 +64,34 @@
             </div>
             @endif
 
+            {{-- Kredi Kartı Ödeme Alındı Kartı (Paid ise) --}}
+            @if($order->status === 'paid')
+            <div class="bg-green-50 border border-green-200 rounded-xl p-6">
+                <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-green-800 mb-1">Ödeme Alındı (Kredi Kartı)</h3>
+                        <p class="text-green-700 text-sm mb-4">
+                            Kredi kartı ödemesi başarıyla alınmıştır. Siparişi onaylayarak ArtPuan dağıtımı yapabilir ve kargoya hazırlayabilirsiniz.
+                        </p>
+                        <div class="flex gap-3">
+                            <form action="{{ route('admin.orders.update', $order) }}" method="POST" onsubmit="return confirm('Siparişi onaylamak istediğinizden emin misiniz? Bu işlem ArtPuan dağıtımı yapacaktır.')">
+                                @csrf
+                                @method('PUT')
+                                <input type="hidden" name="status" value="confirmed">
+                                <button type="submit" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                    Siparişi Onayla
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <!-- Status Update -->
             <div class="bg-white rounded-xl shadow-sm p-6">
                 <h2 class="text-lg font-semibold mb-4">Sipariş Durumu</h2>
@@ -72,10 +100,12 @@
                     @method('PUT')
                     <select name="status" class="flex-1 rounded-lg border-gray-300 focus:border-primary focus:ring-primary">
                         <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>Ödeme Bekleniyor</option>
+                        <option value="paid" {{ $order->status === 'paid' ? 'selected' : '' }}>Ödendi (Onay Bekliyor)</option>
                         <option value="confirmed" {{ $order->status === 'confirmed' ? 'selected' : '' }}>Onaylandı</option>
                         <option value="shipped" {{ $order->status === 'shipped' ? 'selected' : '' }}>Kargoda</option>
                         <option value="delivered" {{ $order->status === 'delivered' ? 'selected' : '' }}>Teslim Edildi</option>
                         <option value="cancelled" {{ $order->status === 'cancelled' ? 'selected' : '' }}>İptal Edildi</option>
+                        <option value="payment_failed" {{ $order->status === 'payment_failed' ? 'selected' : '' }}>Ödeme Başarısız</option>
                     </select>
                     <button type="submit" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark">
                         Güncelle
@@ -181,7 +211,58 @@
                         <dd class="font-mono font-bold text-lg text-primary">{{ $order->payment_code }}</dd>
                     </div>
                     @endif
+                    @if($order->paid_at)
+                    <div>
+                        <dt class="text-sm text-gray-500">Ödeme Tarihi</dt>
+                        <dd class="font-medium text-green-600">{{ $order->paid_at->format('d.m.Y H:i') }}</dd>
+                    </div>
+                    @endif
                 </dl>
+
+                {{-- Payment Transaction Detayları --}}
+                @if($order->paymentTransactions && $order->paymentTransactions->count() > 0)
+                <div class="mt-4 pt-4 border-t border-gray-100">
+                    <h3 class="text-sm font-medium text-gray-700 mb-3">İşlem Detayları</h3>
+                    @foreach($order->paymentTransactions as $transaction)
+                    <div class="bg-gray-50 rounded-lg p-3 text-sm space-y-2 {{ !$loop->last ? 'mb-2' : '' }}">
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Durum:</span>
+                            <span class="font-medium {{ $transaction->status === 'completed' ? 'text-green-600' : ($transaction->status === 'failed' ? 'text-red-600' : 'text-amber-600') }}">
+                                {{ $transaction->status === 'completed' ? 'Başarılı' : ($transaction->status === 'failed' ? 'Başarısız' : 'Bekliyor') }}
+                            </span>
+                        </div>
+                        @if($transaction->auth_code)
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Onay Kodu:</span>
+                            <span class="font-mono font-medium">{{ $transaction->auth_code }}</span>
+                        </div>
+                        @endif
+                        @if($transaction->host_ref_num)
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Referans No:</span>
+                            <span class="font-mono text-xs">{{ $transaction->host_ref_num }}</span>
+                        </div>
+                        @endif
+                        @if($transaction->card_number)
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Kart:</span>
+                            <span class="font-mono">{{ $transaction->card_number }}</span>
+                        </div>
+                        @endif
+                        @if($transaction->error_message)
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Hata:</span>
+                            <span class="text-red-600 text-xs">{{ $transaction->error_message }}</span>
+                        </div>
+                        @endif
+                        <div class="flex justify-between text-xs text-gray-400">
+                            <span>{{ $transaction->created_at->format('d.m.Y H:i:s') }}</span>
+                            <span>{{ $transaction->gateway }}</span>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                @endif
             </div>
 
             <!-- Delivery Address -->

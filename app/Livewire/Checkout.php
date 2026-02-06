@@ -7,6 +7,7 @@ use App\Models\Artwork;
 use App\Models\CartItem;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\PaymentTransaction;
 use App\Services\NotificationService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -340,6 +341,22 @@ class Checkout extends Component
                 $user->spendArtPuan($artpuanUsed, [
                     'order_id' => $order->id,
                     'description' => "#{$order->order_number} nolu sipariş - " . number_format($artpuanUsed, 2, ',', '.') . " AP kullanıldı",
+                ]);
+            }
+
+            // Havale ödemesi için PaymentTransaction kaydı oluştur
+            if ($this->payment_method === 'havale') {
+                PaymentTransaction::create([
+                    'order_id' => $order->id,
+                    'transaction_id' => $order->payment_code,
+                    'gateway' => 'havale',
+                    'amount' => $finalTotalTl,
+                    'currency' => 'TRY',
+                    'status' => 'pending',
+                    'request_data' => [
+                        'payment_code' => $paymentCode,
+                        'customer_email' => $this->customer_email,
+                    ],
                 ]);
             }
 

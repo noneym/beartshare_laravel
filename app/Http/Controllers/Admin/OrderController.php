@@ -31,14 +31,14 @@ class OrderController extends Controller
     public function update(Request $request, Order $order)
     {
         $validated = $request->validate([
-            'status' => 'required|in:pending,confirmed,shipped,delivered,cancelled',
+            'status' => 'required|in:pending,paid,confirmed,shipped,delivered,cancelled,payment_failed',
         ]);
 
         $previousStatus = $order->status;
         $newStatus = $validated['status'];
 
-        // Onaylanma durumunda özel işlemler
-        if ($newStatus === 'confirmed' && $previousStatus !== 'confirmed') {
+        // Onaylanma durumunda özel işlemler (pending veya paid'den geçişte)
+        if ($newStatus === 'confirmed' && !in_array($previousStatus, ['confirmed', 'shipped', 'delivered'])) {
             return $this->confirmOrder($order);
         }
 

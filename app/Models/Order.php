@@ -27,6 +27,7 @@ class Order extends Model
         'district',
         'notes',
         'confirmed_at',
+        'paid_at',
         'artpuan_used',
         'discount_tl',
     ];
@@ -37,6 +38,7 @@ class Order extends Model
         'artpuan_used' => 'decimal:2',
         'discount_tl' => 'decimal:2',
         'confirmed_at' => 'datetime',
+        'paid_at' => 'datetime',
     ];
 
     protected static function boot()
@@ -60,14 +62,21 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    public function paymentTransactions()
+    {
+        return $this->hasMany(PaymentTransaction::class);
+    }
+
     public function getStatusLabelAttribute()
     {
         return match($this->status) {
             'pending' => 'Ödeme Bekleniyor',
+            'paid' => 'Ödendi',
             'confirmed' => 'Onaylandı',
             'shipped' => 'Kargoda',
             'delivered' => 'Teslim Edildi',
             'cancelled' => 'İptal Edildi',
+            'payment_failed' => 'Ödeme Başarısız',
             default => $this->status,
         };
     }
@@ -76,10 +85,12 @@ class Order extends Model
     {
         return match($this->status) {
             'pending' => 'yellow',
+            'paid' => 'green',
             'confirmed' => 'blue',
             'shipped' => 'purple',
             'delivered' => 'green',
             'cancelled' => 'red',
+            'payment_failed' => 'red',
             default => 'gray',
         };
     }

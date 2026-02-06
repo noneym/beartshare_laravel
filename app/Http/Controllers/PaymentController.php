@@ -81,7 +81,7 @@ class PaymentController extends Controller
             // Başarılı ödeme - Bildirim gönder
             try {
                 $notificationService = new NotificationService();
-                $notificationService->notifyPaymentReceived($result['order']);
+                $notificationService->notifyOrderCreated($result['order']);
             } catch (\Exception $e) {
                 Log::error('Payment notification error: ' . $e->getMessage());
             }

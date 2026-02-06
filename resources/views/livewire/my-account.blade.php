@@ -135,10 +135,12 @@
                                         <span class="text-sm font-medium text-brand-black100">{{ $order->order_number }}</span>
                                         <span class="text-[10px] px-2 py-0.5 font-medium
                                             {{ $order->status === 'pending' ? 'bg-amber-50 text-amber-600' : '' }}
+                                            {{ $order->status === 'paid' ? 'bg-green-50 text-green-600' : '' }}
                                             {{ $order->status === 'confirmed' ? 'bg-blue-50 text-blue-600' : '' }}
                                             {{ $order->status === 'shipped' ? 'bg-purple-50 text-purple-600' : '' }}
                                             {{ $order->status === 'delivered' ? 'bg-green-50 text-green-600' : '' }}
                                             {{ $order->status === 'cancelled' ? 'bg-red-50 text-red-600' : '' }}
+                                            {{ $order->status === 'payment_failed' ? 'bg-red-50 text-red-600' : '' }}
                                         ">{{ $order->status_label }}</span>
                                     </div>
                                     <p class="text-xs text-gray-400">{{ $order->created_at->format('d.m.Y H:i') }} &middot; {{ $order->items->count() }} eser</p>
@@ -262,10 +264,12 @@
                                         <span class="text-sm font-semibold text-brand-black100">{{ $order->order_number }}</span>
                                         <span class="text-[10px] px-2 py-0.5 font-medium
                                             {{ $order->status === 'pending' ? 'bg-amber-50 text-amber-600' : '' }}
+                                            {{ $order->status === 'paid' ? 'bg-green-50 text-green-600' : '' }}
                                             {{ $order->status === 'confirmed' ? 'bg-blue-50 text-blue-600' : '' }}
                                             {{ $order->status === 'shipped' ? 'bg-purple-50 text-purple-600' : '' }}
                                             {{ $order->status === 'delivered' ? 'bg-green-50 text-green-600' : '' }}
                                             {{ $order->status === 'cancelled' ? 'bg-red-50 text-red-600' : '' }}
+                                            {{ $order->status === 'payment_failed' ? 'bg-red-50 text-red-600' : '' }}
                                         ">{{ $order->status_label }}</span>
                                     </div>
                                     <p class="text-xs text-gray-400">{{ $order->created_at->format('d.m.Y H:i') }} &middot; {{ $order->payment_method_label }}</p>

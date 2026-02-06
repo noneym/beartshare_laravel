@@ -13,15 +13,15 @@ return [
     // Çalışma modu: PROD (production) veya TEST
     'mode' => env('GARANTI_MODE', 'PROD'),
 
-    // API versiyonu
-    'api_version' => 'v0.01',
+    // API versiyonu (Yeni Garanti BBVA API'de 512 olarak geçiyor)
+    'api_version' => '512',
 
     // Terminal bilgileri
     'terminal_id' => env('GARANTI_TERMINAL_ID', '10401052'),
     'merchant_id' => env('GARANTI_MERCHANT_ID', '3216754'),
 
-    // Kullanıcı bilgileri
-    'terminal_user_id' => env('GARANTI_TERMINAL_USER_ID', 'PROVAUT'),
+    // Kullanıcı bilgileri (OOS için her ikisi de PROVOOS olmalı)
+    'terminal_user_id' => env('GARANTI_TERMINAL_USER_ID', 'PROVOOS'),
     'terminal_prov_user_id' => env('GARANTI_TERMINAL_PROV_USER_ID', 'PROVOOS'),
 
     // Şifreler

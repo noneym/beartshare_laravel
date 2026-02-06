@@ -30,10 +30,12 @@
                         <td class="px-6 py-4">
                             <span class="inline-block px-2 py-1 text-xs rounded-full
                                 {{ $order->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : '' }}
+                                {{ $order->status === 'paid' ? 'bg-green-100 text-green-800' : '' }}
                                 {{ $order->status === 'confirmed' ? 'bg-blue-100 text-blue-800' : '' }}
                                 {{ $order->status === 'shipped' ? 'bg-purple-100 text-purple-800' : '' }}
                                 {{ $order->status === 'delivered' ? 'bg-green-100 text-green-800' : '' }}
                                 {{ $order->status === 'cancelled' ? 'bg-red-100 text-red-800' : '' }}
+                                {{ $order->status === 'payment_failed' ? 'bg-red-100 text-red-800' : '' }}
                             ">
                                 {{ $order->status_label }}
                             </span>

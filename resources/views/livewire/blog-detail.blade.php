@@ -94,7 +94,7 @@
                             <h4 class="text-sm font-semibold text-brand-black100 group-hover:text-primary transition line-clamp-2">
                                 {{ $related->title }}
                             </h4>
-                            <p class="text-xs text-gray-400 mt-1">{{ $related->created_at->format('d M Y') }}</p>
+                            <p class="text-xs text-gray-400 mt-1">{{ $related->created_at->translatedFormat('d F Y') }}</p>
                         </a>
                     @endforeach
                 </div>

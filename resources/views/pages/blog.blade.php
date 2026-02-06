@@ -27,7 +27,7 @@
                             Sanat dünyasından en güncel haberler ve yazılar. Türk ve dünya sanatından ilham veren içerikler.
                         </p>
                         <div class="flex items-center text-[10px] text-gray-300 pt-1">
-                            <span>{{ now()->subDays($i)->format('d M Y') }}</span>
+                            <span>{{ now()->subDays($i)->translatedFormat('d F Y') }}</span>
                         </div>
                     </div>
                 </article>

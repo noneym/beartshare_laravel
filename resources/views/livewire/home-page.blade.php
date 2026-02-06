@@ -482,7 +482,7 @@
                                 <h3 class="text-sm font-semibold text-brand-black100 mt-1 group-hover:text-primary transition line-clamp-2 leading-snug">
                                     {{ $post->title }}
                                 </h3>
-                                <p class="text-xs text-gray-400 mt-2">{{ $post->created_at->format('d M Y') }}</p>
+                                <p class="text-xs text-gray-400 mt-2">{{ $post->created_at->translatedFormat('d F Y') }}</p>
                             </div>
                         </a>
                     </article>

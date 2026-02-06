@@ -93,10 +93,12 @@ class ArtworkController extends Controller
             'is_sold' => 'boolean',
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
+            'allow_credit_card' => 'boolean',
             'images.*' => 'nullable|image|max:4096',
         ]);
 
         $validated['slug'] = Str::slug($validated['title'] . '-' . uniqid());
+        $validated['allow_credit_card'] = $request->boolean('allow_credit_card');
 
         if ($request->hasFile('images')) {
             $images = [];
@@ -136,8 +138,11 @@ class ArtworkController extends Controller
             'is_sold' => 'boolean',
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
+            'allow_credit_card' => 'boolean',
             'images.*' => 'nullable|image|max:4096',
         ]);
+
+        $validated['allow_credit_card'] = $request->boolean('allow_credit_card');
 
         if ($request->hasFile('images')) {
             $images = $artwork->images ?? [];

@@ -268,6 +268,15 @@ class Checkout extends Component
             }
         }
 
+        // Kredi kartı seçilmişse, tüm ürünlerin kredi kartı ile alınabilir olduğunu kontrol et
+        if ($this->payment_method === 'kredi_karti') {
+            $nonCreditCardItems = $cartItems->filter(fn($item) => !($item->artwork->allow_credit_card ?? true));
+            if ($nonCreditCardItems->isNotEmpty()) {
+                session()->flash('error', 'Sepetinizdeki bazı ürünler sadece havale/EFT ile satın alınabilir.');
+                return;
+            }
+        }
+
         $totalTl = $cartItems->sum(fn($item) => $item->artwork->price_tl);
         $totalUsd = $cartItems->sum(fn($item) => $item->artwork->price_usd);
         $paymentCode = Order::generatePaymentCode();
@@ -402,6 +411,7 @@ class Checkout extends Component
         $userArtPuan = 0;
         $artpuanDiscount = 0;
         $finalTotal = 0;
+        $allowCreditCard = true;
 
         if (Auth::check() && !$this->orderCompleted) {
             $userId = Auth::id();
@@ -413,6 +423,14 @@ class Checkout extends Component
 
             $totalTl = $cartItems->sum(fn($item) => $item->artwork->price_tl);
             $totalUsd = $cartItems->sum(fn($item) => $item->artwork->price_usd);
+
+            // Sepette kredi kartı ile alınamayan ürün var mı kontrol et
+            $allowCreditCard = $cartItems->every(fn($item) => $item->artwork->allow_credit_card ?? true);
+
+            // Eğer kredi kartı izni yoksa ve kredi kartı seçiliyse, havaleye çevir
+            if (!$allowCreditCard && $this->payment_method === 'kredi_karti') {
+                $this->payment_method = 'havale';
+            }
 
             // ArtPuan hesaplama
             $userArtPuan = (float) $user->art_puan;
@@ -443,6 +461,7 @@ class Checkout extends Component
             'userArtPuan' => $userArtPuan,
             'artpuanDiscount' => $artpuanDiscount,
             'finalTotal' => $finalTotal,
+            'allowCreditCard' => $allowCreditCard,
         ])->layoutData([
             'title' => 'Ödeme | BeArtShare',
             'metaRobots' => 'noindex, nofollow',

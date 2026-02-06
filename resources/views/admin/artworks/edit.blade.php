@@ -108,6 +108,10 @@
                         <input type="checkbox" name="is_sold" value="1" {{ $artwork->is_sold ? 'checked' : '' }} class="rounded border-gray-300 text-primary focus:ring-primary">
                         <span class="ml-2 text-gray-700">Satildi</span>
                     </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="allow_credit_card" value="1" {{ $artwork->allow_credit_card ? 'checked' : '' }} class="rounded border-gray-300 text-primary focus:ring-primary">
+                        <span class="ml-2 text-gray-700">Kredi Karti ile Alinabilir</span>
+                    </label>
                 </div>
 
                 <div class="flex justify-end gap-4">

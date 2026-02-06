@@ -2,6 +2,8 @@
         toast: { show: false, message: '', type: 'success' },
         showShareMenu: false,
         showLoginModal: false,
+        lightbox: { open: false, index: 0 },
+        images: @js($artwork->image_urls ?? []),
         showToast(message, type = 'success') {
             this.toast = { show: true, message, type };
             setTimeout(() => { this.toast.show = false; }, 3000);
@@ -22,6 +24,25 @@
             navigator.clipboard.writeText(window.location.href);
             this.showShareMenu = false;
             this.showToast('Link kopyalandı!', 'success');
+        },
+        openLightbox(index = 0) {
+            this.lightbox.index = index;
+            this.lightbox.open = true;
+            document.body.style.overflow = 'hidden';
+        },
+        closeLightbox() {
+            this.lightbox.open = false;
+            document.body.style.overflow = '';
+        },
+        nextImage() {
+            if (this.images.length > 0) {
+                this.lightbox.index = (this.lightbox.index + 1) % this.images.length;
+            }
+        },
+        prevImage() {
+            if (this.images.length > 0) {
+                this.lightbox.index = (this.lightbox.index - 1 + this.images.length) % this.images.length;
+            }
         }
      }"
      @cart-added.window="showToast($event.detail.message, 'success')"
@@ -29,6 +50,9 @@
      @cart-info.window="showToast($event.detail.message, 'info')"
      @toast.window="showToast($event.detail.message, $event.detail.type || 'success')"
      @show-login-modal.window="showLoginModal = true"
+     @keydown.escape.window="closeLightbox()"
+     @keydown.arrow-right.window="if(lightbox.open) nextImage()"
+     @keydown.arrow-left.window="if(lightbox.open) prevImage()"
 >
     <!-- Toast Notification -->
     <div x-show="toast.show"
@@ -97,6 +121,69 @@
         </div>
     </div>
 
+    <!-- Image Lightbox Modal -->
+    <div x-show="lightbox.open"
+         x-cloak
+         class="fixed inset-0 z-[150] flex items-center justify-center"
+         @click.self="closeLightbox()"
+    >
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/95" @click="closeLightbox()"></div>
+
+        <!-- Close Button -->
+        <button @click="closeLightbox()"
+                class="absolute top-4 right-4 z-10 text-white/70 hover:text-white transition p-2">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+
+        <!-- Image Counter -->
+        <div class="absolute top-4 left-4 z-10 text-white/70 text-sm font-medium" x-show="images.length > 1">
+            <span x-text="lightbox.index + 1"></span> / <span x-text="images.length"></span>
+        </div>
+
+        <!-- Previous Button -->
+        <button x-show="images.length > 1"
+                @click.stop="prevImage()"
+                class="absolute left-4 z-10 text-white/70 hover:text-white transition p-3 bg-black/30 hover:bg-black/50 rounded-full">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+        </button>
+
+        <!-- Next Button -->
+        <button x-show="images.length > 1"
+                @click.stop="nextImage()"
+                class="absolute right-4 z-10 text-white/70 hover:text-white transition p-3 bg-black/30 hover:bg-black/50 rounded-full">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+        </button>
+
+        <!-- Image Container -->
+        <div class="relative max-w-[90vw] max-h-[90vh] flex items-center justify-center" @click.stop>
+            <img :src="images[lightbox.index]"
+                 alt="{{ $artwork->title }}"
+                 class="max-w-full max-h-[90vh] object-contain"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 scale-95"
+                 x-transition:enter-end="opacity-100 scale-100"
+            >
+        </div>
+
+        <!-- Thumbnail Strip -->
+        <div x-show="images.length > 1" class="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex gap-2 bg-black/50 p-2 rounded-lg max-w-[90vw] overflow-x-auto">
+            <template x-for="(img, idx) in images" :key="idx">
+                <button @click.stop="lightbox.index = idx"
+                        class="w-12 h-12 flex-shrink-0 overflow-hidden border-2 transition rounded"
+                        :class="lightbox.index === idx ? 'border-white' : 'border-transparent opacity-50 hover:opacity-80'">
+                    <img :src="img" alt="" class="w-full h-full object-cover">
+                </button>
+            </template>
+        </div>
+    </div>
+
     <!-- Breadcrumb -->
     <div class="bg-gray-50 border-b border-gray-100">
         <div class="container mx-auto px-4 py-3">
@@ -116,9 +203,19 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
             <!-- Images -->
             <div>
-                <div class="relative bg-gray-50 overflow-hidden aspect-square mb-4">
+                <div class="relative bg-gray-50 overflow-hidden aspect-square mb-4 cursor-zoom-in"
+                     @if($artwork->image_urls && count($artwork->image_urls) > 0)
+                     @click="openLightbox({{ $currentImage }})"
+                     @endif
+                >
                     @if($artwork->image_urls && count($artwork->image_urls) > 0)
                         <img src="{{ $artwork->image_urls[$currentImage] }}" alt="{{ $artwork->title }}" class="w-full h-full object-contain">
+                        <!-- Zoom hint icon -->
+                        <div class="absolute bottom-3 right-3 bg-white/80 backdrop-blur-sm p-2 rounded-full shadow-sm opacity-60 hover:opacity-100 transition pointer-events-none">
+                            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
+                            </svg>
+                        </div>
                     @else
                         <div class="w-full h-full flex items-center justify-center">
                             <svg class="w-32 h-32 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -133,7 +230,9 @@
                         @foreach($artwork->image_urls as $index => $imageUrl)
                             <button
                                 wire:click="setImage({{ $index }})"
+                                @dblclick="openLightbox({{ $index }})"
                                 class="w-16 h-16 bg-gray-50 overflow-hidden border-2 transition {{ $currentImage == $index ? 'border-brand-black100' : 'border-gray-200 hover:border-gray-400' }}"
+                                title="Tam boyut için çift tıklayın"
                             >
                                 <img src="{{ $imageUrl }}" alt="" class="w-full h-full object-cover">
                             </button>

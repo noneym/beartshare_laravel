@@ -612,9 +612,8 @@
                     <ul class="space-y-2 text-gray-400">
                         <li><a href="{{ route('contact') }}" class="hover:text-white transition">İletişim</a></li>
                         <li><a href="{{ route('banka-hesaplari') }}" class="hover:text-white transition">Banka Hesapları</a></li>
-                        <li><a href="#" class="hover:text-white transition">Kargo ve Teslimat</a></li>
-                        <li><a href="#" class="hover:text-white transition">İade Politikası</a></li>
-                        <li><a href="#" class="hover:text-white transition">SSS</a></li>
+                        <li><a href="{{ route('teslimat-iade') }}" class="hover:text-white transition">Teslimat ve İade Şartları</a></li>
+                        <li><a href="{{ route('gizlilik-kvkk') }}" class="hover:text-white transition">Gizlilik ve KVKK</a></li>
                     </ul>
                 </div>
 

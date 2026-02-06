@@ -48,6 +48,8 @@ Route::view('/iletisim', 'pages.contact')->name('contact');
 Route::view('/artpuan', 'pages.artpuan')->name('artpuan');
 Route::view('/banka-hesaplari', 'pages.banka-hesaplari')->name('banka-hesaplari');
 Route::view('/eser-kabulu', 'pages.eser-kabulu')->name('eser-kabulu');
+Route::view('/teslimat-ve-iade', 'pages.teslimat-iade')->name('teslimat-iade');
+Route::view('/gizlilik-ve-kvkk', 'pages.gizlilik-kvkk')->name('gizlilik-kvkk');
 Route::post('/eser-kabulu', [ArtworkSubmissionController::class, 'submit'])->name('eser-kabulu.submit');
 
 // Blog

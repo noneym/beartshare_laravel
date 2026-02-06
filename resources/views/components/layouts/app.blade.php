@@ -643,7 +643,20 @@
                 </div>
             </div>
 
-            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm space-y-2">
+            <!-- Odeme Yontemleri -->
+            <div class="border-t border-gray-800 mt-8 pt-8">
+                <div class="flex flex-col items-center gap-4">
+                    <p class="text-xs text-gray-500 uppercase tracking-wider">Guvenli Odeme</p>
+                    <div class="flex items-center justify-center gap-6 flex-wrap">
+                        <!-- Garanti Pay -->
+                        <img src="https://www.ideasoft.com.tr/wp-content/uploads/2025/02/garanti-pay-logo-1024x272.png" alt="Garanti Pay" class="h-8 object-contain opacity-90 hover:opacity-100 transition">
+                        <!-- Visa & Mastercard -->
+                        <img src="{{ asset('images/logo-visa-mastercard.png.webp') }}" alt="Visa Mastercard" class="h-8 object-contain opacity-90 hover:opacity-100 transition">
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 mt-6 pt-6 text-center text-gray-400 text-sm space-y-2">
                 <p>&copy; {{ date('Y') }} BeArtShare. Tüm hakları saklıdır.</p>
                 <p class="flex items-center justify-center gap-1.5 text-xs text-gray-500">
                     <svg class="w-3.5 h-3.5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">

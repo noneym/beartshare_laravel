@@ -94,13 +94,30 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('artworks', App\Http\Controllers\Admin\ArtworkController::class)->except(['show']);
     Route::resource('categories', App\Http\Controllers\Admin\CategoryController::class)->except(['show']);
     Route::resource('users', App\Http\Controllers\Admin\UserController::class)->only(['index', 'show', 'edit', 'update']);
-    Route::resource('orders', App\Http\Controllers\Admin\OrderController::class)->only(['index', 'show', 'update']);
+    Route::resource('orders', App\Http\Controllers\Admin\OrderController::class)->only(['index', 'show', 'update', 'destroy']);
+    Route::post('orders/{id}/restore', [App\Http\Controllers\Admin\OrderController::class, 'restore'])->name('orders.restore');
+
     Route::get('messages/sms', [App\Http\Controllers\Admin\MessageController::class, 'smsForm'])->name('messages.sms');
     Route::post('messages/sms', [App\Http\Controllers\Admin\MessageController::class, 'sendSms'])->name('messages.sms.send');
     Route::get('messages/email', [App\Http\Controllers\Admin\MessageController::class, 'emailForm'])->name('messages.email');
     Route::post('messages/email', [App\Http\Controllers\Admin\MessageController::class, 'sendEmail'])->name('messages.email.send');
     Route::resource('blog-categories', App\Http\Controllers\Admin\BlogCategoryController::class)->except(['show']);
     Route::resource('blog-posts', App\Http\Controllers\Admin\BlogPostController::class)->except(['show']);
+
+    // ArtPuan Logs
     Route::get('art-puan-logs', [App\Http\Controllers\Admin\ArtPuanLogController::class, 'index'])->name('art-puan-logs.index');
+    Route::get('art-puan-logs/create', [App\Http\Controllers\Admin\ArtPuanLogController::class, 'create'])->name('art-puan-logs.create');
+    Route::post('art-puan-logs', [App\Http\Controllers\Admin\ArtPuanLogController::class, 'store'])->name('art-puan-logs.store');
+    Route::delete('art-puan-logs/{artPuanLog}', [App\Http\Controllers\Admin\ArtPuanLogController::class, 'destroy'])->name('art-puan-logs.destroy');
+    Route::post('art-puan-logs/{id}/restore', [App\Http\Controllers\Admin\ArtPuanLogController::class, 'restore'])->name('art-puan-logs.restore');
+
+    // Payments
+    Route::get('payments', [App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments.index');
+    Route::get('payments/create', [App\Http\Controllers\Admin\PaymentController::class, 'create'])->name('payments.create');
+    Route::post('payments', [App\Http\Controllers\Admin\PaymentController::class, 'store'])->name('payments.store');
+    Route::get('payments/{payment}', [App\Http\Controllers\Admin\PaymentController::class, 'show'])->name('payments.show');
+    Route::delete('payments/{payment}', [App\Http\Controllers\Admin\PaymentController::class, 'destroy'])->name('payments.destroy');
+    Route::post('payments/{id}/restore', [App\Http\Controllers\Admin\PaymentController::class, 'restore'])->name('payments.restore');
+
     Route::get('notification-logs', [App\Http\Controllers\Admin\NotificationLogController::class, 'index'])->name('notification-logs.index');
 });

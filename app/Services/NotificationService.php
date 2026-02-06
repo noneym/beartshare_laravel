@@ -348,6 +348,68 @@ class NotificationService
         </div>";
     }
 
+    /**
+     * Manuel ArtPuan ekleme bildirimi
+     */
+    public function notifyManualArtPuan(User $user, float $puanAmount, string $description, array $channels = ['sms', 'email']): void
+    {
+        $formattedPuan = number_format($puanAmount, 2, ',', '.');
+        $totalPuan = number_format($user->art_puan, 2, ',', '.');
+
+        // SMS gönder
+        if (in_array('sms', $channels) && $user->phone) {
+            $message = "BeArtShare: Hesabiniza {$formattedPuan} ArtPuan eklendi. Aciklama: {$description}. Toplam bakiyeniz: {$totalPuan} AP";
+            $this->sendSmsAndLog($user->phone, $message, 'manual_artpuan', null, $user->id);
+        }
+
+        // E-posta gönder
+        if (in_array('email', $channels) && $user->email) {
+            $this->sendEmailAndLog(
+                $user->email,
+                'ArtPuan Hesabınıza Eklendi!',
+                $this->buildManualArtPuanEmailBody($user, $puanAmount, $description),
+                'manual_artpuan',
+                null,
+                $user->id
+            );
+        }
+    }
+
+    protected function buildManualArtPuanEmailBody(User $user, float $puanAmount, string $description): string
+    {
+        $formattedPuan = number_format($puanAmount, 2, ',', '.');
+        $totalPuan = number_format($user->art_puan, 2, ',', '.');
+
+        return "
+        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
+            <div style='background: #1a1a1a; padding: 24px; text-align: center;'>
+                <h1 style='color: #fff; font-size: 20px; margin: 0;'>BeArtShare</h1>
+            </div>
+            <div style='padding: 32px 24px; background: #fff;'>
+                <p style='color: #333; font-size: 14px;'>Merhaba {$user->name},</p>
+                <p style='color: #555; font-size: 14px;'>
+                    Hesabınıza ArtPuan eklenmiştir!
+                </p>
+                <div style='background: #f0fdf4; border: 1px solid #bbf7d0; padding: 16px; margin: 16px 0; text-align: center;'>
+                    <p style='color: #16a34a; font-size: 24px; font-weight: bold; margin: 0;'>{$formattedPuan} ArtPuan</p>
+                    <p style='color: #15803d; font-size: 12px; margin: 4px 0 0;'>eklendi!</p>
+                </div>
+                <p style='color: #555; font-size: 14px;'>
+                    <strong>Açıklama:</strong> {$description}
+                </p>
+                <p style='color: #555; font-size: 14px;'>
+                    Toplam ArtPuan bakiyeniz: <strong>{$totalPuan} AP</strong>
+                </p>
+                <p style='color: #888; font-size: 12px; margin-top: 24px;'>
+                    ArtPuan'larınızı sonraki alışverişlerinizde kullanabilirsiniz.
+                </p>
+            </div>
+            <div style='padding: 16px 24px; background: #f8f8f8; text-align: center;'>
+                <p style='color: #999; font-size: 11px; margin: 0;'>BeArtShare &copy; " . date('Y') . "</p>
+            </div>
+        </div>";
+    }
+
     protected function buildOrderCreatedEmailBody(Order $order): string
     {
         $order->load('items.artwork');

@@ -12,11 +12,34 @@ use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Order::with('user', 'items.artwork')
-            ->latest()
-            ->paginate(20);
+        $query = Order::with('user', 'items.artwork')
+            ->latest();
+
+        // Silinmişleri göster
+        if ($request->has('with_trashed')) {
+            $query->withTrashed();
+        }
+
+        // Durum filtresi
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Arama
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('order_number', 'like', "%{$search}%")
+                  ->orWhereHas('user', function ($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $orders = $query->paginate(20)->withQueryString();
 
         return view('admin.orders.index', compact('orders'));
     }
@@ -133,6 +156,93 @@ class OrderController extends Controller
 
             return redirect()->back()
                 ->with('error', 'Sipariş onaylanırken bir hata oluştu: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Siparişi soft delete ile sil
+     */
+    public function destroy(Order $order)
+    {
+        DB::beginTransaction();
+
+        try {
+            // Önce siparişi iptal et (eserler serbest bırakılsın)
+            if (!in_array($order->status, ['cancelled'])) {
+                $order->update(['status' => 'cancelled']);
+
+                // Eserleri serbest bırak
+                foreach ($order->items as $item) {
+                    if ($item->artwork) {
+                        $item->artwork->update([
+                            'is_reserved' => false,
+                            'is_sold' => false,
+                        ]);
+                    }
+                }
+            }
+
+            // İlişkili kayıtları soft delete yap
+            $order->items()->delete();
+            $order->paymentTransactions()->delete();
+
+            // Siparişi soft delete yap
+            $order->delete();
+
+            Log::info('Order deleted', [
+                'order_id' => $order->id,
+                'order_number' => $order->order_number,
+                'deleted_by' => auth()->user()->name ?? 'Admin',
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('admin.orders.index')
+                ->with('success', "#{$order->order_number} nolu sipariş silindi.");
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Order delete error: ' . $e->getMessage());
+
+            return redirect()->back()
+                ->with('error', 'Sipariş silinirken bir hata oluştu.');
+        }
+    }
+
+    /**
+     * Silinmiş siparişi geri yükle
+     */
+    public function restore($id)
+    {
+        DB::beginTransaction();
+
+        try {
+            $order = Order::withTrashed()->findOrFail($id);
+
+            // Siparişi geri yükle
+            $order->restore();
+
+            // İlişkili kayıtları geri yükle
+            $order->items()->withTrashed()->restore();
+            $order->paymentTransactions()->withTrashed()->restore();
+
+            Log::info('Order restored', [
+                'order_id' => $order->id,
+                'order_number' => $order->order_number,
+                'restored_by' => auth()->user()->name ?? 'Admin',
+            ]);
+
+            DB::commit();
+
+            return redirect()->back()
+                ->with('success', "#{$order->order_number} nolu sipariş geri yüklendi.");
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Order restore error: ' . $e->getMessage());
+
+            return redirect()->back()
+                ->with('error', 'Sipariş geri yüklenirken bir hata oluştu.');
         }
     }
 

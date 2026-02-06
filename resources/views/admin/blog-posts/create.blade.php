@@ -7,7 +7,7 @@
         </a>
     </div>
 
-    <form method="POST" action="{{ route('admin.blog-posts.store') }}" enctype="multipart/form-data" id="blogForm" class="max-w-5xl">
+    <form method="POST" action="{{ route('admin.blog-posts.store') }}" enctype="multipart/form-data" id="blogForm">
         @csrf
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">

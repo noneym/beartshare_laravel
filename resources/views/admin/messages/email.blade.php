@@ -3,7 +3,7 @@
         <h1 class="text-3xl font-bold text-gray-900">E-posta Gonder</h1>
     </div>
 
-    <form method="POST" action="{{ route('admin.messages.email.send') }}" class="max-w-4xl" id="emailForm">
+    <form method="POST" action="{{ route('admin.messages.email.send') }}" id="emailForm">
         @csrf
 
         <!-- User Selection -->

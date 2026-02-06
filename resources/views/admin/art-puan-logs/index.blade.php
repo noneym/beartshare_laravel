@@ -7,6 +7,12 @@
             <h1 class="text-2xl font-bold text-gray-800">ArtPuan Log</h1>
             <p class="text-sm text-gray-500 mt-1">Tum ArtPuan hareketleri</p>
         </div>
+        <a href="{{ route('admin.art-puan-logs.create') }}" class="inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Manuel ArtPuan Ekle
+        </a>
     </div>
 
     {{-- Istatistik Kartlari --}}
@@ -49,6 +55,13 @@
                     <option value="spend" {{ request('type') === 'spend' ? 'selected' : '' }}>Harcama</option>
                 </select>
             </div>
+            <div class="flex items-center">
+                <label class="inline-flex items-center cursor-pointer">
+                    <input type="checkbox" name="with_trashed" value="1" {{ request('with_trashed') ? 'checked' : '' }}
+                           class="rounded border-gray-300 text-primary focus:ring-primary">
+                    <span class="ml-2 text-sm text-gray-600">Silinmisleri Goster</span>
+                </label>
+            </div>
             <button type="submit" class="bg-gray-800 text-white px-4 py-2 rounded text-sm hover:bg-gray-700 transition">
                 Filtrele
             </button>
@@ -72,6 +85,7 @@
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Siparis</th>
                     <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Miktar</th>
                     <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Bakiye</th>
+                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Islemler</th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
@@ -112,10 +126,37 @@
                         <td class="px-4 py-3 whitespace-nowrap text-sm text-right text-gray-500">
                             {{ number_format($log->balance_after, 2, ',', '.') }} AP
                         </td>
+                        <td class="px-4 py-3 whitespace-nowrap text-center">
+                            @if($log->trashed())
+                                <form action="{{ route('admin.art-puan-logs.restore', $log->id) }}" method="POST" class="inline">
+                                    @csrf
+                                    <button type="submit" class="text-green-600 hover:text-green-800 text-xs font-medium" title="Geri Yukle">
+                                        <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                        </svg>
+                                    </button>
+                                </form>
+                            @else
+                                @if($log->amount > 0)
+                                    <form action="{{ route('admin.art-puan-logs.destroy', $log) }}" method="POST" class="inline"
+                                          onsubmit="return confirm('Bu kaydi silmek ve {{ number_format($log->amount, 2, ',', '.') }} AP geri almak istediginize emin misiniz?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-600 hover:text-red-800 text-xs font-medium" title="Sil ve Puani Geri Al">
+                                            <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                @else
+                                    <span class="text-gray-400 text-xs">-</span>
+                                @endif
+                            @endif
+                        </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="px-4 py-12 text-center text-sm text-gray-400">
+                        <td colspan="8" class="px-4 py-12 text-center text-sm text-gray-400">
                             Henuz ArtPuan hareketi bulunmuyor.
                         </td>
                     </tr>

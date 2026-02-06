@@ -621,6 +621,7 @@
                 <div>
                     <h4 class="font-semibold mb-4">İletişim</h4>
                     <ul class="space-y-3 text-gray-400 text-sm">
+                        <li class="font-medium text-white text-sm mb-1">Beartshare Online Sanat Galerisi A.Ş.</li>
                         <li class="flex items-start space-x-2">
                             <svg class="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>

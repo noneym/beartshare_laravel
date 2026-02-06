@@ -610,6 +610,7 @@
                 <div>
                     <h4 class="font-semibold mb-4">Yardım</h4>
                     <ul class="space-y-2 text-gray-400">
+                        <li><a href="{{ route('faq') }}" class="hover:text-white transition">Sıkça Sorulan Sorular</a></li>
                         <li><a href="{{ route('contact') }}" class="hover:text-white transition">İletişim</a></li>
                         <li><a href="{{ route('banka-hesaplari') }}" class="hover:text-white transition">Banka Hesapları</a></li>
                         <li><a href="{{ route('teslimat-iade') }}" class="hover:text-white transition">Teslimat ve İade Şartları</a></li>

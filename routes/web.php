@@ -14,6 +14,7 @@ use App\Livewire\BlogDetail;
 use App\Livewire\Favorites;
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
+use App\Livewire\FaqPage;
 use App\Http\Controllers\ArtworkSubmissionController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\SearchController;
@@ -52,6 +53,7 @@ Route::view('/eser-kabulu', 'pages.eser-kabulu')->name('eser-kabulu');
 Route::view('/teslimat-ve-iade', 'pages.teslimat-iade')->name('teslimat-iade');
 Route::view('/gizlilik-ve-kvkk', 'pages.gizlilik-kvkk')->name('gizlilik-kvkk');
 Route::view('/kullanim-kosullari', 'pages.kullanim-kosullari')->name('kullanim-kosullari');
+Route::get('/sikca-sorulan-sorular', FaqPage::class)->name('faq');
 Route::post('/eser-kabulu', [ArtworkSubmissionController::class, 'submit'])->name('eser-kabulu.submit');
 
 // Blog
@@ -120,4 +122,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::post('payments/{id}/restore', [App\Http\Controllers\Admin\PaymentController::class, 'restore'])->name('payments.restore');
 
     Route::get('notification-logs', [App\Http\Controllers\Admin\NotificationLogController::class, 'index'])->name('notification-logs.index');
+
+    // FAQs
+    Route::resource('faqs', App\Http\Controllers\Admin\FaqController::class)->except(['show']);
+    Route::patch('faqs/{faq}/toggle-active', [App\Http\Controllers\Admin\FaqController::class, 'toggleActive'])->name('faqs.toggle-active');
 });

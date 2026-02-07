@@ -15,12 +15,8 @@
         user_name: '',
         order_number: '',
         order_url: ''
-    },
-    openModal(data) {
-        this.modalData = data;
-        this.showModal = true;
     }
-}">
+}" @open-log-modal.window="modalData = $event.detail; showModal = true">
 
     {{-- Baslik --}}
     <div class="flex items-center justify-between mb-6">
@@ -141,21 +137,25 @@
                                 @endif
                             </div>
                         </td>
+                        @php
+                            $logData = [
+                                'channel' => $log->channel_label,
+                                'type' => $log->type_label,
+                                'recipient' => $log->recipient,
+                                'subject' => $log->subject ?? '',
+                                'message' => $log->message ?? '',
+                                'error' => $log->error ?? '',
+                                'api_response' => $log->api_response ?? '',
+                                'created_at' => $log->created_at->format('d.m.Y H:i:s'),
+                                'user_name' => $log->user?->name ?? '',
+                                'order_number' => $log->order?->order_number ?? '',
+                                'order_url' => $log->order ? route('admin.orders.show', $log->order) : ''
+                            ];
+                        @endphp
                         <td class="px-4 py-3 text-xs text-gray-600 max-w-xs">
                             <button type="button"
-                                    @click="openModal({
-                                        channel: '{{ $log->channel_label }}',
-                                        type: '{{ $log->type_label }}',
-                                        recipient: '{{ $log->recipient }}',
-                                        subject: '{{ addslashes($log->subject ?? '') }}',
-                                        message: `{{ addslashes($log->message ?? '') }}`,
-                                        error: '{{ addslashes($log->error ?? '') }}',
-                                        api_response: '{{ addslashes($log->api_response ?? '') }}',
-                                        created_at: '{{ $log->created_at->format('d.m.Y H:i:s') }}',
-                                        user_name: '{{ $log->user?->name ?? '' }}',
-                                        order_number: '{{ $log->order?->order_number ?? '' }}',
-                                        order_url: '{{ $log->order ? route('admin.orders.show', $log->order) : '' }}'
-                                    })"
+                                    x-data="{ logData: {{ Js::from($logData) }} }"
+                                    @click="$dispatch('open-log-modal', logData)"
                                     class="text-left hover:bg-gray-100 p-1 -m-1 rounded transition w-full">
                                 @if($log->subject)
                                     <p class="font-medium text-gray-700 truncate">{{ $log->subject }}</p>

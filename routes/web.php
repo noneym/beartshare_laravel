@@ -123,6 +123,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     Route::get('notification-logs', [App\Http\Controllers\Admin\NotificationLogController::class, 'index'])->name('notification-logs.index');
 
+    // Favorites
+    Route::get('favorites', [App\Http\Controllers\Admin\FavoriteController::class, 'index'])->name('favorites.index');
+
     // FAQs
     Route::resource('faqs', App\Http\Controllers\Admin\FaqController::class)->except(['show']);
     Route::patch('faqs/{faq}/toggle-active', [App\Http\Controllers\Admin\FaqController::class, 'toggleActive'])->name('faqs.toggle-active');

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Auth;
 
+use App\Models\CartItem;
 use App\Models\User;
 use App\Services\NotificationService;
 use App\Services\SmsService;
@@ -241,9 +242,44 @@ class Register extends Component
         // Referans çerezini temizle
         cookie()->queue(cookie()->forget('referral_code'));
 
+        // Misafir sepetini kullanıcıya aktar (login öncesi session ID ile)
+        $guestSessionId = session()->getId();
+        $this->mergeGuestCartToUser($guestSessionId, $user->id);
+
         Auth::login($user);
 
+        session()->regenerate();
+
         return redirect()->intended(route('home'));
+    }
+
+    /**
+     * Misafir sepetindeki ürünleri kullanıcıya aktar
+     */
+    protected function mergeGuestCartToUser($guestSessionId, $userId)
+    {
+        // Misafir sepetindeki ürünleri bul
+        $guestCartItems = CartItem::where('session_id', $guestSessionId)
+            ->whereNull('user_id')
+            ->get();
+
+        foreach ($guestCartItems as $guestItem) {
+            // Kullanıcının sepetinde aynı eser var mı kontrol et
+            $existingItem = CartItem::where('user_id', $userId)
+                ->where('artwork_id', $guestItem->artwork_id)
+                ->first();
+
+            if (!$existingItem) {
+                // Yoksa misafir ürününü kullanıcıya aktar
+                $guestItem->update([
+                    'user_id' => $userId,
+                    'session_id' => null,
+                ]);
+            } else {
+                // Zaten varsa misafir ürününü sil (duplicate olmasın)
+                $guestItem->delete();
+            }
+        }
     }
 
     /**

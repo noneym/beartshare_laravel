@@ -95,6 +95,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('artists', App\Http\Controllers\Admin\ArtistController::class)->except(['show']);
     Route::resource('artworks', App\Http\Controllers\Admin\ArtworkController::class)->except(['show']);
     Route::resource('categories', App\Http\Controllers\Admin\CategoryController::class)->except(['show']);
+    Route::patch('categories/{category}/toggle-active', [App\Http\Controllers\Admin\CategoryController::class, 'toggleActive'])->name('categories.toggle-active');
     Route::resource('users', App\Http\Controllers\Admin\UserController::class)->only(['index', 'show', 'edit', 'update']);
     Route::resource('orders', App\Http\Controllers\Admin\OrderController::class)->only(['index', 'show', 'update', 'destroy']);
     Route::post('orders/{id}/restore', [App\Http\Controllers\Admin\OrderController::class, 'restore'])->name('orders.restore');

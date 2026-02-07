@@ -1,6 +1,27 @@
 <x-admin.layouts.app>
     <x-slot name="title">Bildirim Loglari</x-slot>
 
+<div x-data="{
+    showModal: false,
+    modalData: {
+        channel: '',
+        type: '',
+        recipient: '',
+        subject: '',
+        message: '',
+        error: '',
+        api_response: '',
+        created_at: '',
+        user_name: '',
+        order_number: '',
+        order_url: ''
+    },
+    openModal(data) {
+        this.modalData = data;
+        this.showModal = true;
+    }
+}">
+
     {{-- Baslik --}}
     <div class="flex items-center justify-between mb-6">
         <div>
@@ -121,15 +142,32 @@
                             </div>
                         </td>
                         <td class="px-4 py-3 text-xs text-gray-600 max-w-xs">
-                            @if($log->subject)
-                                <p class="font-medium text-gray-700 truncate">{{ $log->subject }}</p>
-                            @endif
-                            <p class="truncate text-gray-400" title="{{ $log->message }}">{{ Str::limit($log->message, 80) }}</p>
-                            @if($log->error)
-                                <p class="text-red-500 text-xs mt-1 truncate" title="{{ $log->error }}">
-                                    Hata: {{ Str::limit($log->error, 60) }}
-                                </p>
-                            @endif
+                            <button type="button"
+                                    @click="openModal({
+                                        channel: '{{ $log->channel_label }}',
+                                        type: '{{ $log->type_label }}',
+                                        recipient: '{{ $log->recipient }}',
+                                        subject: '{{ addslashes($log->subject ?? '') }}',
+                                        message: `{{ addslashes($log->message ?? '') }}`,
+                                        error: '{{ addslashes($log->error ?? '') }}',
+                                        api_response: '{{ addslashes($log->api_response ?? '') }}',
+                                        created_at: '{{ $log->created_at->format('d.m.Y H:i:s') }}',
+                                        user_name: '{{ $log->user?->name ?? '' }}',
+                                        order_number: '{{ $log->order?->order_number ?? '' }}',
+                                        order_url: '{{ $log->order ? route('admin.orders.show', $log->order) : '' }}'
+                                    })"
+                                    class="text-left hover:bg-gray-100 p-1 -m-1 rounded transition w-full">
+                                @if($log->subject)
+                                    <p class="font-medium text-gray-700 truncate">{{ $log->subject }}</p>
+                                @endif
+                                <p class="truncate text-gray-400">{{ Str::limit($log->message, 80) }}</p>
+                                @if($log->error)
+                                    <p class="text-red-500 text-xs mt-1 truncate">
+                                        Hata: {{ Str::limit($log->error, 60) }}
+                                    </p>
+                                @endif
+                                <span class="text-primary text-[10px] mt-1 inline-block">Detay için tıklayın</span>
+                            </button>
                         </td>
                         <td class="px-4 py-3 whitespace-nowrap text-xs">
                             @if($log->order)
@@ -166,4 +204,108 @@
             {{ $logs->links() }}
         </div>
     @endif
+
+    {{-- Mesaj Detay Modal --}}
+    <div x-show="showModal"
+         x-cloak
+         class="fixed inset-0 z-50 overflow-y-auto"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+            {{-- Backdrop --}}
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showModal = false"></div>
+
+            {{-- Modal Content --}}
+            <div class="relative bg-white rounded-lg shadow-xl transform transition-all sm:max-w-2xl sm:w-full mx-4"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 @click.away="showModal = false">
+
+                {{-- Header --}}
+                <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">Bildirim Detayi</h3>
+                            <p class="text-xs text-gray-500" x-text="modalData.created_at"></p>
+                        </div>
+                    </div>
+                    <button @click="showModal = false" class="text-gray-400 hover:text-gray-600 transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+
+                {{-- Body --}}
+                <div class="px-6 py-4 max-h-[60vh] overflow-y-auto">
+                    {{-- Meta Bilgiler --}}
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="bg-gray-50 rounded-lg p-3">
+                            <p class="text-xs text-gray-500 mb-1">Kanal</p>
+                            <p class="text-sm font-medium text-gray-900" x-text="modalData.channel"></p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-3">
+                            <p class="text-xs text-gray-500 mb-1">Tip</p>
+                            <p class="text-sm font-medium text-gray-900" x-text="modalData.type"></p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-3">
+                            <p class="text-xs text-gray-500 mb-1">Alici</p>
+                            <p class="text-sm font-medium text-gray-900" x-text="modalData.recipient"></p>
+                            <p class="text-xs text-gray-400" x-show="modalData.user_name" x-text="modalData.user_name"></p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-3" x-show="modalData.order_number">
+                            <p class="text-xs text-gray-500 mb-1">Siparis</p>
+                            <a :href="modalData.order_url" class="text-sm font-medium text-primary hover:underline" x-text="'#' + modalData.order_number"></a>
+                        </div>
+                    </div>
+
+                    {{-- Konu --}}
+                    <div x-show="modalData.subject" class="mb-4">
+                        <p class="text-xs text-gray-500 mb-1">Konu</p>
+                        <p class="text-sm font-medium text-gray-900 bg-gray-50 rounded-lg p-3" x-text="modalData.subject"></p>
+                    </div>
+
+                    {{-- Mesaj Icerigi --}}
+                    <div class="mb-4">
+                        <p class="text-xs text-gray-500 mb-1">Mesaj Icerigi</p>
+                        <div class="bg-gray-50 rounded-lg p-4 text-sm text-gray-700 whitespace-pre-wrap break-words border border-gray-200" x-text="modalData.message"></div>
+                    </div>
+
+                    {{-- Hata --}}
+                    <div x-show="modalData.error" class="mb-4">
+                        <p class="text-xs text-red-500 mb-1">Hata Mesaji</p>
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700" x-text="modalData.error"></div>
+                    </div>
+
+                    {{-- API Response --}}
+                    <div x-show="modalData.api_response" class="mb-4">
+                        <p class="text-xs text-gray-500 mb-1">API Yaniti</p>
+                        <div class="bg-gray-100 rounded-lg p-3 text-xs font-mono text-gray-600 overflow-x-auto" x-text="modalData.api_response"></div>
+                    </div>
+                </div>
+
+                {{-- Footer --}}
+                <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-lg">
+                    <button @click="showModal = false" class="w-full bg-gray-800 hover:bg-gray-900 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition">
+                        Kapat
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
 </x-admin.layouts.app>

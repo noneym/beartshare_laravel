@@ -206,28 +206,14 @@
     @endif
 
     {{-- Mesaj Detay Modal --}}
-    <div x-show="showModal"
-         x-cloak
-         class="fixed inset-0 z-50 overflow-y-auto"
-         x-transition:enter="transition ease-out duration-200"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
-         x-transition:leave="transition ease-in duration-150"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0">
+    <template x-if="showModal">
+    <div class="fixed inset-0 z-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
             {{-- Backdrop --}}
-            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showModal = false"></div>
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75" @click="showModal = false"></div>
 
             {{-- Modal Content --}}
-            <div class="relative bg-white rounded-lg shadow-xl transform transition-all sm:max-w-2xl sm:w-full mx-4"
-                 x-transition:enter="transition ease-out duration-200"
-                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-                 x-transition:leave="transition ease-in duration-150"
-                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                 @click.away="showModal = false">
+            <div class="relative bg-white rounded-lg shadow-xl sm:max-w-2xl sm:w-full mx-4" @click.stop>
 
                 {{-- Header --}}
                 <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
@@ -306,6 +292,7 @@
             </div>
         </div>
     </div>
+    </template>
 
 </div>
 </x-admin.layouts.app>

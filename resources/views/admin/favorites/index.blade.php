@@ -100,11 +100,8 @@
                         <td class="px-4 py-3">
                             @if($favorite->artwork)
                                 <div class="flex items-center gap-3">
-                                    @php
-                                        $image = $favorite->artwork->images->first();
-                                    @endphp
-                                    @if($image)
-                                        <img src="{{ asset('storage/' . $image->image_path) }}"
+                                    @if($favorite->artwork->first_image_url)
+                                        <img src="{{ $favorite->artwork->first_image_url }}"
                                              alt="{{ $favorite->artwork->title }}"
                                              class="w-12 h-12 object-cover rounded">
                                     @else
@@ -158,7 +155,7 @@
                         <td class="px-4 py-3 whitespace-nowrap">
                             @if($favorite->artwork)
                                 <span class="text-sm font-medium text-gray-900">
-                                    {{ number_format($favorite->artwork->price, 0, ',', '.') }} TL
+                                    {{ $favorite->artwork->formatted_price_tl }}
                                 </span>
                             @else
                                 <span class="text-gray-400">-</span>
@@ -168,11 +165,11 @@
                         {{-- Durum --}}
                         <td class="px-4 py-3 whitespace-nowrap">
                             @if($favorite->artwork)
-                                @if($favorite->artwork->status === 'sold')
+                                @if($favorite->artwork->is_sold)
                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
                                         Satildi
                                     </span>
-                                @elseif($favorite->artwork->status === 'reserved')
+                                @elseif($favorite->artwork->is_reserved)
                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
                                         Rezerve
                                     </span>

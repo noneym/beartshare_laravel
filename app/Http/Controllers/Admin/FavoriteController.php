@@ -10,7 +10,7 @@ class FavoriteController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Favorite::with(['user', 'artwork.artist', 'artwork.images']);
+        $query = Favorite::with(['user', 'artwork.artist']);
 
         // Siralama
         $sort = $request->get('sort', 'latest');

@@ -623,57 +623,39 @@
             <div class="space-y-6 max-w-2xl">
                 {{-- Profil Bilgileri --}}
                 <div class="bg-white border border-gray-100 p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-sm font-semibold text-brand-black100 uppercase tracking-wider">Profil Bilgileri</h3>
-                        @if(!$showEditProfile)
-                            <button wire:click="openEditProfile" class="text-xs text-primary hover:underline">Düzenle</button>
-                        @endif
-                    </div>
+                    <h3 class="text-sm font-semibold text-brand-black100 uppercase tracking-wider mb-4">Profil Bilgileri</h3>
 
-                    @if($showEditProfile)
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-xs text-gray-500 mb-1.5">Ad Soyad *</label>
-                                <input type="text" wire:model="edit_name"
-                                       class="w-full border px-4 py-2.5 text-sm focus:outline-none transition {{ $errors->has('edit_name') ? 'border-red-400' : 'border-gray-200 focus:border-brand-black100' }}">
-                                @error('edit_name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                            </div>
-                            <div>
-                                <label class="block text-xs text-gray-500 mb-1.5">E-posta *</label>
-                                <input type="email" wire:model="edit_email"
-                                       class="w-full border px-4 py-2.5 text-sm focus:outline-none transition {{ $errors->has('edit_email') ? 'border-red-400' : 'border-gray-200 focus:border-brand-black100' }}">
-                                @error('edit_email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                            </div>
-                            <div>
-                                <label class="block text-xs text-gray-500 mb-1.5">Telefon</label>
-                                <input type="tel" wire:model="edit_phone"
-                                       class="w-full border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:border-brand-black100 transition">
-                            </div>
-                            <div class="flex gap-3">
-                                <button wire:click="saveProfile" class="bg-brand-black100 hover:bg-black text-white px-6 py-2.5 text-sm font-medium transition">Kaydet</button>
-                                <button wire:click="$set('showEditProfile', false)" class="border border-gray-200 px-6 py-2.5 text-sm text-gray-500 hover:bg-gray-50 transition">İptal</button>
-                            </div>
+                    <dl class="space-y-3">
+                        <div class="flex justify-between py-2 border-b border-gray-50">
+                            <dt class="text-xs text-gray-400">Ad Soyad</dt>
+                            <dd class="text-sm font-medium text-brand-black100">{{ $user->name }}</dd>
                         </div>
-                    @else
-                        <dl class="space-y-3">
-                            <div class="flex justify-between py-2 border-b border-gray-50">
-                                <dt class="text-xs text-gray-400">Ad Soyad</dt>
-                                <dd class="text-sm font-medium text-brand-black100">{{ $user->name }}</dd>
-                            </div>
-                            <div class="flex justify-between py-2 border-b border-gray-50">
-                                <dt class="text-xs text-gray-400">E-posta</dt>
-                                <dd class="text-sm font-medium text-brand-black100">{{ $user->email }}</dd>
-                            </div>
-                            <div class="flex justify-between py-2 border-b border-gray-50">
-                                <dt class="text-xs text-gray-400">Telefon</dt>
-                                <dd class="text-sm font-medium text-brand-black100">{{ $user->phone ?? '-' }}</dd>
-                            </div>
-                            <div class="flex justify-between py-2">
-                                <dt class="text-xs text-gray-400">Üyelik Tarihi</dt>
-                                <dd class="text-sm font-medium text-brand-black100">{{ $user->created_at->format('d.m.Y') }}</dd>
-                            </div>
-                        </dl>
-                    @endif
+                        <div class="flex justify-between py-2 border-b border-gray-50">
+                            <dt class="text-xs text-gray-400">E-posta</dt>
+                            <dd class="text-sm font-medium text-brand-black100">{{ $user->email }}</dd>
+                        </div>
+                        <div class="flex justify-between py-2 border-b border-gray-50">
+                            <dt class="text-xs text-gray-400">Telefon</dt>
+                            <dd class="text-sm font-medium text-brand-black100">+90 {{ $user->phone ?? '-' }}</dd>
+                        </div>
+                        <div class="flex justify-between py-2 border-b border-gray-50">
+                            <dt class="text-xs text-gray-400">TC Kimlik No</dt>
+                            <dd class="text-sm font-medium text-brand-black100">{{ $user->tc_no ? substr($user->tc_no, 0, 3) . '****' . substr($user->tc_no, -2) : '-' }}</dd>
+                        </div>
+                        <div class="flex justify-between py-2">
+                            <dt class="text-xs text-gray-400">Üyelik Tarihi</dt>
+                            <dd class="text-sm font-medium text-brand-black100">{{ $user->created_at->format('d.m.Y') }}</dd>
+                        </div>
+                    </dl>
+
+                    <div class="mt-4 p-3 bg-gray-50 rounded-lg">
+                        <p class="text-xs text-gray-500 flex items-start gap-2">
+                            <svg class="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                            <span>Güvenlik nedeniyle bu bilgiler değiştirilemez. Bilgilerinizde hata varsa lütfen <a href="{{ route('contact') }}" class="text-primary hover:underline">bizimle iletişime</a> geçin.</span>
+                        </p>
+                    </div>
                 </div>
 
                 {{-- Şifre Değiştir --}}

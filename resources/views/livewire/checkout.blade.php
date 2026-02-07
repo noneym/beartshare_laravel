@@ -180,31 +180,32 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {{-- Ad Soyad --}}
                             <div>
-                                <label class="block text-xs text-gray-500 mb-1.5">Ad Soyad *</label>
-                                <input type="text" wire:model="customer_name"
-                                       class="w-full border px-4 py-2.5 text-sm focus:outline-none transition {{ $errors->has('customer_name') ? 'border-red-400' : 'border-gray-200 focus:border-brand-black100' }}">
-                                @error('customer_name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                <label class="block text-xs text-gray-500 mb-1.5">Ad Soyad</label>
+                                <input type="text" value="{{ $customer_name }}" disabled
+                                       class="w-full border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-600 cursor-not-allowed">
                             </div>
 
                             {{-- E-posta --}}
                             <div>
-                                <label class="block text-xs text-gray-500 mb-1.5">E-posta *</label>
-                                <input type="email" wire:model="customer_email"
-                                       class="w-full border px-4 py-2.5 text-sm focus:outline-none transition {{ $errors->has('customer_email') ? 'border-red-400' : 'border-gray-200 focus:border-brand-black100' }}">
-                                @error('customer_email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                <label class="block text-xs text-gray-500 mb-1.5">E-posta</label>
+                                <input type="email" value="{{ $customer_email }}" disabled
+                                       class="w-full border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-600 cursor-not-allowed">
                             </div>
 
                             {{-- Telefon --}}
                             <div>
-                                <label class="block text-xs text-gray-500 mb-1.5">Telefon *</label>
+                                <label class="block text-xs text-gray-500 mb-1.5">Telefon</label>
                                 <div class="flex">
-                                    <span class="inline-flex items-center px-3 border border-r-0 border-gray-200 bg-gray-50 text-gray-500 text-sm">+90</span>
-                                    <input type="tel" wire:model="customer_phone" inputmode="tel"
-                                           class="w-full border px-4 py-2.5 text-sm focus:outline-none transition {{ $errors->has('customer_phone') ? 'border-red-400' : 'border-gray-200 focus:border-brand-black100' }}">
+                                    <span class="inline-flex items-center px-3 border border-r-0 border-gray-200 bg-gray-100 text-gray-500 text-sm">+90</span>
+                                    <input type="tel" value="{{ $customer_phone }}" disabled
+                                           class="w-full border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-600 cursor-not-allowed">
                                 </div>
-                                @error('customer_phone') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
                         </div>
+                        <p class="text-xs text-gray-400 mt-3">
+                            <svg class="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Bu bilgiler hesabınızdan alınmıştır. Değiştirmek için <a href="{{ route('profile', 'ayarlar') }}" class="text-primary hover:underline">hesap ayarlarını</a> ziyaret edin.
+                        </p>
                     </div>
 
                     {{-- Teslimat Adresi Seçimi --}}

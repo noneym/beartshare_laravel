@@ -172,7 +172,7 @@ class SmsService
      */
     public function sendVerificationCode(string $phone, string $code): array
     {
-        $message = "BeArtShare dogrulama kodunuz: {$code}. Bu kodu kimseyle paylasmayiniz.";
+        $message = "BeArtShare doğrulama kodunuz: {$code}. Bu kodu kimseyle paylaşmayınız.";
         return $this->send($phone, $message);
     }
 }

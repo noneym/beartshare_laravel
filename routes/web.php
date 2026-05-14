@@ -16,7 +16,9 @@ use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
 use App\Livewire\FaqPage;
 use App\Http\Controllers\ArtworkSubmissionController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ProductFeedController;
 use App\Http\Controllers\SearchController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -47,6 +49,7 @@ Route::get('/api/search', [SearchController::class, 'search'])->name('api.search
 // Static Pages
 Route::view('/hakkimizda', 'pages.about')->name('about');
 Route::view('/iletisim', 'pages.contact')->name('contact');
+Route::post('/iletisim', [ContactController::class, 'store'])->name('contact.submit');
 Route::view('/artpuan', 'pages.artpuan')->name('artpuan');
 Route::view('/banka-hesaplari', 'pages.banka-hesaplari')->name('banka-hesaplari');
 Route::view('/eser-kabulu', 'pages.eser-kabulu')->name('eser-kabulu');
@@ -56,6 +59,10 @@ Route::view('/kullanim-kosullari', 'pages.kullanim-kosullari')->name('kullanim-k
 Route::get('/sikca-sorulan-sorular', FaqPage::class)->name('faq');
 Route::post('/eser-kabulu', [ArtworkSubmissionController::class, 'submit'])->name('eser-kabulu.submit');
 
+// Meta Commerce Manager - Product Feed
+Route::get('/feed/products.xml', [ProductFeedController::class, 'xml'])->name('feed.products.xml');
+Route::get('/feed/products.csv', [ProductFeedController::class, 'csv'])->name('feed.products.csv');
+
 // Blog
 Route::get('/blog', BlogList::class)->name('blog');
 Route::get('/blog/{slug}', BlogDetail::class)->name('blog.detail');
@@ -63,12 +70,13 @@ Route::get('/blog/{slug}', BlogDetail::class)->name('blog.detail');
 // Checkout
 Route::get('/odeme', Checkout::class)->middleware('auth')->name('checkout');
 
-// Payment (Garanti OOS)
-Route::middleware('auth')->group(function () {
-    Route::match(['get', 'post'], '/payment/initiate', [PaymentController::class, 'initiate'])->name('payment.initiate');
-    Route::get('/payment/success/{order}', [PaymentController::class, 'success'])->name('payment.success');
-    Route::get('/payment/failed/{order}', [PaymentController::class, 'failed'])->name('payment.failed');
-});
+// Payment (Garanti OOS) - initiate auth gerektirir; success/failed callback sonrası
+// public (session/signed kontrolü controller'da yapılır) — aksi halde 3D dönüşünde
+// session kaybı kullanıcıyı login'e atar.
+Route::match(['get', 'post'], '/payment/initiate', [PaymentController::class, 'initiate'])
+    ->middleware('auth')->name('payment.initiate');
+Route::get('/payment/success/{order}', [PaymentController::class, 'success'])->name('payment.success');
+Route::get('/payment/failed/{order}', [PaymentController::class, 'failed'])->name('payment.failed');
 // Callback CSRF'siz olmalı (banka tarafından POST edilir)
 Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback')->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
 

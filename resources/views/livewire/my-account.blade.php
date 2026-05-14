@@ -48,7 +48,7 @@
                     'overview' => ['label' => 'Genel Bakış', 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>'],
                     'orders' => ['label' => 'Siparişlerim', 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>'],
                     'favorites' => ['label' => 'Favorilerim', 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>'],
-                    'artpuan' => ['label' => 'ArtPuan', 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>'],
+                    'artpuan' => ['label' => 'ArtPuan', 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>'],
                     'addresses' => ['label' => 'Adreslerim', 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>'],
                     'settings' => ['label' => 'Ayarlar', 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>'],
                 ];
@@ -205,7 +205,7 @@
             @if($artPuanLogs->count() > 0)
             <div class="mb-10">
                 <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-sm font-semibold text-brand-black100 uppercase tracking-wider">ArtPuan Hareketleri</h2>
+                    <h2 class="text-sm font-semibold text-brand-black100 uppercase tracking-wider">ArtPuan&reg; Hareketleri</h2>
                     <button wire:click="setTab('artpuan')" class="text-xs text-primary hover:underline">Tümünü Gör &rarr;</button>
                 </div>
                 <div class="bg-white border border-gray-100 divide-y divide-gray-50">
@@ -231,8 +231,8 @@
             <div class="bg-gradient-to-r from-brand-black100 to-gray-800 p-6 md:p-8">
                 <div class="flex flex-col md:flex-row items-start md:items-center gap-6">
                     <div class="flex-1">
-                        <h3 class="text-white font-semibold mb-1">Arkadaşını Davet Et, ArtPuan Kazan!</h3>
-                        <p class="text-white/50 text-xs">Referans linkini paylaş, arkadaşların eser aldığında sen de %1 ArtPuan kazan.</p>
+                        <h3 class="text-white font-semibold mb-1">Arkadaşını Davet Et, ArtPuan&reg; Kazan!</h3>
+                        <p class="text-white/50 text-xs">Referans linkini paylaş, arkadaşların eser aldığında sen de %1 ArtPuan&reg; kazan.</p>
                     </div>
                     <div class="flex-shrink-0 w-full md:w-auto">
                         <div x-data="{ copied: false }" class="flex items-center gap-2">
@@ -363,7 +363,7 @@
             {{-- ArtPuan Özet --}}
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                 <div class="bg-gradient-to-br from-primary/10 to-amber-50 border border-primary/20 p-6 text-center">
-                    <p class="text-xs text-primary/60 uppercase tracking-wider mb-2">Toplam ArtPuan</p>
+                    <p class="text-xs text-primary/60 uppercase tracking-wider mb-2">Toplam ArtPuan&reg;</p>
                     <p class="text-4xl font-bold text-primary">{{ number_format($stats['total_artpuan'], 0, ',', '.') }}</p>
                     <p class="text-xs text-primary/40 mt-1">AP</p>
                 </div>
@@ -399,7 +399,7 @@
                             <p class="text-[11px] text-gray-400">Seni davet eden arkadaşının referans kodunu gir</p>
                         </div>
                     </div>
-                    <p class="text-xs text-gray-500 mb-4">Bir arkadaşın seni BeArtShare'e davet ettiyse, referans kodunu aşağıya girerek hesabınızı bağlayabilirsiniz. Bağlandıktan sonra yaptığınız alışverişlerde her ikiniz de <strong class="text-primary">%1 ArtPuan</strong> kazanırsınız!</p>
+                    <p class="text-xs text-gray-500 mb-4">Bir arkadaşın seni BeArtShare'e davet ettiyse, referans kodunu aşağıya girerek hesabınızı bağlayabilirsiniz. Bağlandıktan sonra yaptığınız alışverişlerde her ikiniz de <strong class="text-primary">%1 ArtPuan&reg;</strong> kazanırsınız!</p>
                     <div class="flex items-start gap-2">
                         <div class="flex-1">
                             <input type="text" wire:model="referral_code_input" placeholder="Referans kodunu gir..."
@@ -450,7 +450,7 @@
                             <p class="text-[11px] text-gray-400">Referans linkinle arkadaşlarını BeArtShare'e davet et</p>
                         </div>
                     </div>
-                    <p class="text-xs text-gray-500 mb-4">Referans linkini paylaş, arkadaşların üye olup eser satın aldığında <strong class="text-primary">%1 ArtPuan</strong> kazan! Kodun: <strong class="font-mono text-primary">{{ $user->referral_code }}</strong></p>
+                    <p class="text-xs text-gray-500 mb-4">Referans linkini paylaş, arkadaşların üye olup eser satın aldığında <strong class="text-primary">%1 ArtPuan&reg;</strong> kazan! Kodun: <strong class="font-mono text-primary">{{ $user->referral_code }}</strong></p>
 
                     {{-- Referans linki kopyalama --}}
                     <div class="flex items-center gap-2 mb-4">
@@ -477,26 +477,12 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                             E-posta
                         </a>
-                        {{-- Twitter/X --}}
-                        <a href="https://twitter.com/intent/tweet?text={{ urlencode('BeArtShare\'de harika sanat eserlerini keşfet! 🎨 Referans linkim ile üye ol: ' . $user->referral_link) }}"
-                           target="_blank" rel="noopener"
-                           class="inline-flex items-center gap-1.5 bg-black hover:bg-gray-800 text-white px-3 py-2 text-xs font-medium transition">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                            X
-                        </a>
                         {{-- Facebook --}}
                         <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode($user->referral_link) }}"
                            target="_blank" rel="noopener"
                            class="inline-flex items-center gap-1.5 bg-[#1877F2] hover:bg-[#166fe5] text-white px-3 py-2 text-xs font-medium transition">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                             Facebook
-                        </a>
-                        {{-- Telegram --}}
-                        <a href="https://t.me/share/url?url={{ urlencode($user->referral_link) }}&text={{ urlencode('BeArtShare\'de harika sanat eserlerini keşfet! 🎨') }}"
-                           target="_blank" rel="noopener"
-                           class="inline-flex items-center gap-1.5 bg-[#0088cc] hover:bg-[#0077b5] text-white px-3 py-2 text-xs font-medium transition">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-                            Telegram
                         </a>
                     </div>
                 </div>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ArtworkSubmission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -47,6 +48,23 @@ class ArtworkSubmissionController extends Controller
             }
         }
 
+        // Veritabanina kaydet
+        $submission = ArtworkSubmission::create([
+            'name' => $validated['name'],
+            'phone' => $validated['phone'],
+            'email' => $validated['email'],
+            'artist_name' => $validated['artist_name'],
+            'artwork_title' => $validated['artwork_title'],
+            'technique' => $validated['technique'] ?? null,
+            'dimensions' => $validated['dimensions'] ?? null,
+            'year' => $validated['year'] ?? null,
+            'expected_price' => $validated['expected_price'] ?? null,
+            'notes' => $validated['notes'] ?? null,
+            'images' => $imagePaths,
+            'status' => 'new',
+            'ip_address' => $request->ip(),
+        ]);
+
         // E-posta gonder (admin'e)
         try {
             $data = $validated;
@@ -63,6 +81,7 @@ class ArtworkSubmissionController extends Controller
         }
 
         Log::info('Yeni eser basvurusu', [
+            'id' => $submission->id,
             'name' => $validated['name'],
             'email' => $validated['email'],
             'artist' => $validated['artist_name'],
@@ -71,7 +90,7 @@ class ArtworkSubmissionController extends Controller
         ]);
 
         return redirect()->route('eser-kabulu')
-            ->with('success', 'Basvurunuz basariyla alindi. Ekibimiz en kisa surede sizinle iletisime gececektir.');
+            ->with('success', 'Başvurunuz başarıyla alındı. Ekibimiz en kısa sürede sizinle iletişime geçecektir.');
     }
 
     /**

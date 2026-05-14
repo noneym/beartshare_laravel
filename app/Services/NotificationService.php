@@ -139,16 +139,32 @@ class NotificationService
     // ── Bildirim Methodlari ──
 
     /**
-     * Eser rezerve edildiğinde favorisine eklemiş kullanıcılara bildirim gönder
+     * Eser rezerve edildiğinde favorisine eklemiş kullanıcılara bildirim gönder.
+     * Satılmış eser için bildirim göndermez; aynı kullanıcıya aynı eser için
+     * tekrar bildirim göndermez.
      */
     public function notifyFavoriteWatchers(Artwork $artwork, int $excludeUserId = 0): void
     {
+        if ($artwork->is_sold) {
+            return;
+        }
+
         $watchers = $artwork->favoritedBy()
             ->where('users.id', '!=', $excludeUserId)
             ->get();
 
         foreach ($watchers as $watcher) {
-            $message = "BeArtShare: Favori listenizde bulunan \"{$artwork->title}\" eseri rezerve edildi.";
+            $alreadyNotified = NotificationLog::where('type', 'favorite_reserved')
+                ->where('user_id', $watcher->id)
+                ->where('message', 'like', '%' . $artwork->title . '%')
+                ->where('status', 'success')
+                ->exists();
+
+            if ($alreadyNotified) {
+                continue;
+            }
+
+            $message = "BeArtShare: Favori listenizdeki \"{$artwork->title}\" eseri rezerve edildi.";
 
             if ($watcher->phone) {
                 $this->sendSmsAndLog($watcher->phone, $message, 'favorite_reserved', null, $watcher->id);
@@ -173,7 +189,7 @@ class NotificationService
     public function notifyBuyerArtPuan(User $buyer, float $puanAmount, Order $order): void
     {
         $formattedPuan = number_format($puanAmount, 2, ',', '.');
-        $message = "BeArtShare: Siparisiniiz onaylanmistir. {$formattedPuan} ArtPuan kazandiniz! Siparis No: {$order->order_number}";
+        $message = "BeArtShare: Siparişiniz onaylanmıştır. {$formattedPuan} ArtPuan kazandınız! Sipariş No: {$order->order_number}";
 
         if ($buyer->phone) {
             $this->sendSmsAndLog($buyer->phone, $message, 'buyer_artpuan', $order->id, $buyer->id);
@@ -199,7 +215,7 @@ class NotificationService
         $formattedPuan = number_format($puanAmount, 2, ',', '.');
         $buyerFirstName = explode(' ', $buyer->name)[0];
 
-        $message = "BeArtShare: Referansiniz {$buyerFirstName} bir satin alma yapti. {$formattedPuan} ArtPuan kazandiniz!";
+        $message = "BeArtShare: Referansınız {$buyerFirstName} bir satın alma yaptı. {$formattedPuan} ArtPuan kazandınız!";
 
         if ($referrer->phone) {
             $this->sendSmsAndLog($referrer->phone, $message, 'referrer_artpuan', $order->id, $referrer->id);
@@ -224,12 +240,12 @@ class NotificationService
     {
         $bankPageUrl = url('/banka-hesaplari');
 
-        $message = "BeArtShare: Siparisiniiz basariyla olusturuldu. Siparis No: {$order->order_number}. ";
+        $message = "BeArtShare: Siparişiniz başarıyla oluşturuldu. Sipariş No: {$order->order_number}. ";
         if ($order->payment_method === 'havale') {
             $totalTl = number_format($order->total_tl, 0, ',', '.');
-            $message .= "Odeme tutari: {$totalTl} TL. Havale aciklama kodunuz: {$order->payment_code}. ";
-            $message .= "Banka hesaplarimiz: {$bankPageUrl} ";
-            $message .= "Eserler 30 dk rezervedir. Dekont icin: info@beartshare.com";
+            $message .= "Ödeme tutarı: {$totalTl} TL. Havale açıklama kodunuz: {$order->payment_code}. ";
+            $message .= "Banka hesaplarımız: {$bankPageUrl} ";
+            $message .= "Eserler 30 dk rezervedir. Dekont için: info@beartshare.com";
         }
 
         $userId = $order->user_id;
@@ -358,7 +374,7 @@ class NotificationService
 
         // SMS gönder
         if (in_array('sms', $channels) && $user->phone) {
-            $message = "BeArtShare: Hesabiniza {$formattedPuan} ArtPuan eklendi. Aciklama: {$description}. Toplam bakiyeniz: {$totalPuan} AP";
+            $message = "BeArtShare: Hesabınıza {$formattedPuan} ArtPuan eklendi. Açıklama: {$description}. Toplam bakiyeniz: {$totalPuan} AP";
             $this->sendSmsAndLog($user->phone, $message, 'manual_artpuan', null, $user->id);
         }
 

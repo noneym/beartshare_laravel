@@ -156,27 +156,48 @@
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                         </svg>
-                        Siteye Don
+                        Siteye Dön
                     </a>
                 </div>
             </nav>
         </aside>
 
         <!-- Main Content -->
-        <main class="flex-1 p-8">
-            @if(session('success'))
-                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">
-                    {{ session('success') }}
+        <main class="flex-1 flex flex-col">
+            <!-- Top Bar -->
+            <header class="bg-white border-b border-gray-200 px-8 py-3 flex items-center justify-between sticky top-0 z-30">
+                <div class="flex items-center gap-3 text-sm text-gray-500">
+                    <a href="javascript:history.back()" class="inline-flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-md hover:bg-gray-50 hover:text-gray-800 transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                        <span>Geri</span>
+                    </a>
+                    <a href="{{ route('admin.dashboard') }}" class="hover:text-gray-800">Admin Panel</a>
                 </div>
-            @endif
+                <a href="{{ route('home') }}" target="_blank" class="inline-flex items-center gap-1.5 bg-gray-800 hover:bg-black text-white px-4 py-1.5 rounded-md text-sm transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                    </svg>
+                    <span>Siteye Dön</span>
+                </a>
+            </header>
 
-            @if(session('error'))
-                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
-                    {{ session('error') }}
-                </div>
-            @endif
+            <div class="flex-1 p-8">
+                @if(session('success'))
+                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">
+                        {{ session('success') }}
+                    </div>
+                @endif
 
-            {{ $slot }}
+                @if(session('error'))
+                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
+                {{ $slot }}
+            </div>
         </main>
     </div>
 </body>

@@ -3,8 +3,10 @@
 namespace App\Livewire;
 
 use App\Models\Artwork;
+use App\Models\ArtworkView;
 use App\Models\CartItem;
 use App\Models\Favorite;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Livewire\Component;
 
@@ -13,6 +15,9 @@ class ArtworkDetail extends Component
     public Artwork $artwork;
     public $currentImage = 0;
     public bool $isFavorited = false;
+    public int $viewCount24h = 0;
+    public int $favoriteCount = 0;
+    public int $artpuanEarn = 0;
 
     public function mount($slug)
     {
@@ -23,6 +28,44 @@ class ArtworkDetail extends Component
         if (auth()->check()) {
             $this->isFavorited = auth()->user()->hasFavorited($this->artwork->id);
         }
+
+        $this->recordView();
+        $this->loadStats();
+    }
+
+    protected function recordView(): void
+    {
+        $userId = auth()->id();
+        $sessionId = session()->getId();
+        $cutoff = Carbon::now()->subHours(24);
+
+        $existing = ArtworkView::where('artwork_id', $this->artwork->id)
+            ->where('viewed_at', '>=', $cutoff)
+            ->when($userId, fn($q) => $q->where('user_id', $userId))
+            ->when(!$userId, fn($q) => $q->where('session_id', $sessionId)->whereNull('user_id'))
+            ->exists();
+
+        if (!$existing) {
+            ArtworkView::create([
+                'artwork_id' => $this->artwork->id,
+                'user_id' => $userId,
+                'session_id' => $userId ? null : $sessionId,
+                'viewed_at' => Carbon::now(),
+            ]);
+        }
+    }
+
+    protected function loadStats(): void
+    {
+        $cutoff = Carbon::now()->subHours(24);
+
+        $this->viewCount24h = ArtworkView::where('artwork_id', $this->artwork->id)
+            ->where('viewed_at', '>=', $cutoff)
+            ->count();
+
+        $this->favoriteCount = $this->artwork->favoritedBy()->count();
+
+        $this->artpuanEarn = (int) floor(($this->artwork->price_tl ?? 0) * 0.01);
     }
 
     public function setImage($index)

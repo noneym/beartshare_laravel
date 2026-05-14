@@ -129,46 +129,64 @@
                     <h2 class="text-xl font-semibold text-brand-black100 mb-2">Bize Yazın</h2>
                     <p class="text-gray-400 text-xs mb-8">Sorularınız, önerileriniz veya işbirliği teklifleriniz için formu doldurun, en kısa sürede size dönüş yapacağız.</p>
 
-                    <form class="space-y-5">
+                    @if(session('success'))
+                        <div class="bg-green-50 border border-green-200 text-green-700 text-sm px-4 py-3 mb-6 flex items-center gap-2">
+                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
+                    @if($errors->any())
+                        <div class="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 mb-6">
+                            <ul class="list-disc list-inside space-y-1">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    <form method="POST" action="{{ route('contact.submit') }}" class="space-y-5">
+                        @csrf
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
                                 <label class="block text-xs font-medium text-brand-black100 mb-2">Adınız Soyadınız <span class="text-red-400">*</span></label>
-                                <input type="text" required class="w-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-brand-black100 transition" placeholder="Adınız Soyadınız">
+                                <input type="text" name="name" value="{{ old('name') }}" required class="w-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-brand-black100 transition" placeholder="Adınız Soyadınız">
                             </div>
                             <div>
                                 <label class="block text-xs font-medium text-brand-black100 mb-2">E-posta Adresiniz <span class="text-red-400">*</span></label>
-                                <input type="email" required class="w-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-brand-black100 transition" placeholder="ornek@email.com">
+                                <input type="email" name="email" value="{{ old('email') }}" required class="w-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-brand-black100 transition" placeholder="ornek@email.com">
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
                                 <label class="block text-xs font-medium text-brand-black100 mb-2">Telefon Numaranız</label>
-                                <input type="tel" class="w-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-brand-black100 transition" placeholder="0500 000 00 00">
+                                <input type="tel" name="phone" value="{{ old('phone') }}" class="w-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-brand-black100 transition" placeholder="0500 000 00 00">
                             </div>
                             <div>
                                 <label class="block text-xs font-medium text-brand-black100 mb-2">Konu <span class="text-red-400">*</span></label>
-                                <select required class="w-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-brand-black100 bg-white transition">
+                                <select name="subject" required class="w-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-brand-black100 bg-white transition">
                                     <option value="">Konu seçin...</option>
-                                    <option value="genel">Genel Bilgi</option>
-                                    <option value="satis">Satış & Sipariş</option>
-                                    <option value="eser">Eser Hakkında</option>
-                                    <option value="artpuan">ArtPuan</option>
-                                    <option value="isbirligi">İşbirliği Teklifi</option>
-                                    <option value="diger">Diğer</option>
+                                    <option value="genel" @selected(old('subject')==='genel')>Genel Bilgi</option>
+                                    <option value="satis" @selected(old('subject')==='satis')>Satış & Sipariş</option>
+                                    <option value="eser" @selected(old('subject')==='eser')>Eser Hakkında</option>
+                                    <option value="artpuan" @selected(old('subject')==='artpuan')>ArtPuan</option>
+                                    <option value="isbirligi" @selected(old('subject')==='isbirligi')>İşbirliği Teklifi</option>
+                                    <option value="diger" @selected(old('subject')==='diger')>Diğer</option>
                                 </select>
                             </div>
                         </div>
 
                         <div>
                             <label class="block text-xs font-medium text-brand-black100 mb-2">Mesajınız <span class="text-red-400">*</span></label>
-                            <textarea rows="6" required class="w-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-brand-black100 transition resize-none" placeholder="Mesajınızı buraya yazın..."></textarea>
+                            <textarea name="message" rows="6" required class="w-full border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-brand-black100 transition resize-none" placeholder="Mesajınızı buraya yazın...">{{ old('message') }}</textarea>
                         </div>
 
                         <div class="flex items-center gap-2">
-                            <input type="checkbox" id="kvkk" class="w-4 h-4 border-gray-300 text-primary focus:ring-primary">
+                            <input type="checkbox" id="kvkk" name="kvkk" value="1" required class="w-4 h-4 border-gray-300 text-primary focus:ring-primary">
                             <label for="kvkk" class="text-xs text-gray-400">
-                                <a href="#" class="text-brand-black100 hover:text-primary transition">KVKK Aydınlatma Metni</a>'ni okudum ve kabul ediyorum.
+                                <a href="{{ route('gizlilik-kvkk') }}" class="text-brand-black100 hover:text-primary transition">KVKK Aydınlatma Metni</a>'ni okudum ve kabul ediyorum.
                             </label>
                         </div>
 

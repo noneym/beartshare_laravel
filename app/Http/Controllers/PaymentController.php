@@ -86,12 +86,16 @@ class PaymentController extends Controller
                 Log::error('Payment notification error: ' . $e->getMessage());
             }
 
+            // Session'a son tamamlanan sipariş id'sini koy — auth dışı erişim için
+            session(['last_completed_order_id' => $result['order']->id]);
+
             return redirect()->route('payment.success', ['order' => $result['order']->id]);
         } else {
             // Başarısız ödeme
             $orderId = $result['order']?->id;
 
             if ($orderId) {
+                session(['last_failed_order_id' => $orderId]);
                 return redirect()->route('payment.failed', ['order' => $orderId])
                     ->with('error', $result['message']);
             }
@@ -102,12 +106,26 @@ class PaymentController extends Controller
     }
 
     /**
+     * Sipariş sahibinin bu siparişi görüntüleyebileceğinden emin ol.
+     * 3D Secure POST callback sonrası session değişmiş olabilir, bu yüzden
+     * sadece Auth::id() kontrolü yeterli değil; session'daki son tamamlanan
+     * sipariş id'si ile de doğrulanır.
+     */
+    protected function canAccessOrder(Order $order, string $sessionKey): bool
+    {
+        if (Auth::check() && $order->user_id === Auth::id()) {
+            return true;
+        }
+
+        return (int) session($sessionKey) === (int) $order->id;
+    }
+
+    /**
      * Başarılı ödeme sayfası
      */
     public function success(Order $order)
     {
-        // Güvenlik kontrolü
-        if ($order->user_id !== Auth::id()) {
+        if (!$this->canAccessOrder($order, 'last_completed_order_id')) {
             abort(403);
         }
 
@@ -125,8 +143,7 @@ class PaymentController extends Controller
      */
     public function failed(Order $order)
     {
-        // Güvenlik kontrolü
-        if ($order->user_id !== Auth::id()) {
+        if (!$this->canAccessOrder($order, 'last_failed_order_id')) {
             abort(403);
         }
 

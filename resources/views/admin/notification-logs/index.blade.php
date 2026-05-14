@@ -16,7 +16,7 @@
         order_number: '',
         order_url: ''
     }
-}" @open-log-modal.window="modalData = $event.detail; showModal = true">
+}">
 
     {{-- Baslik --}}
     <div class="flex items-center justify-between mb-6">
@@ -154,9 +154,8 @@
                         @endphp
                         <td class="px-4 py-3 text-xs text-gray-600 max-w-xs">
                             <button type="button"
-                                    x-data="{ logData: {{ Js::from($logData) }} }"
-                                    @click="$dispatch('open-log-modal', logData)"
-                                    class="text-left hover:bg-gray-100 p-1 -m-1 rounded transition w-full">
+                                    @click='modalData = {{ Js::from($logData) }}; showModal = true'
+                                    class="text-left hover:bg-gray-100 p-1 -m-1 rounded transition w-full cursor-pointer">
                                 @if($log->subject)
                                     <p class="font-medium text-gray-700 truncate">{{ $log->subject }}</p>
                                 @endif
@@ -206,8 +205,7 @@
     @endif
 
     {{-- Mesaj Detay Modal --}}
-    <template x-if="showModal">
-    <div class="fixed inset-0 z-50 overflow-y-auto">
+    <div x-show="showModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
             {{-- Backdrop --}}
             <div class="fixed inset-0 bg-gray-500 bg-opacity-75" @click="showModal = false"></div>
@@ -292,7 +290,6 @@
             </div>
         </div>
     </div>
-    </template>
 
 </div>
 </x-admin.layouts.app>

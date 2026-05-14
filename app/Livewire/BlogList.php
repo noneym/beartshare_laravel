@@ -44,7 +44,8 @@ class BlogList extends Component
                       ->orWhere('content', 'like', '%' . $this->search . '%');
                 });
             })
-            ->latest()
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
             ->paginate(12);
 
         $categories = BlogCategory::active()

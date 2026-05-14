@@ -2,7 +2,7 @@
     <!-- Page Header -->
     <section class="bg-brand-black100 py-16">
         <div class="container mx-auto px-4">
-            <h1 class="text-3xl md:text-4xl font-light text-white">Bl<span class="font-semibold">og</span></h1>
+            <h1 class="text-3xl md:text-4xl font-light text-white">Sanat <span class="font-semibold">Haberleri</span></h1>
             <p class="text-white/50 text-sm mt-2">Sanat dünyasından haberler, yazılar ve daha fazlası</p>
         </div>
     </section>
@@ -69,18 +69,16 @@
                                     </span>
                                 @endif
 
-                                <h2 class="text-lg font-semibold text-brand-black100 mt-1 mb-2 group-hover:text-primary transition line-clamp-2">
+                                <h2 class="text-xl font-semibold text-brand-black100 mt-1 mb-3 group-hover:text-primary transition line-clamp-2 leading-snug">
                                     {{ $post->title }}
                                 </h2>
 
-                                <p class="text-sm text-gray-500 line-clamp-3 mb-3">
+                                <p class="text-sm text-gray-500 line-clamp-3 mb-4">
                                     {{ $post->excerpt }}
                                 </p>
 
-                                <div class="flex items-center text-xs text-gray-400 gap-3">
-                                    <span>{{ $post->created_at->translatedFormat('d F Y') }}</span>
-                                    <span>&middot;</span>
-                                    <span>{{ $post->read_time }}</span>
+                                <div class="border-t border-gray-100 pt-3">
+                                    <p class="text-xs text-gray-400 italic">{{ $post->created_at->format('d.m.Y') }}</p>
                                 </div>
                             </div>
                         </a>

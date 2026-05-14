@@ -67,15 +67,37 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Fiyat (TL) *</label>
-                        <input type="number" name="price_tl" value="{{ old('price_tl', $artwork->price_tl) }}" step="0.01" min="0" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary" required>
+                        @php $priceTl = old('price_tl', $artwork->price_tl); @endphp
+                        <input type="text" inputmode="numeric" data-price-format value="{{ $priceTl ? number_format((float) $priceTl, 0, ',', '.') : '' }}" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary" placeholder="100.000" required>
+                        <input type="hidden" name="price_tl" value="{{ $priceTl }}">
+                        <p class="text-gray-400 text-xs mt-1">Otomatik binlik ayraç (örn. 100.000)</p>
                         @error('price_tl') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Fiyat (USD) *</label>
-                        <input type="number" name="price_usd" value="{{ old('price_usd', $artwork->price_usd) }}" step="0.01" min="0" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary" required>
+                        @php $priceUsd = old('price_usd', $artwork->price_usd); @endphp
+                        <input type="text" inputmode="numeric" data-price-format value="{{ $priceUsd ? number_format((float) $priceUsd, 0, ',', '.') : '' }}" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary" placeholder="3.500" required>
+                        <input type="hidden" name="price_usd" value="{{ $priceUsd }}">
+                        <p class="text-gray-400 text-xs mt-1">Otomatik binlik ayraç (örn. 3.500)</p>
                         @error('price_usd') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                     </div>
                 </div>
+
+                <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    document.querySelectorAll('[data-price-format]').forEach(function (input) {
+                        const hidden = input.parentElement.querySelector('input[type="hidden"]');
+                        const sync = function () {
+                            const raw = input.value.replace(/[^\d]/g, '');
+                            if (hidden) hidden.value = raw;
+                            if (raw === '') { input.value = ''; return; }
+                            input.value = Number(raw).toLocaleString('tr-TR');
+                        };
+                        input.addEventListener('input', sync);
+                        sync();
+                    });
+                });
+                </script>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Mevcut Gorseller</label>

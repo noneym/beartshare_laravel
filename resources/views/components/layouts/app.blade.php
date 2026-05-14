@@ -212,7 +212,7 @@
                     <!-- Logo -->
                     <a href="/" class="flex items-center gap-2 group">
                         <img alt="BeArtShare Logo" src="{{ asset('images/logo.svg') }}" class="h-10 lg:h-12 w-auto transition-transform duration-300 group-hover:scale-105" width="65" height="65">
-                        <span class="hidden xl:inline-block text-[10px] text-gray-400 font-light tracking-wider border-l border-gray-200 pl-2 ml-0.5 leading-tight">Yeni Çağın<br>Sanat Galerisi</span>
+                        <span class="hidden xl:inline-block text-[10px] text-gray-400 font-light tracking-wider border-l border-gray-200 pl-2 ml-0.5 leading-tight whitespace-nowrap">Yeni Çağın Sanat Galerisi</span>
                     </a>
 
                     <!-- Desktop Navigation -->
@@ -231,7 +231,7 @@
                                 <span class="absolute bottom-0 left-3 right-3 h-[2px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
                             </a>
                             <a href="{{ route('blog') }}" class="nav-link px-3 py-2 text-[13px] text-brand-black100 hover:text-primary transition-colors relative group">
-                                Blog
+                                Sanat Haberleri
                                 <span class="absolute bottom-0 left-3 right-3 h-[2px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
                             </a>
                         </div>
@@ -323,9 +323,7 @@
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                             </svg>
-                            <button type="submit" class="p-1.5 text-gray-400 hover:text-primary transition-colors" title="Ara">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
-                            </button>
+                            <button type="submit" class="sr-only">Ara</button>
                             <button type="button" @click="searchOpen = false; showResults = false" class="p-1.5 text-gray-400 hover:text-brand-black100 transition-colors" title="Kapat">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                             </button>
@@ -493,11 +491,11 @@
                     </a>
                     <a href="{{ route('artpuan') }}" class="flex items-center gap-3 px-5 py-3 text-sm hover:bg-gray-50 transition-all" @click="mobileMenu = false">
                         <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
-                        <span class="text-primary font-medium">ArtPuan</span>
+                        <span class="text-primary font-medium">ArtPuan&reg;</span>
                     </a>
                     <a href="{{ route('blog') }}" class="flex items-center gap-3 px-5 py-3 text-sm text-brand-black100 hover:bg-gray-50 hover:text-primary transition-all" @click="mobileMenu = false">
                         <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
-                        Blog
+                        Sanat Haberleri
                     </a>
                     <a href="{{ route('contact') }}" class="flex items-center gap-3 px-5 py-3 text-sm text-brand-black100 hover:bg-gray-50 hover:text-primary transition-all" @click="mobileMenu = false">
                         <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
@@ -609,9 +607,9 @@
                         <li><a href="{{ route('artworks') }}" class="hover:text-white transition">Eserler</a></li>
                         <li><a href="{{ route('artists') }}" class="hover:text-white transition">Sanatçılar</a></li>
                         <li><a href="{{ route('about') }}" class="hover:text-white transition">Hakkımızda</a></li>
-                        <li><a href="{{ route('blog') }}" class="hover:text-white transition">Blog</a></li>
-                        <li><a href="{{ route('artpuan') }}" class="hover:text-white transition">ArtPuan</a></li>
-                        <li><a href="{{ route('eser-kabulu') }}" class="hover:text-white transition">Eser Kabulu</a></li>
+                        <li><a href="{{ route('blog') }}" class="hover:text-white transition">Sanat Haberleri</a></li>
+                        <li><a href="{{ route('artpuan') }}" class="hover:text-white transition">ArtPuan&reg;</a></li>
+                        <li><a href="{{ route('eser-kabulu') }}" class="hover:text-white transition">Eser Kabulü</a></li>
                     </ul>
                 </div>
 
@@ -634,7 +632,7 @@
                             <svg class="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                             </svg>
-                            <span>Harmancı Giz Plaza, Harman Sok. No:5 K:21 D:118 Esentepe/İST</span>
+                            <span>Harmancı Giz Plaza, Harman Sok. No:5 K:21 D:118 Esentepe / İST</span>
                         </li>
                         <li class="flex items-center space-x-2">
                             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

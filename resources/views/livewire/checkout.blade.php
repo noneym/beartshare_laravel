@@ -49,7 +49,7 @@
                                 <span class="text-gray-700">{{ number_format($subtotalTl, 0, ',', '.') }} TL</span>
                             </div>
                             <div class="flex justify-between text-sm">
-                                <span class="text-gray-500">ArtPuan İndirimi ({{ number_format($completedOrder->artpuan_used, 2, ',', '.') }} AP):</span>
+                                <span class="text-gray-500">ArtPuan&reg; İndirimi ({{ number_format($completedOrder->artpuan_used, 2, ',', '.') }} AP):</span>
                                 <span class="font-medium text-green-600">-{{ number_format($completedOrder->discount_tl, 0, ',', '.') }} TL</span>
                             </div>
                             <div class="border-t border-gray-200 pt-2"></div>
@@ -130,7 +130,7 @@
                         <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
                         </svg>
-                        <span><strong>{{ number_format($completedOrder->artpuan_used, 2, ',', '.') }} ArtPuan</strong> kullanıldı ve <strong>{{ number_format($completedOrder->discount_tl, 0, ',', '.') }} TL</strong> indirim uygulandı.</span>
+                        <span><strong>{{ number_format($completedOrder->artpuan_used, 2, ',', '.') }} ArtPuan&reg;</strong> kullanıldı ve <strong>{{ number_format($completedOrder->discount_tl, 0, ',', '.') }} TL</strong> indirim uygulandı.</span>
                     </div>
                 </div>
                 @endif
@@ -367,8 +367,17 @@
                                     </div>
                                     <p class="text-xs text-gray-400 mt-1">Garanti Bankası güvenli ödeme altyapısı ile kredi kartınızla güvenle ödeme yapabilirsiniz.</p>
                                     <div class="flex items-center gap-3 mt-2">
-                                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/80px-Visa_Inc._logo.svg.png" alt="Visa" class="h-4 opacity-60">
-                                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/80px-Mastercard-logo.svg.png" alt="Mastercard" class="h-4 opacity-60">
+                                        {{-- Visa (inline SVG) --}}
+                                        <svg class="h-5 opacity-80" viewBox="0 0 780 500" xmlns="http://www.w3.org/2000/svg" aria-label="Visa">
+                                            <rect width="780" height="500" rx="40" fill="#1A1F71"/>
+                                            <path d="M293 350l40-200h62l-40 200h-62zm280-196c-12-5-32-10-56-10-62 0-106 31-106 75 0 33 31 51 55 62 24 11 32 19 32 29 0 16-20 23-38 23-25 0-39-3-60-12l-8-4-9 54c15 6 42 12 71 13 66 0 109-31 110-79 0-26-17-46-54-63-22-10-36-17-36-28 0-9 11-19 35-19 20 0 34 4 45 9l5 2 9-52zm158-4h-48c-15 0-26 4-32 19l-91 181h64l13-34h78l7 34h57l-48-200zm-76 121l24-64 5-14 4 14 14 64h-47zm-355-121l-60 137-7-32c-11-37-46-77-85-97l55 192h64l96-200h-63z" fill="#FFFFFF"/>
+                                        </svg>
+                                        {{-- Mastercard (inline SVG) --}}
+                                        <svg class="h-5 opacity-80" viewBox="0 0 32 20" xmlns="http://www.w3.org/2000/svg" aria-label="Mastercard">
+                                            <circle cx="12" cy="10" r="7" fill="#EB001B"/>
+                                            <circle cx="20" cy="10" r="7" fill="#F79E1B"/>
+                                            <path d="M16 4.5a7 7 0 010 11 7 7 0 010-11z" fill="#FF5F00"/>
+                                        </svg>
                                     </div>
                                 </div>
                             </label>
@@ -443,7 +452,7 @@
                                         <svg class="w-4 h-4 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
                                         </svg>
-                                        <span class="text-sm font-medium text-brand-black100">ArtPuan Kullan</span>
+                                        <span class="text-sm font-medium text-brand-black100">ArtPuan&reg; Kullan</span>
                                     </div>
                                     <p class="text-[11px] text-gray-500 mt-1">
                                         Bakiyeniz: <strong class="text-primary">{{ number_format($userArtPuan, 2, ',', '.') }} AP</strong>
@@ -466,7 +475,7 @@
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                                     </svg>
-                                    ArtPuan İndirimi
+                                    ArtPuan&reg; İndirimi
                                 </span>
                                 <span class="font-medium text-green-600">-{{ number_format($artpuanDiscount, 2, ',', '.') }} TL</span>
                             </div>

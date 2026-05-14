@@ -371,6 +371,8 @@
                                         <img src="{{ asset('images/payment/garanti-pay.png') }}" alt="Garanti Pay" class="h-6 object-contain">
                                         {{-- Visa + Mastercard (birleşik logo) --}}
                                         <img src="{{ asset('images/logo-visa-mastercard.png.webp') }}" alt="Visa Mastercard" class="h-6 object-contain">
+                                        {{-- American Express --}}
+                                        <img src="{{ asset('images/payment/amex.svg') }}" alt="American Express" class="h-6 object-contain">
                                     </div>
                                 </div>
                             </label>

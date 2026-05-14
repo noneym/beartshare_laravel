@@ -669,6 +669,8 @@
                         <img src="{{ asset('images/payment/garanti-pay.png') }}" alt="Garanti Pay" class="h-8 object-contain opacity-90 hover:opacity-100 transition">
                         <!-- Visa & Mastercard -->
                         <img src="{{ asset('images/logo-visa-mastercard.png.webp') }}" alt="Visa Mastercard" class="h-8 object-contain opacity-90 hover:opacity-100 transition">
+                        <!-- American Express -->
+                        <img src="{{ asset('images/payment/amex.svg') }}" alt="American Express" class="h-8 object-contain opacity-90 hover:opacity-100 transition">
                     </div>
                 </div>
             </div>

@@ -154,7 +154,7 @@
                         @endphp
                         <td class="px-4 py-3 text-xs text-gray-600 max-w-xs">
                             <button type="button"
-                                    @click='modalData = {{ Js::from($logData) }}; showModal = true'
+                                    @click="modalData = {{ Js::from($logData) }}; showModal = true"
                                     class="text-left hover:bg-gray-100 p-1 -m-1 rounded transition w-full cursor-pointer">
                                 @if($log->subject)
                                     <p class="font-medium text-gray-700 truncate">{{ $log->subject }}</p>

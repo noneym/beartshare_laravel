@@ -132,6 +132,18 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     Route::get('notification-logs', [App\Http\Controllers\Admin\NotificationLogController::class, 'index'])->name('notification-logs.index');
 
+    // İletişim Mesajları
+    Route::get('contact-messages', [App\Http\Controllers\Admin\ContactMessageController::class, 'index'])->name('contact-messages.index');
+    Route::get('contact-messages/{contactMessage}', [App\Http\Controllers\Admin\ContactMessageController::class, 'show'])->name('contact-messages.show');
+    Route::patch('contact-messages/{contactMessage}', [App\Http\Controllers\Admin\ContactMessageController::class, 'update'])->name('contact-messages.update');
+    Route::delete('contact-messages/{contactMessage}', [App\Http\Controllers\Admin\ContactMessageController::class, 'destroy'])->name('contact-messages.destroy');
+
+    // Eser Başvuruları
+    Route::get('artwork-submissions', [App\Http\Controllers\Admin\ArtworkSubmissionController::class, 'index'])->name('artwork-submissions.index');
+    Route::get('artwork-submissions/{artworkSubmission}', [App\Http\Controllers\Admin\ArtworkSubmissionController::class, 'show'])->name('artwork-submissions.show');
+    Route::patch('artwork-submissions/{artworkSubmission}', [App\Http\Controllers\Admin\ArtworkSubmissionController::class, 'update'])->name('artwork-submissions.update');
+    Route::delete('artwork-submissions/{artworkSubmission}', [App\Http\Controllers\Admin\ArtworkSubmissionController::class, 'destroy'])->name('artwork-submissions.destroy');
+
     // Favorites
     Route::get('favorites', [App\Http\Controllers\Admin\FavoriteController::class, 'index'])->name('favorites.index');
 

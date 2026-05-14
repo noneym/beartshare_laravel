@@ -205,7 +205,7 @@
     @endif
 
     {{-- Mesaj Detay Modal --}}
-    <div x-show="showModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto">
+    <div x-show="showModal" x-cloak style="display: none;" class="fixed inset-0 z-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
             {{-- Backdrop --}}
             <div class="fixed inset-0 bg-gray-500 bg-opacity-75" @click="showModal = false"></div>

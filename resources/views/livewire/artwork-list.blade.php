@@ -59,16 +59,16 @@
                     <option value="name">İsim (A-Z)</option>
                 </select>
             </div>
-            <!-- Satılan Eserler Toggle -->
+            <!-- Satılmamış Eserler Toggle -->
             <div class="flex items-center justify-between mt-3 flex-wrap gap-2">
                 <p class="text-gray-400 text-xs">{{ $artworks->total() }} eser listeleniyor</p>
                 <label class="inline-flex items-center gap-2 text-xs text-gray-600 cursor-pointer select-none">
                     <input
                         type="checkbox"
-                        wire:model.live="showSold"
+                        wire:model.live="availableOnly"
                         class="rounded border-gray-300 text-primary focus:ring-primary"
                     >
-                    <span>Sadece satılan eserleri göster</span>
+                    <span>Sadece satılmamış eserleri göster</span>
                 </label>
             </div>
         </div>

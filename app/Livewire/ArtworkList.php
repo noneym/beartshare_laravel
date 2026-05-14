@@ -17,7 +17,7 @@ class ArtworkList extends Component
     public $categoryId = '';
     public $priceRange = '';
     public $sortBy = 'latest';
-    public $showSold = false;
+    public $availableOnly = false;
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -25,7 +25,7 @@ class ArtworkList extends Component
         'categoryId' => ['except' => ''],
         'priceRange' => ['except' => ''],
         'sortBy' => ['except' => 'latest'],
-        'showSold' => ['except' => false, 'as' => 'satilan'],
+        'availableOnly' => ['except' => false, 'as' => 'satilmamis'],
     ];
 
     public function updatingSearch()
@@ -33,7 +33,7 @@ class ArtworkList extends Component
         $this->resetPage();
     }
 
-    public function updatingShowSold()
+    public function updatingAvailableOnly()
     {
         $this->resetPage();
     }
@@ -42,9 +42,7 @@ class ArtworkList extends Component
     {
         $query = Artwork::with('artist')->where('is_active', true);
 
-        if ($this->showSold) {
-            $query->where('is_sold', true);
-        } else {
+        if ($this->availableOnly) {
             $query->where('is_sold', false)->where('is_reserved', false);
         }
 

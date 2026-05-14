@@ -367,6 +367,8 @@
                                     </div>
                                     <p class="text-xs text-gray-400 mt-1">Garanti Bankası güvenli ödeme altyapısı ile kredi kartınızla güvenle ödeme yapabilirsiniz.</p>
                                     <div class="flex items-center gap-3 mt-2">
+                                        {{-- Garanti Pay --}}
+                                        <img src="{{ asset('images/payment/garanti-pay.png') }}" alt="Garanti Pay" class="h-6 object-contain">
                                         {{-- Visa (orijinal logo, inline SVG) --}}
                                         <svg class="h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 324.68351" aria-label="Visa">
                                             <defs>

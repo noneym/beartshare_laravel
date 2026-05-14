@@ -666,7 +666,7 @@
                     <p class="text-xs text-gray-500 uppercase tracking-wider">Guvenli Odeme</p>
                     <div class="flex items-center justify-center gap-6 flex-wrap">
                         <!-- Garanti Pay -->
-                        <img src="https://www.ideasoft.com.tr/wp-content/uploads/2025/02/garanti-pay-logo-1024x272.png" alt="Garanti Pay" class="h-8 object-contain opacity-90 hover:opacity-100 transition">
+                        <img src="{{ asset('images/payment/garanti-pay.png') }}" alt="Garanti Pay" class="h-8 object-contain opacity-90 hover:opacity-100 transition">
                         <!-- Visa & Mastercard -->
                         <img src="{{ asset('images/logo-visa-mastercard.png.webp') }}" alt="Visa Mastercard" class="h-8 object-contain opacity-90 hover:opacity-100 transition">
                     </div>

@@ -460,7 +460,7 @@
                     <h2 class="text-2xl font-light text-brand-black100">Satılmış <span class="font-semibold">Eserler</span></h2>
                     <p class="text-gray-400 text-xs mt-1">Koleksiyonerlerimize ulaşan eserler</p>
                 </div>
-                <a href="{{ route('artworks') }}" class="text-xs text-brand-black100 hover:text-primary transition flex items-center gap-1 font-medium">
+                <a href="{{ route('artworks', ['satilanlar' => 1]) }}" class="text-xs text-brand-black100 hover:text-primary transition flex items-center gap-1 font-medium">
                     Tümünü Gör
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>

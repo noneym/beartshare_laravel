@@ -59,17 +59,14 @@
                     <option value="name">İsim (A-Z)</option>
                 </select>
             </div>
-            <!-- Satılmamış Eserler Toggle -->
             <div class="flex items-center justify-between mt-3 flex-wrap gap-2">
                 <p class="text-gray-400 text-xs">{{ $artworks->total() }} eser listeleniyor</p>
-                <label class="inline-flex items-center gap-2 text-xs text-gray-600 cursor-pointer select-none">
-                    <input
-                        type="checkbox"
-                        wire:model.live="availableOnly"
-                        class="rounded border-gray-300 text-primary focus:ring-primary"
-                    >
-                    <span>Sadece satılmamış eserleri göster</span>
-                </label>
+                @if($soldOnly)
+                    <a href="{{ route('artworks') }}" class="inline-flex items-center gap-1.5 text-xs text-red-600 bg-red-50 border border-red-100 px-3 py-1 rounded-full hover:bg-red-100 transition">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        Sadece satılanlar gösteriliyor &middot; Filtreyi kaldır
+                    </a>
+                @endif
             </div>
         </div>
 

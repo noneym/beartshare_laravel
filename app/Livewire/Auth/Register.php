@@ -145,7 +145,7 @@ class Register extends Component
 
         // SMS gönder ve logla
         $notificationService = new NotificationService();
-        $message = "BeArtShare dogrulama kodunuz: {$code}. Bu kodu kimseyle paylasmayin.";
+        $message = "BeArtShare doğrulama kodunuz: {$code}. Bu kodu kimseyle paylaşmayın.";
         $result = $notificationService->sendSmsWithLog($phone, $message, 'sms_verification');
         $sent = $result['success'];
 
@@ -301,7 +301,7 @@ class Register extends Component
 
         // SMS gönder ve logla
         $notificationService = new NotificationService();
-        $message = "BeArtShare dogrulama kodunuz: {$code}. Bu kodu kimseyle paylasmayin.";
+        $message = "BeArtShare doğrulama kodunuz: {$code}. Bu kodu kimseyle paylaşmayın.";
         $result = $notificationService->sendSmsWithLog($phone, $message, 'sms_verification_resend');
         $sent = $result['success'];
 

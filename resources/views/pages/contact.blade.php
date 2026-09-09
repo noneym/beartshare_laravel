@@ -6,7 +6,7 @@
     <!-- Page Header -->
     <section class="bg-brand-black100 py-16">
         <div class="container mx-auto px-4">
-            <h1 class="text-3xl md:text-4xl font-light text-white">İleti<span class="font-semibold">şim</span></h1>
+            <h1 class="text-3xl md:text-4xl font-semibold text-white">İletişim</h1>
             <p class="text-white/50 text-sm mt-2">Sorularınız ve önerileriniz için bize ulaşın</p>
         </div>
     </section>

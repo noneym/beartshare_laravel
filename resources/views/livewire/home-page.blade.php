@@ -104,7 +104,7 @@
                             <div class="text-center max-w-2xl">
                                 <p class="slide-desc text-white/40 text-[10px] md:text-xs tracking-[0.35em] uppercase mb-5">Yeni Çağın Sanat Galerisi</p>
                                 <h2 class="slide-title text-5xl md:text-6xl lg:text-[5.5rem] font-bold text-white leading-[0.95] tracking-tight">
-                                    BeArt<span class="font-light">Share</span>
+                                    BeArtShare
                                 </h2>
                                 <p class="slide-desc text-white/55 text-sm md:text-[15px] leading-[1.9] mt-6 max-w-lg mx-auto">
                                     Ülkemizin kıymetli sanatçılarına ve uluslararası Blue Chip sanatçılara güvenle ve kazançla ulaşmanın yolu.
@@ -300,7 +300,7 @@
         <div class="container mx-auto px-4">
             <div class="flex items-end justify-between mb-8">
                 <div>
-                    <h2 class="text-2xl font-light text-brand-black100">Sanatçı<span class="font-semibold">larımız</span></h2>
+                    <h2 class="text-2xl font-semibold text-brand-black100">Sanatçılarımız</h2>
                     <p class="text-gray-400 text-xs mt-1">Koleksiyonumuzdaki seçkin sanatçılar</p>
                 </div>
                 <a href="{{ route('artists') }}" class="text-xs text-brand-black100 hover:text-primary transition flex items-center gap-1 font-medium">
@@ -355,7 +355,7 @@
         <div class="container mx-auto px-4">
             <div class="flex items-center justify-between mb-8">
                 <div>
-                    <h2 class="text-2xl font-light text-brand-black100">Öne Çıkan <span class="font-semibold">Eserler</span></h2>
+                    <h2 class="text-2xl font-semibold text-brand-black100">Öne Çıkan Eserler</h2>
                     <p class="text-gray-400 text-sm mt-1">Koleksiyonumuzdaki seçkin eserler</p>
                 </div>
                 <a href="{{ route('artworks') }}" class="text-xs text-gray-400 hover:text-brand-black100 transition link-underline pb-1 hidden md:block">Tümünü Gör</a>
@@ -408,7 +408,7 @@
         <div class="container mx-auto px-4">
             <div class="flex items-center justify-between mb-8">
                 <div>
-                    <h2 class="text-2xl font-light text-brand-black100">Son Eklenen <span class="font-semibold">Eserler</span></h2>
+                    <h2 class="text-2xl font-semibold text-brand-black100">Son Eklenen Eserler</h2>
                     <p class="text-gray-400 text-sm mt-1">Koleksiyonumuza yeni eklenen eserler</p>
                 </div>
                 <a href="{{ route('artworks') }}" class="text-xs text-gray-400 hover:text-brand-black100 transition link-underline pb-1 hidden md:block">Tümünü Gör</a>
@@ -457,7 +457,7 @@
         <div class="container mx-auto px-4">
             <div class="flex items-end justify-between mb-8">
                 <div>
-                    <h2 class="text-2xl font-light text-brand-black100">Satılmış <span class="font-semibold">Eserler</span></h2>
+                    <h2 class="text-2xl font-semibold text-brand-black100">Satılmış Eserler</h2>
                     <p class="text-gray-400 text-xs mt-1">Koleksiyonerlerimize ulaşan eserler</p>
                 </div>
                 <a href="{{ route('artworks', ['satilanlar' => 1]) }}" class="text-xs text-brand-black100 hover:text-primary transition flex items-center gap-1 font-medium">
@@ -512,7 +512,7 @@
         <div class="container mx-auto px-4">
             <div class="flex items-center justify-between mb-8">
                 <div>
-                    <h2 class="text-2xl font-light text-brand-black100">Sanat <span class="font-semibold">Yazıları</span></h2>
+                    <h2 class="text-2xl font-semibold text-brand-black100">Sanat Yazıları</h2>
                     <p class="text-gray-400 text-sm mt-1">Sanat dünyasından haberler ve yazılar</p>
                 </div>
                 <a href="{{ route('blog') }}" class="text-xs text-gray-400 hover:text-brand-black100 transition link-underline pb-1 hidden md:block">Tümünü Gör</a>
@@ -564,7 +564,7 @@
 
         <div class="container mx-auto px-4 relative z-10">
             <div class="text-center mb-14">
-                <h2 class="text-2xl font-light text-brand-black100">Neden <span class="font-semibold">BeArtShare?</span></h2>
+                <h2 class="text-2xl font-semibold text-brand-black100">Neden BeArtShare?</h2>
                 <p class="text-gray-400 text-sm mt-2">Sanat yolculuğunuzda yanınızdayız</p>
             </div>
 

@@ -17,7 +17,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                         </svg>
                     </div>
-                    <h1 class="text-2xl font-light text-brand-black100 mb-2">Siparişiniz Başarıyla <span class="font-semibold">Alındı!</span></h1>
+                    <h1 class="text-2xl font-semibold text-brand-black100 mb-2">Siparişiniz Başarıyla Alındı!</h1>
                     <p class="text-gray-400 text-sm">Sipariş numaranız: <strong class="text-brand-black100">{{ $completedOrder->order_number }}</strong></p>
                 </div>
 
@@ -153,7 +153,7 @@
     {{-- Checkout Form --}}
     <section class="bg-brand-black100 py-12">
         <div class="container mx-auto px-4">
-            <h1 class="text-3xl font-light text-white">Sipariş <span class="font-semibold">Tamamla</span></h1>
+            <h1 class="text-3xl font-semibold text-white">Sipariş Tamamla</h1>
             <p class="text-white/50 text-sm mt-2">Bilgilerinizi kontrol edin ve siparişinizi tamamlayın</p>
         </div>
     </section>

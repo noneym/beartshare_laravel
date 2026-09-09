@@ -2,7 +2,7 @@
     <!-- Page Header -->
     <section class="bg-brand-black100 py-12">
         <div class="container mx-auto px-4">
-            <h1 class="text-3xl font-light text-white">Sepet<span class="font-semibold">im</span></h1>
+            <h1 class="text-3xl font-semibold text-white">Sepetim</h1>
         </div>
     </section>
 

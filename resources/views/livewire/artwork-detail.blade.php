@@ -449,7 +449,7 @@
         <!-- Related Artworks -->
         @if($relatedArtworks->count() > 0)
             <div class="mt-16 pt-12 border-t border-gray-100">
-                <h2 class="text-xl font-light text-brand-black100 mb-8">Sanatçının Diğer <span class="font-semibold">Eserleri</span></h2>
+                <h2 class="text-xl font-semibold text-brand-black100 mb-8">Sanatçının Diğer Eserleri</h2>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-8">
                     @foreach($relatedArtworks as $related)
                         <div class="group" wire:key="related-{{ $related->id }}">

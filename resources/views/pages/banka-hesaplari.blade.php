@@ -12,7 +12,7 @@
         <div class="container mx-auto px-4 relative z-10">
             <div class="max-w-3xl">
                 <span class="inline-block bg-amber-500/20 text-amber-400 text-xs font-semibold px-3 py-1 rounded-full mb-4 tracking-wider uppercase">Ödeme Bilgileri</span>
-                <h1 class="text-3xl md:text-4xl font-light text-white">Banka <span class="font-semibold">Hesaplarımız</span></h1>
+                <h1 class="text-3xl md:text-4xl font-semibold text-white">Banka Hesaplarımız</h1>
                 <p class="text-white/50 text-sm mt-3 max-w-xl leading-relaxed">Havale / EFT ile güvenli ödeme için banka hesap bilgilerimiz aşağıdadır.</p>
             </div>
         </div>

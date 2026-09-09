@@ -48,7 +48,7 @@
         @if($step === 1)
         <div>
             <div class="text-center mb-8">
-                <h1 class="text-2xl font-light text-brand-black100">Kayıt <span class="font-semibold">Ol</span></h1>
+                <h1 class="text-2xl font-semibold text-brand-black100">Kayıt Ol</h1>
                 <p class="text-gray-400 text-xs mt-2">BeArtShare ailesine katılın</p>
             </div>
 
@@ -190,7 +190,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
                     </svg>
                 </div>
-                <h1 class="text-2xl font-light text-brand-black100">Telefon <span class="font-semibold">Doğrulama</span></h1>
+                <h1 class="text-2xl font-semibold text-brand-black100">Telefon Doğrulama</h1>
                 <p class="text-gray-400 text-xs mt-2">
                     <span class="font-medium text-brand-black100">+90 {{ $phone }}</span> numarasına gönderilen 6 haneli kodu giriniz
                 </p>

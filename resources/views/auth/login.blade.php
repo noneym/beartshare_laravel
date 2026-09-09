@@ -2,7 +2,7 @@
     <div class="min-h-[60vh] flex items-center justify-center py-12">
         <div class="w-full max-w-sm px-4">
             <div class="text-center mb-8">
-                <h1 class="text-2xl font-light text-brand-black100">Giriş <span class="font-semibold">Yap</span></h1>
+                <h1 class="text-2xl font-semibold text-brand-black100">Giriş Yap</h1>
                 <p class="text-gray-400 text-xs mt-2">Hesabınıza giriş yapın</p>
             </div>
 

@@ -2,7 +2,7 @@
     <!-- Page Header -->
     <section class="bg-brand-black100 py-16">
         <div class="container mx-auto px-4">
-            <h1 class="text-3xl md:text-4xl font-light text-white">Eser<span class="font-semibold">ler</span></h1>
+            <h1 class="text-3xl md:text-4xl font-semibold text-white">Eserler</h1>
             <p class="text-white/50 text-sm mt-2">BeArtShare koleksiyonundaki tüm eserleri keşfedin</p>
         </div>
     </section>

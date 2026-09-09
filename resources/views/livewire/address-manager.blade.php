@@ -2,7 +2,7 @@
     <!-- Page Header -->
     <section class="bg-brand-black100 py-12">
         <div class="container mx-auto px-4">
-            <h1 class="text-3xl font-light text-white">Adres<span class="font-semibold">lerim</span></h1>
+            <h1 class="text-3xl font-semibold text-white">Adreslerim</h1>
             <p class="text-white/50 text-sm mt-2">Teslimat ve fatura adreslerinizi yönetin</p>
         </div>
     </section>

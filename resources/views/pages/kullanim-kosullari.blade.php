@@ -6,7 +6,7 @@
     <!-- Page Header -->
     <section class="bg-brand-black100 py-16">
         <div class="container mx-auto px-4">
-            <h1 class="text-3xl md:text-4xl font-light text-white">Kullanım Koşulları ve <span class="font-semibold">Üyelik Sözleşmesi</span></h1>
+            <h1 class="text-3xl md:text-4xl font-semibold text-white">Kullanım Koşulları ve Üyelik Sözleşmesi</h1>
             <p class="text-white/50 text-sm mt-2">Hizmet kullanım şartları ve üyelik koşulları</p>
         </div>
     </section>

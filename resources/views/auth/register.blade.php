@@ -2,7 +2,7 @@
     <div class="min-h-[60vh] flex items-center justify-center py-12">
         <div class="w-full max-w-sm px-4">
             <div class="text-center mb-8">
-                <h1 class="text-2xl font-light text-brand-black100">Kayıt <span class="font-semibold">Ol</span></h1>
+                <h1 class="text-2xl font-semibold text-brand-black100">Kayıt Ol</h1>
                 <p class="text-gray-400 text-xs mt-2">BeArtShare ailesine katılın</p>
             </div>
 

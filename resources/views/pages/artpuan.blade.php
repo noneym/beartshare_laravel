@@ -23,7 +23,7 @@
     <section class="py-16">
         <div class="container mx-auto px-4">
             <div class="text-center mb-14">
-                <h2 class="text-2xl font-light text-brand-black100">Nasıl <span class="font-semibold">Çalışır?</span></h2>
+                <h2 class="text-2xl font-semibold text-brand-black100">Nasıl Çalışır?</h2>
                 <p class="text-gray-400 text-sm mt-2">Üç kolay adımda ArtPuan&reg; kazanmaya başlayın</p>
             </div>
 
@@ -79,7 +79,7 @@
     <section class="py-16 bg-gray-50">
         <div class="container mx-auto px-4">
             <div class="text-center mb-14">
-                <h2 class="text-2xl font-light text-brand-black100">ArtPuan&reg; <span class="font-semibold">Avantajları</span></h2>
+                <h2 class="text-2xl font-semibold text-brand-black100">ArtPuan&reg; Avantajları</h2>
                 <p class="text-gray-400 text-sm mt-2">Sanat koleksiyonunuzu büyütmenin en akıllı yolu</p>
             </div>
 
@@ -137,7 +137,7 @@
             <div class="max-w-4xl mx-auto">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                     <div>
-                        <h2 class="text-2xl font-light text-brand-black100 mb-2">Örnek <span class="font-semibold">Hesaplama</span></h2>
+                        <h2 class="text-2xl font-semibold text-brand-black100 mb-2">Örnek Hesaplama</h2>
                         <p class="text-gray-400 text-sm mb-8">ArtPuan&reg;'larınız nasıl birikir, bir örnekle görelim.</p>
 
                         <div class="space-y-5">
@@ -191,7 +191,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
                     </svg>
                 </div>
-                <h2 class="text-2xl font-light text-brand-black100 mb-3">Referans <span class="font-semibold">Programı</span></h2>
+                <h2 class="text-2xl font-semibold text-brand-black100 mb-3">Referans Programı</h2>
                 <p class="text-gray-400 text-sm max-w-2xl mx-auto mb-4 leading-relaxed">
                     Davet ettiğiniz arkadaşınız <strong class="text-brand-black100">kendi adıyla ayrı bir hesap açar</strong>; ilk alışverişini yaptığında
                     <strong class="text-brand-black100">hem siz hem o</strong> ekstra ArtPuan&reg; kazanırsınız.

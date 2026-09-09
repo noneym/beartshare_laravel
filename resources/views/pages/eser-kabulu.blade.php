@@ -55,7 +55,7 @@
         <div class="container mx-auto px-4">
             <div class="max-w-2xl mx-auto">
                 <div class="text-center mb-10">
-                    <h2 class="text-2xl font-light text-brand-black100">Eser <span class="font-semibold">Başvuru Formu</span></h2>
+                    <h2 class="text-2xl font-semibold text-brand-black100">Eser Başvuru Formu</h2>
                     <p class="text-gray-400 text-sm mt-2">Eserleriniz hakkında bilgi gönderin, ekibimiz sizinle iletişime geçecektir.</p>
                 </div>
 

@@ -308,7 +308,7 @@
                         <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
                         </svg>
-                        <input type="text" name="search" placeholder="Eser, sanatci veya kategori ara..."
+                        <input type="text" name="search" placeholder="Eser, sanatçı veya kategori ara..."
                                x-model="query"
                                @input="fetchResults()"
                                @focus="if(query.length >= 2) showResults = true"
@@ -340,11 +340,11 @@
                              x-transition:leave-end="opacity-0 translate-y-1"
                              class="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-50 max-h-[420px] overflow-y-auto"
                         >
-                            <!-- Sanatcilar -->
+                            <!-- Sanatçılar -->
                             <template x-if="results.artists.length > 0">
                                 <div>
                                     <div class="px-4 py-2 bg-gray-50 border-b border-gray-100">
-                                        <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Sanatcilar</p>
+                                        <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Sanatçılar</p>
                                     </div>
                                     <template x-for="artist in results.artists" :key="'a-'+artist.id">
                                         <a :href="artist.url" class="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors cursor-pointer border-b border-gray-50" @click.prevent="goTo(artist.url)">
@@ -663,7 +663,7 @@
             <!-- Odeme Yontemleri -->
             <div class="border-t border-gray-800 mt-8 pt-8">
                 <div class="flex flex-col items-center gap-4">
-                    <p class="text-xs text-gray-500 uppercase tracking-wider">Guvenli Odeme</p>
+                    <p class="text-xs text-gray-500 uppercase tracking-wider">Güvenli Ödeme</p>
                     <div class="flex items-center justify-center gap-6 flex-wrap">
                         <!-- Garanti Pay -->
                         <img src="{{ asset('images/payment/garanti-pay.png') }}" alt="Garanti Pay" class="h-8 object-contain opacity-90 hover:opacity-100 transition">
@@ -677,12 +677,6 @@
 
             <div class="border-t border-gray-800 mt-6 pt-6 text-center text-gray-400 text-sm space-y-2">
                 <p>&copy; {{ date('Y') }} BeArtShare. Tüm hakları saklıdır.</p>
-                <p class="flex items-center justify-center gap-1.5 text-xs text-gray-500">
-                    <svg class="w-3.5 h-3.5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                    </svg>
-                    Bu site <a href="https://etbis.eticaret.gov.tr/sitedogrulama/2428037130442436" target="_blank" rel="noopener noreferrer" class="underline hover:text-white transition">ETBİS</a>'e kayıtlıdır.
-                </p>
             </div>
         </div>
     </footer>

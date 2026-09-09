@@ -41,8 +41,8 @@
 
     <div class="container mx-auto px-4 py-8 lg:py-12">
         <div class="flex items-center justify-between mb-8">
-            <h1 class="text-2xl font-light text-brand-black100">
-                Favori <span class="font-semibold">Eserlerim</span>
+            <h1 class="text-2xl font-semibold text-brand-black100">
+                Favori Eserlerim
             </h1>
             @if($favorites->count() > 0)
                 <span class="text-xs text-gray-400">{{ $favorites->count() }} eser</span>

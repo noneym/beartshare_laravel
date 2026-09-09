@@ -75,22 +75,26 @@
         </div>
 
         <div class="flex justify-between">
-            <form action="{{ route('admin.faqs.destroy', $faq) }}" method="POST" onsubmit="return confirm('Bu soruyu silmek istediginizden emin misiniz?')">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="px-4 py-2.5 text-red-600 hover:bg-red-50 rounded-lg transition text-sm">
-                    Sil
-                </button>
-            </form>
+            {{-- Silme butonu ayrı forma bağlı (form="..."); iç içe form HTML'de geçersiz olduğundan
+                 _method=DELETE güncelleme formuna sızıyor ve kayıt siliniyordu --}}
+            <button type="submit" form="faq-delete-form" class="px-4 py-2.5 text-red-600 hover:bg-red-50 rounded-lg transition text-sm">
+                Sil
+            </button>
 
             <div class="flex gap-3">
                 <a href="{{ route('admin.faqs.index') }}" class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
-                    Iptal
+                    İptal
                 </a>
                 <button type="submit" class="px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-yellow-600 transition font-medium">
-                    Guncelle
+                    Güncelle
                 </button>
             </div>
         </div>
+    </form>
+
+    <form id="faq-delete-form" action="{{ route('admin.faqs.destroy', $faq) }}" method="POST"
+          onsubmit="return confirm('Bu soruyu silmek istediğinizden emin misiniz?')">
+        @csrf
+        @method('DELETE')
     </form>
 </x-admin.layouts.app>

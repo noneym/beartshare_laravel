@@ -13,7 +13,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
                     </div>
-                    <h1 class="text-2xl font-light text-brand-black100 mb-2">Ödeme <span class="font-semibold">Başarısız</span></h1>
+                    <h1 class="text-2xl font-semibold text-brand-black100 mb-2">Ödeme Başarısız</h1>
                     <p class="text-gray-400 text-sm">Sipariş numarası: <strong class="text-brand-black100">{{ $order->order_number }}</strong></p>
                 </div>
 

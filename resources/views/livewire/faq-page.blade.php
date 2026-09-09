@@ -2,11 +2,11 @@
     <!-- Hero -->
     <div class="bg-gray-50 border-b border-gray-100">
         <div class="container mx-auto px-4 py-12 text-center">
-            <h1 class="text-3xl md:text-4xl font-light text-brand-black100 mb-3">
-                Sikca Sorulan <span class="font-semibold">Sorular</span>
+            <h1 class="text-3xl md:text-4xl font-semibold text-brand-black100 mb-3">
+                Sıkça Sorulan Sorular
             </h1>
             <p class="text-gray-400 text-sm max-w-xl mx-auto">
-                BeArtShare hakkinda merak ettiginiz her seyin cevabi burada. Aradiginizi bulamadiysaniz bizimle iletisime gecebilirsiniz.
+                BeArtShare hakkında merak ettiğiniz her şeyin cevabı burada. Aradığınızı bulamadıysanız bizimle iletişime geçebilirsiniz.
             </p>
         </div>
     </div>
@@ -19,7 +19,7 @@
                     <button wire:click="setCategory('')"
                             class="px-4 py-2 text-sm rounded-full transition
                                 {{ $selectedCategory === '' ? 'bg-brand-black100 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
-                        Tumu
+                        Tümü
                     </button>
                     @foreach($categories as $key => $label)
                         <button wire:click="setCategory('{{ $key }}')"
@@ -74,17 +74,17 @@
                 </div>
             @endif
 
-            <!-- Iletisim CTA -->
+            <!-- İletişim CTA -->
             <div class="mt-16 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 md:p-12 text-center">
-                <h2 class="text-xl font-semibold text-brand-black100 mb-3">Hala sorunuz mu var?</h2>
+                <h2 class="text-xl font-semibold text-brand-black100 mb-3">Hâlâ sorunuz mu var?</h2>
                 <p class="text-gray-500 text-sm mb-6 max-w-md mx-auto">
-                    Aradiginiz cevabi bulamadiysaniz, musteri hizmetlerimiz size yardimci olmaktan mutluluk duyacaktir.
+                    Aradığınız cevabı bulamadıysanız, müşteri hizmetlerimiz size yardımcı olmaktan mutluluk duyacaktır.
                 </p>
                 <a href="{{ route('contact') }}" class="inline-flex items-center gap-2 bg-brand-black100 hover:bg-black text-white px-6 py-3 rounded-lg text-sm font-medium transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                     </svg>
-                    Bize Ulasin
+                    Bize Ulaşın
                 </a>
             </div>
         </div>

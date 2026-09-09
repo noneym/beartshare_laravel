@@ -40,7 +40,7 @@
     </section>
 
     {{-- Tab Navigation --}}
-    <div class="bg-white border-b border-gray-100 sticky top-[72px] z-30">
+    <div class="bg-white border-b border-gray-100 sticky top-[76px] lg:top-[88px] z-30">
         <div class="container mx-auto px-4">
             <nav class="flex overflow-x-auto -mb-px scrollbar-hide">
                 @php

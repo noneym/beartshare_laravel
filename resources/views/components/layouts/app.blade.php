@@ -197,7 +197,7 @@
     <div x-data="{ mobileMenu: false, searchOpen: false }" class="sticky top-0 z-50">
         <header class="bg-white border-b border-gray-100 shadow-sm">
             <div class="container mx-auto px-4">
-                <div class="flex items-center justify-between h-16 lg:h-[72px]">
+                <div class="flex items-center justify-between h-[76px] lg:h-[88px]">
 
                     <!-- Mobile: Hamburger (Left) -->
                     <button @click="mobileMenu = !mobileMenu" class="lg:hidden p-2 -ml-2 text-brand-black100 hover:text-primary transition-colors">
@@ -211,8 +211,8 @@
 
                     <!-- Logo -->
                     <a href="/" class="flex items-center gap-2 group">
-                        <img alt="BeArtShare Logo" src="{{ asset('images/logo.svg') }}" class="h-10 lg:h-12 w-auto transition-transform duration-300 group-hover:scale-105" width="65" height="65">
-                        <span class="hidden xl:inline-block text-[10px] text-gray-400 font-light tracking-wider border-l border-gray-200 pl-2 ml-0.5 leading-tight whitespace-nowrap">Yeni Çağın Sanat Galerisi</span>
+                        <img alt="BeArtShare Logo" src="{{ asset('images/logo.svg') }}" class="h-12 lg:h-16 w-auto transition-transform duration-300 group-hover:scale-105" width="65" height="65">
+                        <span class="hidden xl:inline-block text-[11px] text-gray-400 font-light tracking-wider border-l border-gray-200 pl-2.5 ml-1 leading-tight whitespace-nowrap">Yeni Çağın Sanat Galerisi</span>
                     </a>
 
                     <!-- Desktop Navigation -->

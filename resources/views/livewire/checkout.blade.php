@@ -368,7 +368,7 @@
                                     <p class="text-xs text-gray-400 mt-1">Garanti Bankası güvenli ödeme altyapısı ile kredi kartınızla güvenle ödeme yapabilirsiniz.</p>
                                     <div class="flex items-center gap-3 mt-2">
                                         {{-- Garanti Pay --}}
-                                        <img src="{{ asset('images/payment/garanti-pay.png') }}" alt="Garanti Pay" class="h-6 object-contain">
+                                        <img src="{{ asset('images/payment/garanti-pay2.png') }}" alt="Garanti Pay" class="h-6 object-contain">
                                         {{-- Visa + Mastercard (birleşik logo) --}}
                                         <img src="{{ asset('images/logo-visa-mastercard.png.webp') }}" alt="Visa Mastercard" class="h-6 object-contain">
                                         {{-- American Express --}}

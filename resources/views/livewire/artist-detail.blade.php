@@ -75,6 +75,7 @@
                         <div class="text-right flex-shrink-0">
                             <p class="font-medium text-brand-black100 text-sm">{{ $artwork->formatted_price_tl }}</p>
                             <p class="text-gray-400 text-[10px]">{{ $artwork->formatted_price_usd }}</p>
+                            <x-credit-card-badge :artwork="$artwork" />
                         </div>
                     </div>
                 </div>

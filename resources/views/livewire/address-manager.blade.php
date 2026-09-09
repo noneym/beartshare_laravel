@@ -90,6 +90,17 @@
                         @error('address_line') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
+                    {{-- TC Kimlik No (teslimat adresinde) --}}
+                    @if($type === 'shipping')
+                    <div class="md:col-span-2">
+                        <label class="block text-xs text-gray-500 mb-1.5">TC Kimlik No *</label>
+                        <input type="text" wire:model="tc_no" maxlength="11" inputmode="numeric" placeholder="XXXXXXXXXXX"
+                               class="w-full border px-4 py-2.5 text-sm focus:outline-none transition {{ $errors->has('tc_no') ? 'border-red-400' : 'border-gray-200 focus:border-brand-black100' }}">
+                        <p class="text-[10px] text-gray-400 mt-1">Fatura ve kargo işlemleri için gereklidir.</p>
+                        @error('tc_no') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+                    @endif
+
                     {{-- Fatura Bilgileri (billing tipinde göster) --}}
                     @if($type === 'billing')
                     <div class="md:col-span-2 border-t border-gray-100 pt-4 mt-2">

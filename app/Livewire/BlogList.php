@@ -59,7 +59,7 @@ class BlogList extends Component
             'posts' => $posts,
             'categories' => $categories,
         ])->layoutData([
-            'title' => 'Sanat Blogu | BeArtShare - Sanat Haberleri ve Yazıları',
+            'title' => 'Haberler | BeArtShare - Sanat Haberleri ve Yazıları',
             'metaDescription' => 'BeArtShare sanat blogunda güncel sanat haberleri, sanatçı röportajları, koleksiyon tavsiyeleri ve sanat dünyasından son gelişmeleri okuyun.',
             'metaKeywords' => 'sanat blogu, sanat haberleri, sanat yazıları, sanatçı röportajları, sanat dünyası, koleksiyon, sanat piyasası',
             'ogType' => 'blog',

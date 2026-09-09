@@ -15,20 +15,23 @@ class ArtworkList extends Component
     public $search = '';
     public $artistId = '';
     public $categoryId = '';
-    public $priceRange = '';
     public $sortBy = 'latest';
-    public $soldOnly = false;
+    public $soldFilter = '';
 
     protected $queryString = [
         'search' => ['except' => ''],
         'artistId' => ['except' => ''],
         'categoryId' => ['except' => ''],
-        'priceRange' => ['except' => ''],
         'sortBy' => ['except' => 'latest'],
-        'soldOnly' => ['except' => false, 'as' => 'satilanlar'],
+        'soldFilter' => ['except' => '', 'as' => 'satilanlar'],
     ];
 
     public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingSoldFilter()
     {
         $this->resetPage();
     }
@@ -37,8 +40,10 @@ class ArtworkList extends Component
     {
         $query = Artwork::with('artist')->where('is_active', true);
 
-        if ($this->soldOnly) {
+        if ($this->soldFilter === 'only' || $this->soldFilter === '1') {
             $query->where('is_sold', true);
+        } elseif ($this->soldFilter === 'hide') {
+            $query->where('is_sold', false);
         }
 
         $artworks = $query
@@ -55,15 +60,6 @@ class ArtworkList extends Component
             })
             ->when($this->categoryId, function ($query) {
                 $query->where('category_id', $this->categoryId);
-            })
-            ->when($this->priceRange, function ($query) {
-                match ($this->priceRange) {
-                    'under_100k' => $query->where('price_tl', '<', 100000),
-                    '100k_500k' => $query->whereBetween('price_tl', [100000, 500000]),
-                    '500k_1m' => $query->whereBetween('price_tl', [500000, 1000000]),
-                    'over_1m' => $query->where('price_tl', '>', 1000000),
-                    default => $query,
-                };
             })
             ->when($this->sortBy, function ($query) {
                 match ($this->sortBy) {

@@ -46,6 +46,10 @@ class AddressManager extends Component
             'address_line' => 'required|string|min:10',
         ];
 
+        if ($this->type === 'shipping') {
+            $rules['tc_no'] = 'required|string|size:11|regex:/^[0-9]+$/';
+        }
+
         if ($this->type === 'billing') {
             $rules['invoice_type'] = 'required|in:individual,corporate';
 
@@ -138,7 +142,7 @@ class AddressManager extends Component
             'district' => $this->district,
             'address_line' => $this->address_line,
             'invoice_type' => $this->type === 'billing' ? $this->invoice_type : 'individual',
-            'tc_no' => $this->type === 'billing' && $this->invoice_type === 'individual' ? $this->tc_no : null,
+            'tc_no' => ($this->type === 'shipping' || $this->invoice_type === 'individual') ? $this->tc_no : null,
             'company_name' => $this->type === 'billing' && $this->invoice_type === 'corporate' ? $this->company_name : null,
             'tax_office' => $this->type === 'billing' && $this->invoice_type === 'corporate' ? $this->tax_office : null,
             'tax_number' => $this->type === 'billing' && $this->invoice_type === 'corporate' ? $this->tax_number : null,

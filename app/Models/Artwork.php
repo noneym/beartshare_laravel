@@ -27,6 +27,8 @@ class Artwork extends Model
         'is_featured',
         'is_reserved',
         'allow_credit_card',
+        'owner_name',
+        'admin_notes',
         'type',
         'sort_order',
         'old_id',

@@ -35,16 +35,14 @@
                     @endforeach
                 </select>
 
-                <!-- Price Filter -->
+                <!-- Satılan Filtresi -->
                 <select
-                    wire:model.live="priceRange"
+                    wire:model.live="soldFilter"
                     class="w-full border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-black100 bg-white transition"
                 >
-                    <option value="">Tüm Fiyatlar</option>
-                    <option value="under_100k">100.000 TL altı</option>
-                    <option value="100k_500k">100.000 - 500.000 TL</option>
-                    <option value="500k_1m">500.000 - 1.000.000 TL</option>
-                    <option value="over_1m">1.000.000 TL üzeri</option>
+                    <option value="">Tüm Eserler</option>
+                    <option value="hide">Satılanları Gösterme</option>
+                    <option value="only">Sadece Satılanlar</option>
                 </select>
 
                 <!-- Sort -->
@@ -61,12 +59,6 @@
             </div>
             <div class="flex items-center justify-between mt-3 flex-wrap gap-2">
                 <p class="text-gray-400 text-xs">{{ $artworks->total() }} eser listeleniyor</p>
-                @if($soldOnly)
-                    <a href="{{ route('artworks') }}" class="inline-flex items-center gap-1.5 text-xs text-red-600 bg-red-50 border border-red-100 px-3 py-1 rounded-full hover:bg-red-100 transition">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                        Sadece satılanlar gösteriliyor &middot; Filtreyi kaldır
-                    </a>
-                @endif
             </div>
         </div>
 
@@ -105,6 +97,7 @@
                         <div class="text-right flex-shrink-0">
                             <p class="font-medium text-brand-black100 text-sm">{{ $artwork->formatted_price_tl }}</p>
                             <p class="text-gray-400 text-[10px]">{{ $artwork->formatted_price_usd }}</p>
+                            <x-credit-card-badge :artwork="$artwork" />
                         </div>
                     </div>
                 </div>

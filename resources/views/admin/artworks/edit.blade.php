@@ -132,8 +132,23 @@
                     </label>
                     <label class="flex items-center">
                         <input type="checkbox" name="allow_credit_card" value="1" {{ $artwork->allow_credit_card ? 'checked' : '' }} class="rounded border-gray-300 text-primary focus:ring-primary">
-                        <span class="ml-2 text-gray-700">Kredi Karti ile Alinabilir</span>
+                        <span class="ml-2 text-gray-700">Kredi Kartı ile Alınabilir</span>
                     </label>
+                </div>
+
+                <div class="border-t border-gray-200 pt-6 space-y-4">
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Yalnızca Admin Görür</p>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Asıl Sahibi (Konsinye)</label>
+                        <input type="text" name="owner_name" value="{{ old('owner_name', $artwork->owner_name) }}" placeholder="Eser konsinye ise sahibinin adı" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary">
+                        <p class="text-gray-400 text-xs mt-1">Sitede gösterilmez.</p>
+                        @error('owner_name') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Admin Notu</label>
+                        <textarea name="admin_notes" rows="3" placeholder="Dahili not (anlaşma şartları, iletişim, vb.)" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary">{{ old('admin_notes', $artwork->admin_notes) }}</textarea>
+                        @error('admin_notes') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+                    </div>
                 </div>
 
                 <div class="flex justify-end gap-4">

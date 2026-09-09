@@ -300,7 +300,7 @@
         <div class="container mx-auto px-4">
             <div class="flex items-end justify-between mb-8">
                 <div>
-                    <h2 class="text-2xl font-semibold text-brand-black100">Sanatçılarımız</h2>
+                    <h2 class="text-2xl font-semibold text-brand-black100">Sanatçılar</h2>
                     <p class="text-gray-400 text-xs mt-1">Koleksiyonumuzdaki seçkin sanatçılar</p>
                 </div>
                 <a href="{{ route('artists') }}" class="text-xs text-brand-black100 hover:text-primary transition flex items-center gap-1 font-medium">
@@ -394,6 +394,7 @@
                             <div class="text-right flex-shrink-0">
                                 <p class="font-medium text-brand-black100 text-sm">{{ $artwork->formatted_price_tl }}</p>
                                 <p class="text-gray-400 text-[10px]">{{ $artwork->formatted_price_usd }}</p>
+                                <x-credit-card-badge :artwork="$artwork" />
                             </div>
                         </div>
                     </div>
@@ -438,6 +439,7 @@
                         <h3 class="font-medium text-brand-black100 text-xs truncate">{{ $artwork->artist->name }}</h3>
                         <p class="text-gray-400 text-[10px] mt-0.5 truncate">{{ $artwork->title }}</p>
                         <p class="font-medium text-brand-black100 text-xs mt-1">{{ $artwork->formatted_price_tl }}</p>
+                        <x-credit-card-badge :artwork="$artwork" />
                     </div>
                 @endforeach
             </div>
@@ -451,16 +453,16 @@
         </div>
     </section>
 
-    <!-- Satılmış Eserler Carousel -->
+    <!-- Satılan Eserler Carousel -->
     @if($soldArtworks->count() > 0)
     <section class="py-12">
         <div class="container mx-auto px-4">
             <div class="flex items-end justify-between mb-8">
                 <div>
-                    <h2 class="text-2xl font-semibold text-brand-black100">Satılmış Eserler</h2>
+                    <h2 class="text-2xl font-semibold text-brand-black100">Satılan Eserler</h2>
                     <p class="text-gray-400 text-xs mt-1">Koleksiyonerlerimize ulaşan eserler</p>
                 </div>
-                <a href="{{ route('artworks', ['satilanlar' => 1]) }}" class="text-xs text-brand-black100 hover:text-primary transition flex items-center gap-1 font-medium">
+                <a href="{{ route('artworks', ['satilanlar' => 'only']) }}" class="text-xs text-brand-black100 hover:text-primary transition flex items-center gap-1 font-medium">
                     Tümünü Gör
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
@@ -512,7 +514,7 @@
         <div class="container mx-auto px-4">
             <div class="flex items-center justify-between mb-8">
                 <div>
-                    <h2 class="text-2xl font-semibold text-brand-black100">Sanat Yazıları</h2>
+                    <h2 class="text-2xl font-semibold text-brand-black100">Haberler</h2>
                     <p class="text-gray-400 text-sm mt-1">Sanat dünyasından haberler ve yazılar</p>
                 </div>
                 <a href="{{ route('blog') }}" class="text-xs text-gray-400 hover:text-brand-black100 transition link-underline pb-1 hidden md:block">Tümünü Gör</a>

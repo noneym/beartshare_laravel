@@ -187,6 +187,7 @@
                                     <p class="text-xs font-medium text-brand-black100 truncate">{{ $fav->artwork->title }}</p>
                                     <p class="text-[10px] text-gray-400 mt-0.5">{{ $fav->artwork->artist->name ?? '' }}</p>
                                     <p class="text-xs font-medium text-brand-black100 mt-1">{{ $fav->artwork->formatted_price_tl }}</p>
+                                    <x-credit-card-badge :artwork="$fav->artwork" />
                                 </div>
                             </a>
                             @endif
@@ -342,6 +343,7 @@
                                 <p class="text-xs font-medium text-brand-black100 truncate">{{ $fav->artwork->title }}</p>
                                 <p class="text-[10px] text-gray-400 mt-0.5">{{ $fav->artwork->artist->name ?? '' }}</p>
                                 <p class="text-xs font-semibold text-brand-black100 mt-1.5">{{ $fav->artwork->formatted_price_tl }}</p>
+                                <x-credit-card-badge :artwork="$fav->artwork" />
                             </div>
                         </a>
                         @endif

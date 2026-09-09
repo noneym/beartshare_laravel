@@ -94,6 +94,8 @@ class ArtworkController extends Controller
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
             'allow_credit_card' => 'boolean',
+            'owner_name' => 'nullable|string|max:255',
+            'admin_notes' => 'nullable|string|max:5000',
             'images.*' => 'nullable|image|max:4096',
         ]);
 
@@ -139,6 +141,8 @@ class ArtworkController extends Controller
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
             'allow_credit_card' => 'boolean',
+            'owner_name' => 'nullable|string|max:255',
+            'admin_notes' => 'nullable|string|max:5000',
             'images.*' => 'nullable|image|max:4096',
         ]);
 

@@ -94,6 +94,7 @@
                             </a>
                         </h3>
                         <p class="font-medium text-brand-black100 text-xs mt-1">{{ $fav->artwork->formatted_price_tl }}</p>
+                        <x-credit-card-badge :artwork="$fav->artwork" />
                     </div>
                     @endif
                 @endforeach

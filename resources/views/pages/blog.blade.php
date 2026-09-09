@@ -19,7 +19,7 @@
                         </div>
                     </div>
                     <div class="space-y-2">
-                        <span class="text-[10px] text-gray-400 uppercase tracking-wider">Sanat Haberleri</span>
+                        <span class="text-[10px] text-gray-400 uppercase tracking-wider">Haberler</span>
                         <h2 class="text-sm font-medium text-brand-black100 group-hover:underline transition">
                             Blog Yazısı Başlığı {{ $i }}
                         </h2>

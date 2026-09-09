@@ -153,6 +153,10 @@ class Checkout extends Component
             'addr_address_line' => 'required|string|min:10',
         ];
 
+        if ($this->addr_type === 'shipping') {
+            $rules['addr_tc_no'] = 'required|string|size:11|regex:/^[0-9]+$/';
+        }
+
         if ($this->addr_type === 'billing') {
             $rules['addr_invoice_type'] = 'required|in:individual,corporate';
             if ($this->addr_invoice_type === 'individual') {
@@ -206,7 +210,7 @@ class Checkout extends Component
             'district' => $this->addr_district,
             'address_line' => $this->addr_address_line,
             'invoice_type' => $this->addr_type === 'billing' ? $this->addr_invoice_type : 'individual',
-            'tc_no' => $this->addr_type === 'billing' && $this->addr_invoice_type === 'individual' ? $this->addr_tc_no : null,
+            'tc_no' => ($this->addr_type === 'shipping' || $this->addr_invoice_type === 'individual') ? $this->addr_tc_no : null,
             'company_name' => $this->addr_type === 'billing' && $this->addr_invoice_type === 'corporate' ? $this->addr_company_name : null,
             'tax_office' => $this->addr_type === 'billing' && $this->addr_invoice_type === 'corporate' ? $this->addr_tax_office : null,
             'tax_number' => $this->addr_type === 'billing' && $this->addr_invoice_type === 'corporate' ? $this->addr_tax_number : null,
@@ -316,7 +320,7 @@ class Checkout extends Component
                 'customer_name' => $this->customer_name,
                 'customer_email' => $this->customer_email,
                 'customer_phone' => $this->customer_phone,
-                'tc_no' => $billingAddress->tc_no ?? $user->tc_no,
+                'tc_no' => $billingAddress->tc_no ?? $shippingAddress->tc_no ?? $user->tc_no,
                 'shipping_address' => $shippingAddress->address_line,
                 'billing_address' => $billingInfo,
                 'city' => $shippingAddress->city,

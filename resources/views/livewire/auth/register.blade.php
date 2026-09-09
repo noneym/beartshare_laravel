@@ -62,15 +62,6 @@
                     @error('name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
 
-                {{-- TC Kimlik No --}}
-                <div>
-                    <label class="block text-xs text-gray-500 mb-1.5">TC Kimlik No</label>
-                    <input type="text" wire:model="tc_no" maxlength="11" inputmode="numeric"
-                           class="w-full border px-4 py-2.5 text-sm focus:outline-none transition {{ $errors->has('tc_no') ? 'border-red-400' : 'border-gray-200 focus:border-brand-black100' }}"
-                           placeholder="XXXXXXXXXXX">
-                    @error('tc_no') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                </div>
-
                 {{-- Cep Telefonu --}}
                 <div>
                     <label class="block text-xs text-gray-500 mb-1.5">Cep Telefonu</label>

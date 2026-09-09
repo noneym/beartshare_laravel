@@ -261,7 +261,7 @@
                         <span class="text-brand-black100">{{ $artwork->dimensions }}</span>
                     </div>
                     <div class="flex justify-between">
-                        <span class="text-gray-400">Yıl</span>
+                        <span class="text-gray-400">Tarih</span>
                         <span class="text-brand-black100">{{ $artwork->year }}</span>
                     </div>
                     @if($artwork->category)
@@ -280,9 +280,12 @@
 
                 <!-- Price & Action -->
                 <div class="border-t border-gray-100 pt-6 mb-6">
-                    <div class="flex items-baseline gap-3 mb-3">
+                    <div class="flex items-baseline gap-3 mb-1">
                         <span class="text-2xl font-semibold text-brand-black100">{{ $artwork->formatted_price_tl }}</span>
                         <span class="text-gray-400 text-sm">{{ $artwork->formatted_price_usd }}</span>
+                    </div>
+                    <div class="mb-3">
+                        <x-credit-card-badge :artwork="$artwork" class="text-xs px-2 py-1" />
                     </div>
 
                     @if(!$artwork->is_sold && $artpuanEarn > 0)
@@ -473,6 +476,7 @@
                             </a>
                             <h3 class="font-medium text-brand-black100 text-xs truncate">{{ $related->title }}</h3>
                             <p class="font-medium text-brand-black100 text-xs mt-1">{{ $related->formatted_price_tl }}</p>
+                            <x-credit-card-badge :artwork="$related" />
                         </div>
                     @endforeach
                 </div>

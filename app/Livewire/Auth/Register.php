@@ -73,7 +73,6 @@ class Register extends Component
         if ($this->step === 1) {
             return [
                 'name' => 'required|string|min:3|max:255',
-                'tc_no' => 'required|string|size:11|regex:/^[0-9]+$/|unique:users,tc_no',
                 'phone' => ['required', 'string', 'regex:/^0?5[0-9]{9}$/', function ($attribute, $value, $fail) {
                     $normalized = $this->normalizePhone($value);
                     if (User::where('phone', $normalized)->exists()) {
@@ -96,10 +95,6 @@ class Register extends Component
         return [
             'name.required' => 'Ad soyad zorunludur.',
             'name.min' => 'Ad soyad en az 3 karakter olmalıdır.',
-            'tc_no.required' => 'TC Kimlik No zorunludur.',
-            'tc_no.size' => 'TC Kimlik No 11 haneli olmalıdır.',
-            'tc_no.regex' => 'TC Kimlik No sadece rakamlardan oluşmalıdır.',
-            'tc_no.unique' => 'Bu TC Kimlik No ile zaten bir hesap mevcut.',
             'phone.required' => 'Cep telefonu numarası zorunludur.',
             'phone.regex' => 'Geçerli bir cep telefonu numarası giriniz. (5XX XXX XX XX)',
             'phone.unique' => 'Bu telefon numarası zaten kayıtlı.',
@@ -122,12 +117,6 @@ class Register extends Component
     {
         $this->step = 1;
         $this->validate();
-
-        // TC Kimlik No basit doğrulama (ilk hane 0 olamaz)
-        if (str_starts_with($this->tc_no, '0')) {
-            $this->addError('tc_no', 'Geçerli bir TC Kimlik No giriniz.');
-            return;
-        }
 
         // Telefon numarasını normalize et
         $phone = $this->normalizePhone($this->phone);
@@ -220,7 +209,6 @@ class Register extends Component
 
         $user = User::create([
             'name' => $this->name,
-            'tc_no' => $this->tc_no,
             'phone' => $phone,
             'email' => $this->email,
             'password' => Hash::make($this->password),

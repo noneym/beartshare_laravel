@@ -39,13 +39,13 @@
                              wire:key="faq-{{ $faq->id }}">
                             <button @click="openItem = openItem === {{ $faq->id }} ? null : {{ $faq->id }}"
                                     class="w-full flex items-center justify-between px-6 py-5 text-left">
-                                <div class="flex items-start gap-4 flex-1">
+                                <div class="flex items-center gap-4 flex-1 min-w-0">
+                                    <span class="font-medium text-brand-black100 text-sm md:text-base flex-1">{{ $faq->question }}</span>
                                     @if($faq->category)
                                         <span class="hidden sm:inline-flex px-2.5 py-1 text-[10px] font-medium bg-primary/10 text-primary rounded-full flex-shrink-0">
                                             {{ $faq->category_label }}
                                         </span>
                                     @endif
-                                    <span class="font-medium text-brand-black100 text-sm md:text-base">{{ $faq->question }}</span>
                                 </div>
                                 <svg class="w-5 h-5 text-gray-400 flex-shrink-0 ml-4 transition-transform duration-200"
                                      :class="{ 'rotate-180': openItem === {{ $faq->id }} }"
@@ -57,7 +57,7 @@
                                  x-collapse
                                  x-cloak>
                                 <div class="px-6 pb-6 pt-0">
-                                    <div class="text-gray-600 text-sm leading-relaxed pl-0 sm:pl-[72px] prose prose-sm max-w-none">
+                                    <div class="text-gray-600 text-sm leading-relaxed prose prose-sm max-w-none">
                                         {!! nl2br(e($faq->answer)) !!}
                                     </div>
                                 </div>

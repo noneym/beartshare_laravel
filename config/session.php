@@ -196,7 +196,10 @@ return [
     |
     */
 
-    'same_site' => 'lax',
+    // Banka 3D/OOS dönüşü cross-site POST olduğundan 'lax' cookie'yi göndermez ve
+    // Laravel yeni session açıp kullanıcının cookie'sini ezer (logout). Canlıda HTTPS ile
+    // SESSION_SAME_SITE=none + SESSION_SECURE_COOKIE=true kullanılmalı.
+    'same_site' => env('SESSION_SAME_SITE', 'lax'),
 
     /*
     |--------------------------------------------------------------------------

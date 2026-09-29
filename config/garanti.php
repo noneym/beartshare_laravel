@@ -17,16 +17,16 @@ return [
     'api_version' => '512',
 
     // Terminal bilgileri
-    'terminal_id' => env('GARANTI_TERMINAL_ID', '10401052'),
-    'merchant_id' => env('GARANTI_MERCHANT_ID', '3216754'),
+    'terminal_id' => env('GARANTI_TERMINAL_ID'),
+    'merchant_id' => env('GARANTI_MERCHANT_ID'),
 
     // Kullanıcı bilgileri (OOS için her ikisi de PROVOOS olmalı)
     'terminal_user_id' => env('GARANTI_TERMINAL_USER_ID', 'PROVOOS'),
     'terminal_prov_user_id' => env('GARANTI_TERMINAL_PROV_USER_ID', 'PROVOOS'),
 
-    // Şifreler
-    'store_key' => env('GARANTI_STORE_KEY', '55514c62632f3736445473446d45464d78356a45642f5864'),
-    'provision_password' => env('GARANTI_PROVISION_PASSWORD', 'Nt38421059*'),
+    // Şifreler — yalnızca .env'den okunur, repo'ya yazılmaz
+    'store_key' => env('GARANTI_STORE_KEY'),
+    'provision_password' => env('GARANTI_PROVISION_PASSWORD'),
 
     // Şirket adı
     'company_name' => env('GARANTI_COMPANY_NAME', 'BEARTSHARE'),

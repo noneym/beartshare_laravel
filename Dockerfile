@@ -42,6 +42,9 @@ RUN docker-php-ext-configure gd \
         zip \
         exif
 
+# phpredis (session/cache için) — FrankenPHP imajındaki install-php-extensions ile
+RUN install-php-extensions redis
+
 # Build dependency temizliği
 RUN apk del --no-cache \
     freetype-dev libjpeg-turbo-dev libpng-dev libwebp-dev

@@ -14,7 +14,7 @@ return [
     'thumbor_unsafe' => (bool) env('THUMBOR_UNSAFE', false),
 
     // Varsayılan filtreler (ör. kalite ve format)
-    'default_filters' => ['quality(85)'],
+    'default_filters' => ['quality(95)'],
 
     // Önceden tanımlı boyutlar: [genişlik, yükseklik] (0 = oranı koru)
     'presets' => [

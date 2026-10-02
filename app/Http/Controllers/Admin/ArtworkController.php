@@ -105,7 +105,7 @@ class ArtworkController extends Controller
         if ($request->hasFile('images')) {
             $images = [];
             foreach ($request->file('images') as $image) {
-                $images[] = $image->store('artworks', 'public');
+                $images[] = $image->store('artworks', config('filesystems.uploads'));
             }
             $validated['images'] = $images;
         }
@@ -151,7 +151,7 @@ class ArtworkController extends Controller
         if ($request->hasFile('images')) {
             $images = $artwork->images ?? [];
             foreach ($request->file('images') as $image) {
-                $images[] = $image->store('artworks', 'public');
+                $images[] = $image->store('artworks', config('filesystems.uploads'));
             }
             $validated['images'] = $images;
         }

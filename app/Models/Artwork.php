@@ -80,30 +80,26 @@ class Artwork extends Model
      */
     public function getFirstImageUrlAttribute()
     {
-        $image = $this->first_image;
-        if (!$image) {
-            return null;
-        }
-        if (str_starts_with($image, 'http')) {
-            return $image;
-        }
-        return asset('storage/' . $image);
+        return \App\Support\ImageUrl::make($this->first_image, 'card');
     }
 
     /**
-     * Get all images as full URLs.
+     * İlk görselin belirli boyutta URL'i (preset adı veya piksel).
+     */
+    public function imageUrl(int|string $width = 'card', int $height = 0): ?string
+    {
+        return \App\Support\ImageUrl::make($this->first_image, $width, $height);
+    }
+
+    /**
+     * Get all images as full URLs (detay/lightbox boyutu).
      */
     public function getImageUrlsAttribute()
     {
         if (!$this->images || count($this->images) === 0) {
             return [];
         }
-        return array_map(function ($image) {
-            if (str_starts_with($image, 'http')) {
-                return $image;
-            }
-            return asset('storage/' . $image);
-        }, $this->images);
+        return array_map(fn ($image) => \App\Support\ImageUrl::make($image, 'detail'), $this->images);
     }
 
     public function getFormattedPriceTlAttribute()

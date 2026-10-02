@@ -56,7 +56,32 @@ return [
             'throw' => false,
         ],
 
+        // Cloudflare R2 (S3 uyumlu). Görseller buradan Thumbor ile servis edilir.
+        'r2' => [
+            'driver' => 's3',
+            'key' => env('R2_ACCESS_KEY_ID'),
+            'secret' => env('R2_SECRET_ACCESS_KEY'),
+            'region' => 'auto',
+            'bucket' => env('R2_BUCKET'),
+            'endpoint' => env('R2_ACCOUNT_ID') ? 'https://' . env('R2_ACCOUNT_ID') . '.r2.cloudflarestorage.com' : null,
+            'use_path_style_endpoint' => true,
+            'visibility' => 'private',
+            'throw' => false,
+        ],
+
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Upload Disk
+    |--------------------------------------------------------------------------
+    |
+    | Admin panelden yüklenen eser / sanatçı / blog görsellerinin yazıldığı disk.
+    | Lokalde 'public', canlıda 'r2'.
+    |
+    */
+
+    'uploads' => env('UPLOADS_DISK', 'public'),
 
     /*
     |--------------------------------------------------------------------------

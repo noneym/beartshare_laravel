@@ -37,7 +37,7 @@ class ArtistController extends Controller
         $validated['slug'] = Str::slug($validated['name']);
 
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('artists', 'public');
+            $validated['image'] = $request->file('image')->store('artists', config('filesystems.uploads'));
         }
 
         Artist::create($validated);
@@ -63,7 +63,7 @@ class ArtistController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('artists', 'public');
+            $validated['image'] = $request->file('image')->store('artists', config('filesystems.uploads'));
         }
 
         $artist->update($validated);

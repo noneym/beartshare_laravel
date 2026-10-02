@@ -47,13 +47,7 @@ class BlogPost extends Model
 
     public function getImageUrlAttribute()
     {
-        if ($this->image && str_starts_with($this->image, 'http')) {
-            return $this->image;
-        }
-        if ($this->image) {
-            return asset('storage/' . $this->image);
-        }
-        return asset('images/blog-placeholder.jpg');
+        return \App\Support\ImageUrl::make($this->image, 'blog') ?? asset('images/blog-placeholder.jpg');
     }
 
     public function getExcerptAttribute()

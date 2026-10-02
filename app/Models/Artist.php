@@ -55,19 +55,7 @@ class Artist extends Model
 
     public function getAvatarUrlAttribute()
     {
-        if ($this->avatar && str_starts_with($this->avatar, 'http')) {
-            return $this->avatar;
-        }
-        if ($this->avatar) {
-            return asset('storage/' . $this->avatar);
-        }
-        if ($this->image && str_starts_with($this->image, 'http')) {
-            return $this->image;
-        }
-        if ($this->image) {
-            return asset('storage/' . $this->image);
-        }
-        return null;
+        return \App\Support\ImageUrl::make($this->avatar ?: $this->image, 'avatar');
     }
 
     public function scopeActive($query)

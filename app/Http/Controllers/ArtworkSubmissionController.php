@@ -44,7 +44,7 @@ class ArtworkSubmissionController extends Controller
         $imagePaths = [];
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
-                $imagePaths[] = $image->store('artwork-submissions', 'public');
+                $imagePaths[] = $image->store('artwork-submissions', config('filesystems.uploads'));
             }
         }
 

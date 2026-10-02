@@ -79,7 +79,7 @@ class BlogPostController extends Controller
         $validated['user_id'] = Auth::id();
 
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('blog', 'public');
+            $validated['image'] = $request->file('image')->store('blog', config('filesystems.uploads'));
         }
 
         BlogPost::create($validated);
@@ -118,7 +118,7 @@ class BlogPostController extends Controller
         $validated['is_active'] = $request->has('is_active');
 
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('blog', 'public');
+            $validated['image'] = $request->file('image')->store('blog', config('filesystems.uploads'));
         }
 
         $blogPost->update($validated);

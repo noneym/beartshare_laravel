@@ -31,10 +31,7 @@ class ArtistDetail extends Component
             ? Str::limit(strip_tags(html_entity_decode($artist->biography, ENT_QUOTES, 'UTF-8')), 160)
             : "{$artist->name} sanatçısının orijinal eserleri BeArtShare'de. {$artworkCount} eser mevcut.";
 
-        $imageUrl = $artist->avatar ?? $artist->image ?? asset('images/og-default.jpg');
-        if ($imageUrl && !str_starts_with($imageUrl, 'http')) {
-            $imageUrl = asset('storage/' . $imageUrl);
-        }
+        $imageUrl = $artist->avatar_url ?? asset('images/og-default.jpg');
 
         $jsonLd = json_encode([
             '@context' => 'https://schema.org',

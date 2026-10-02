@@ -11,6 +11,32 @@ use Illuminate\Support\Str;
 
 class BlogPostController extends Controller
 {
+    /**
+     * TinyMCE editöründen gelen görseli R2'ye yükler, Thumbor URL'i döner.
+     */
+    public function uploadImage(Request $request)
+    {
+        $request->validate([
+            'image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp,gif,avif', 'max:15360'],
+        ], [
+            'image.max' => 'Görsel en fazla 15 MB olabilir.',
+            'image.mimes' => 'Sadece JPG, PNG, WEBP, GIF veya AVIF yükleyebilirsiniz.',
+        ]);
+
+        $file = $request->file('image');
+        $name = date('Ymd') . '-' . Str::random(12) . '.' . strtolower($file->getClientOriginalExtension() ?: $file->extension());
+        $path = $file->storeAs('blog/content', $name, config('filesystems.uploads'));
+
+        if (!$path) {
+            return response()->json(['message' => 'Görsel kaydedilemedi.'], 500);
+        }
+
+        return response()->json([
+            'location' => \App\Support\ImageUrl::make($path, 'blog'),
+            'path' => $path,
+        ]);
+    }
+
     public function index(Request $request)
     {
         $posts = BlogPost::with('category', 'user')

@@ -47,7 +47,7 @@
             prose-img:rounded-lg prose-img:shadow-md
             prose-strong:text-brand-black100
             prose-blockquote:border-primary prose-blockquote:text-gray-500">
-            {!! $post->content !!}
+            {!! $post->rendered_content !!}
         </article>
 
         <!-- Share & Back -->

@@ -50,6 +50,14 @@ class BlogPost extends Model
         return \App\Support\ImageUrl::make($this->image, 'blog') ?? asset('images/blog-placeholder.jpg');
     }
 
+    /**
+     * İçerikteki R2/Thumbor görselleri güncel anahtarla imzalanmış halde döner.
+     */
+    public function getRenderedContentAttribute(): ?string
+    {
+        return \App\Support\ImageUrl::resignHtml($this->content, 'blog');
+    }
+
     public function getExcerptAttribute()
     {
         return Str::limit(html_entity_decode(strip_tags($this->content), ENT_QUOTES, 'UTF-8'), 150);

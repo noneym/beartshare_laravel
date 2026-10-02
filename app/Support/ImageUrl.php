@@ -58,4 +58,44 @@ class ImageUrl
 
         return "{$thumbor}/unsafe/{$operation}";
     }
+
+    /**
+     * Bir Thumbor URL'inden depo yolunu geri çıkarır (imza/boyut/filtre segmentlerini atar).
+     * Thumbor URL'i değilse null döner.
+     */
+    public static function pathFromUrl(?string $url): ?string
+    {
+        $thumbor = config('images.thumbor_url');
+        if (!$url || !$thumbor || !str_starts_with($url, $thumbor . '/')) {
+            return null;
+        }
+
+        $segments = explode('/', substr($url, strlen($thumbor) + 1));
+        array_shift($segments); // imza veya "unsafe"
+
+        while ($segments && (
+            preg_match('/^\d+x\d+$/', $segments[0])
+            || $segments[0] === 'smart'
+            || str_starts_with($segments[0], 'filters:')
+        )) {
+            array_shift($segments);
+        }
+
+        return $segments ? implode('/', $segments) : null;
+    }
+
+    /**
+     * HTML içindeki Thumbor görsellerini güncel anahtarla yeniden imzalar.
+     */
+    public static function resignHtml(?string $html, int|string $width = 'blog'): ?string
+    {
+        if (!$html) {
+            return $html;
+        }
+
+        return preg_replace_callback('/(<img\b[^>]*\bsrc=)(["\'])([^"\']+)\2/i', function ($m) use ($width) {
+            $path = self::pathFromUrl($m[3]);
+            return $path ? $m[1] . $m[2] . self::make($path, $width) . $m[2] : $m[0];
+        }, $html);
+    }
 }

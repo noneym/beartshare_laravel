@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Storage;
 class MigrateImagesToR2 extends Command
 {
     protected $signature = 'images:migrate
-        {--only= : artworks|artists|blog (boş = hepsi)}
+        {--only= : artworks|artists|blog|content (boş = hepsi; content = blog yazısı içindeki gömülü görseller)}
         {--limit=0 : En fazla kaç kayıt işlensin (0 = sınırsız)}
         {--from=0 : Başlangıç id (dahil)}
         {--to=0 : Bitiş id (dahil, 0 = sınırsız)}
@@ -103,6 +103,44 @@ class MigrateImagesToR2 extends Command
             }
         }
 
+        if (!$only || $only === 'content') {
+            $q = BlogPost::query()->orderBy('id');
+            if ($from) $q->where('id', '>=', $from);
+            if ($to) $q->where('id', '<=', $to);
+            if ($limit) $q->limit($limit);
+            foreach ($q->get() as $post) {
+                $original = (string) $post->content;
+                if ($original === '') continue;
+                $self = $this;
+                $changed = false;
+                $new = preg_replace_callback('/(<img\b[^>]*\bsrc=)(["\'])([^"\']+)\2/i', function ($m) use ($self, $disk, $post, $dry, &$changed) {
+                    $src = $m[3];
+                    $thumbor = config('images.thumbor_url');
+                    if ($thumbor && str_starts_with($src, $thumbor . '/')) { $self->skipped++; return $m[0]; }
+
+                    $keyBase = sprintf('blog/%d/content-%s', $post->id, substr(sha1($src), 0, 12));
+                    $stored = null;
+                    if (str_starts_with($src, 'data:image/')) {
+                        $stored = $self->storeDataUri($disk, $src, $keyBase, $dry);
+                    } elseif ($self->isExternal($src)) {
+                        $stored = $self->transfer($disk, $src, $keyBase, $dry);
+                    } else {
+                        $self->skipped++;
+                        return $m[0];
+                    }
+                    if (!$stored) return $m[0];
+                    $changed = true;
+                    return $m[1] . $m[2] . \App\Support\ImageUrl::make($stored, 'blog') . $m[2];
+                }, $original);
+
+                if ($changed && !$dry) {
+                    $this->backup['content'][$post->id] = $original;
+                    $post->forceFill(['content' => $new])->saveQuietly();
+                    $this->line("  <fg=green>içerik güncellendi</> blog #{$post->id}");
+                }
+            }
+        }
+
         if (!$dry && $this->backup) {
             $path = 'image-migration-backup-' . date('Ymd-His') . '.json';
             Storage::disk('local')->put($path, json_encode($this->backup, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
@@ -172,6 +210,35 @@ class MigrateImagesToR2 extends Command
         return null;
     }
 
+    /**
+     * data:image/...;base64,... URI'sini diske yazar.
+     */
+    protected function storeDataUri($disk, string $dataUri, string $keyBase, bool $dry): ?string
+    {
+        if (!preg_match('#^data:(image/[a-z0-9.+-]+);base64,(.+)$#is', $dataUri, $m)) {
+            $this->fail++;
+            return null;
+        }
+        $bytes = base64_decode($m[2], true);
+        if ($bytes === false) {
+            $this->fail++;
+            return null;
+        }
+        $key = $keyBase . '.' . $this->extensionFor($m[1], '');
+        if ($dry) {
+            $this->line("  data-uri ({$m[1]}, " . number_format(strlen($bytes) / 1024, 0) . " KB)  ->  {$key}");
+            $this->ok++;
+            return null;
+        }
+        if ($disk->exists($key) || $disk->put($key, $bytes, ['ContentType' => $m[1]])) {
+            $this->ok++;
+            $this->line("  <fg=green>ok</> {$key}");
+            return $key;
+        }
+        $this->fail++;
+        return null;
+    }
+
     protected function extensionFor(?string $contentType, string $url): string
     {
         $map = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp', 'image/gif' => 'gif', 'image/avif' => 'avif', 'image/svg+xml' => 'svg'];
@@ -196,6 +263,9 @@ class MigrateImagesToR2 extends Command
         }
         foreach ($data['blog'] ?? [] as $id => $image) {
             BlogPost::whereKey($id)->update(['image' => $image]);
+        }
+        foreach ($data['content'] ?? [] as $id => $content) {
+            BlogPost::whereKey($id)->update(['content' => $content]);
         }
         $this->info('Eski URL\'ler geri yüklendi. (R2\'deki dosyalar silinmedi.)');
         return self::SUCCESS;

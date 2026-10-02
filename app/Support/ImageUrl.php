@@ -51,7 +51,8 @@ class ImageUrl
 
         $key = config('images.thumbor_key');
         if ($key && !config('images.thumbor_unsafe')) {
-            $signature = rtrim(strtr(base64_encode(hash_hmac('sha1', $operation, $key, true)), '+/', '-_'), '=');
+            // Thumbor urlsafe base64 kullanır ve '=' dolgusunu korur
+            $signature = strtr(base64_encode(hash_hmac('sha1', $operation, $key, true)), '+/', '-_');
             return "{$thumbor}/{$signature}/{$operation}";
         }
 

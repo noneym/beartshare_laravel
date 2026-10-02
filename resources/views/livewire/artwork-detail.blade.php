@@ -71,17 +71,11 @@
          }"
     >
         <!-- Success icon -->
-        <svg x-show="toast.type === 'success'" class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-        </svg>
+        <i class="ph ph-check-circle flex-shrink-0 text-xl" x-show="toast.type === 'success'"></i>
         <!-- Error icon -->
-        <svg x-show="toast.type === 'error'" class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-        </svg>
+        <i class="ph ph-x flex-shrink-0 text-xl" x-show="toast.type === 'error'"></i>
         <!-- Info icon -->
-        <svg x-show="toast.type === 'info'" class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
+        <i class="ph ph-info flex-shrink-0 text-xl" x-show="toast.type === 'info'"></i>
         <span x-text="toast.message"></span>
     </div>
 
@@ -101,12 +95,10 @@
              class="relative bg-white rounded-xl shadow-2xl p-6 w-[90%] max-w-sm text-center"
         >
             <button @click="showLoginModal = false" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                <i class="ph ph-x text-xl"></i>
             </button>
-            <div class="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                </svg>
+            <div class="w-12 h-12 bg-gray-100 flex items-center justify-center mx-auto mb-4">
+                <i class="ph ph-heart text-brand-black100 text-2xl"></i>
             </div>
             <h3 class="text-lg font-semibold text-brand-black100 mb-2">Üye Girişi Gerekli</h3>
             <p class="text-sm text-gray-500 mb-6">Eserleri favorilerinize eklemek için giriş yapmanız veya üye olmanız gerekmektedir.</p>
@@ -133,9 +125,7 @@
         <!-- Close Button -->
         <button @click="closeLightbox()"
                 class="absolute top-4 right-4 z-10 text-white/70 hover:text-white transition p-2">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
+            <i class="ph ph-x text-3xl"></i>
         </button>
 
         <!-- Image Counter -->
@@ -147,18 +137,14 @@
         <button x-show="images.length > 1"
                 @click.stop="prevImage()"
                 class="absolute left-4 z-10 text-white/70 hover:text-white transition p-3 bg-black/30 hover:bg-black/50 rounded-full">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-            </svg>
+            <i class="ph ph-caret-left text-2xl"></i>
         </button>
 
         <!-- Next Button -->
         <button x-show="images.length > 1"
                 @click.stop="nextImage()"
                 class="absolute right-4 z-10 text-white/70 hover:text-white transition p-3 bg-black/30 hover:bg-black/50 rounded-full">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
+            <i class="ph ph-caret-right text-2xl"></i>
         </button>
 
         <!-- Image Container -->
@@ -185,9 +171,9 @@
     </div>
 
     <!-- Breadcrumb -->
-    <div class="bg-gray-50 border-b border-gray-100">
+    <div class="border-b border-gray-100">
         <div class="container mx-auto px-4 py-3">
-            <nav class="flex items-center space-x-2 text-xs text-gray-400">
+            <nav class="flex items-center space-x-2 text-sm text-gray-400">
                 <a href="/" class="hover:text-brand-black100 transition">Ana Sayfa</a>
                 <span>/</span>
                 <a href="{{ route('artworks') }}" class="hover:text-brand-black100 transition">Eserler</a>
@@ -203,35 +189,30 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
             <!-- Images -->
             <div>
-                <div class="relative bg-gray-50 overflow-hidden aspect-square mb-4 cursor-zoom-in"
+                <div class="relative bg-gray-100 overflow-hidden aspect-square mb-3 cursor-zoom-in"
                      @if($artwork->image_urls && count($artwork->image_urls) > 0)
                      @click="openLightbox({{ $currentImage }})"
                      @endif
                 >
                     @if($artwork->image_urls && count($artwork->image_urls) > 0)
                         <img src="{{ $artwork->image_urls[$currentImage] }}" alt="{{ $artwork->title }}" class="w-full h-full object-contain">
-                        <!-- Zoom hint icon -->
-                        <div class="absolute bottom-3 right-3 bg-white/80 backdrop-blur-sm p-2 rounded-full shadow-sm opacity-60 hover:opacity-100 transition pointer-events-none">
-                            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
-                            </svg>
+                        <div class="absolute bottom-3 right-3 bg-white/90 w-9 h-9 flex items-center justify-center text-gray-600 pointer-events-none">
+                            <i class="ph ph-magnifying-glass-plus text-lg"></i>
                         </div>
                     @else
                         <div class="w-full h-full flex items-center justify-center">
-                            <svg class="w-32 h-32 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                            </svg>
+                            <i class="ph ph-image text-6xl text-gray-300"></i>
                         </div>
                     @endif
                 </div>
 
                 @if($artwork->image_urls && count($artwork->image_urls) > 1)
-                    <div class="flex space-x-2">
+                    <div class="flex gap-2">
                         @foreach($artwork->image_urls as $index => $imageUrl)
                             <button
                                 wire:click="setImage({{ $index }})"
                                 @dblclick="openLightbox({{ $index }})"
-                                class="w-16 h-16 bg-gray-50 overflow-hidden border-2 transition {{ $currentImage == $index ? 'border-brand-black100' : 'border-gray-200 hover:border-gray-400' }}"
+                                class="w-16 h-16 bg-gray-100 overflow-hidden border transition {{ $currentImage == $index ? 'border-brand-black100' : 'border-transparent opacity-70 hover:opacity-100' }}"
                                 title="Tam boyut için çift tıklayın"
                             >
                                 <img src="{{ $imageUrl }}" alt="" class="w-full h-full object-cover">
@@ -244,14 +225,14 @@
             <!-- Details -->
             <div>
                 <div class="mb-6">
-                    <a href="{{ route('artist.detail', $artwork->artist->slug) }}" class="text-sm text-gray-400 hover:text-brand-black100 transition link-underline pb-0.5">
-                        {{ $artwork->artist->name }} {{ $artwork->artist->life_span }}
+                    <a href="{{ route('artist.detail', $artwork->artist->slug) }}" class="text-base text-gray-500 hover:text-brand-black100 transition">
+                        {{ $artwork->artist->name }} <span class="text-gray-400">{{ $artwork->artist->life_span }}</span>
                     </a>
-                    <h1 class="text-2xl md:text-3xl font-light text-brand-black100 mt-2">{{ $artwork->title }}</h1>
+                    <h1 class="text-3xl md:text-4xl font-semibold tracking-tight leading-tight text-brand-black100 mt-2">{{ $artwork->title }}</h1>
                 </div>
 
                 <!-- Artwork Details Table -->
-                <div class="border-t border-gray-100 py-4 space-y-3 text-sm mb-6">
+                <div class="border-t border-gray-100 py-5 space-y-3 text-sm mb-6">
                     <div class="flex justify-between">
                         <span class="text-gray-400">Teknik</span>
                         <span class="text-brand-black100">{{ $artwork->technique }}</span>
@@ -290,9 +271,7 @@
 
                     @if(!$artwork->is_sold && $artpuanEarn > 0)
                         <div class="flex items-center gap-2 text-xs text-primary bg-primary/5 border border-primary/20 px-3 py-2 mb-4">
-                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
-                            </svg>
+                            <i class="ph ph-star flex-shrink-0 text-base"></i>
                             <span>Bu eseri satın aldığınızda <strong>{{ number_format($artpuanEarn, 0, ',', '.') }} ArtPuan&reg;</strong> kazanırsınız</span>
                         </div>
                     @endif
@@ -301,18 +280,13 @@
                         <div class="flex items-center gap-4 text-xs text-gray-500 mb-5">
                             @if($viewCount24h > 1)
                                 <span class="flex items-center gap-1.5">
-                                    <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                    </svg>
+                                    <i class="ph ph-eye text-gray-400 text-sm"></i>
                                     Son 24 saatte <strong class="text-brand-black100">{{ $viewCount24h }} kişi</strong> görüntüledi
                                 </span>
                             @endif
                             @if($favoriteCount > 0)
                                 <span class="flex items-center gap-1.5">
-                                    <svg class="w-3.5 h-3.5 text-red-400" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                                    </svg>
+                                    <i class="ph ph-heart text-brand-black100 text-sm"></i>
                                     <strong class="text-brand-black100">{{ $favoriteCount }} koleksiyoner</strong> favorilerine ekledi
                                 </span>
                             @endif
@@ -325,7 +299,7 @@
                         </div>
                     @elseif($artwork->is_reserved)
                         <div class="bg-amber-50 text-amber-700 px-6 py-4 text-center text-sm font-medium flex items-center justify-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <i class="ph ph-clock text-base"></i>
                             Bu eser rezerve edilmiştir
                         </div>
                     @else
@@ -335,13 +309,8 @@
                             wire:loading.class="opacity-70 cursor-wait"
                             class="w-full bg-brand-black100 hover:bg-black text-white py-3.5 text-sm font-medium transition flex items-center justify-center"
                         >
-                            <svg wire:loading.remove wire:target="addToCart" class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-                            </svg>
-                            <svg wire:loading wire:target="addToCart" class="w-4 h-4 mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
+                            <i class="ph ph-shopping-bag mr-2 text-base" wire:loading.remove wire:target="addToCart"></i>
+                            <i class="ph ph-spinner mr-2 animate-spin text-base" wire:loading wire:target="addToCart"></i>
                             <span wire:loading.remove wire:target="addToCart">Sepete Ekle</span>
                             <span wire:loading wire:target="addToCart">Ekleniyor...</span>
                         </button>
@@ -351,29 +320,22 @@
                             <button
                                 wire:click="toggleFavorite"
                                 wire:loading.attr="disabled"
-                                class="relative py-3 text-xs transition flex items-center justify-center border
+                                class="relative py-3 text-sm transition flex items-center justify-center border btn-press
                                     {{ $isFavorited
-                                        ? 'bg-red-50 border-red-200 text-red-500 hover:bg-red-100'
-                                        : 'border-gray-200 text-gray-500 hover:bg-gray-50' }}"
+                                        ? 'bg-brand-black100 border-brand-black100 text-white'
+                                        : 'border-gray-300 text-brand-black100 hover:border-brand-black100' }}"
                             >
                                 {{-- Loading spinner --}}
-                                <svg wire:loading wire:target="toggleFavorite" class="w-4 h-4 mr-1.5 animate-spin" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
+                                <i class="ph ph-spinner mr-1.5 animate-spin text-base" wire:loading wire:target="toggleFavorite"></i>
 
                                 <span wire:loading.remove wire:target="toggleFavorite" class="flex items-center">
                                     @if($isFavorited)
                                         {{-- Filled heart --}}
-                                        <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                                        </svg>
+                                        <i class="ph ph-heart mr-1.5 text-base"></i>
                                         Favorilerde
                                     @else
                                         {{-- Outline heart --}}
-                                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                                        </svg>
+                                        <i class="ph ph-heart mr-1.5 text-base"></i>
                                         Favorilere Ekle
                                     @endif
                                 </span>
@@ -383,11 +345,9 @@
                             <div class="relative">
                                 <button
                                     @click="shareArtwork()"
-                                    class="w-full border border-gray-200 py-3 text-xs text-gray-500 hover:bg-gray-50 transition flex items-center justify-center"
+                                    class="w-full border border-gray-300 py-3 text-sm text-brand-black100 hover:border-brand-black100 transition flex items-center justify-center btn-press"
                                 >
-                                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"/>
-                                    </svg>
+                                    <i class="ph ph-share-network mr-1.5 text-base"></i>
                                     Paylaş
                                 </button>
 
@@ -396,22 +356,22 @@
                                      x-cloak
                                      @click.away="showShareMenu = false"
                                      x-transition
-                                     class="absolute bottom-full left-0 right-0 mb-2 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-20"
+                                     class="absolute bottom-full left-0 right-0 mb-2 bg-white border border-gray-200 shadow-lg py-1 z-20"
                                 >
                                     <a href="https://wa.me/?text={{ urlencode($artwork->title . ' - ' . url()->current()) }}" target="_blank" @click="showShareMenu = false" class="flex items-center gap-2 px-3 py-2 text-xs text-gray-600 hover:bg-gray-50 transition">
-                                        <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/></svg>
+                                        <i class="ph ph-whatsapp-logo text-gray-600 text-base"></i>
                                         WhatsApp
                                     </a>
                                     <a href="https://twitter.com/intent/tweet?text={{ urlencode($artwork->title) }}&url={{ urlencode(url()->current()) }}" target="_blank" @click="showShareMenu = false" class="flex items-center gap-2 px-3 py-2 text-xs text-gray-600 hover:bg-gray-50 transition">
-                                        <svg class="w-4 h-4 text-black" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                                        <i class="ph ph-x-logo text-gray-600 text-base"></i>
                                         X (Twitter)
                                     </a>
                                     <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(url()->current()) }}" target="_blank" @click="showShareMenu = false" class="flex items-center gap-2 px-3 py-2 text-xs text-gray-600 hover:bg-gray-50 transition">
-                                        <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                                        <i class="ph ph-facebook-logo text-gray-600 text-base"></i>
                                         Facebook
                                     </a>
                                     <button @click="copyLink()" class="w-full flex items-center gap-2 px-3 py-2 text-xs text-gray-600 hover:bg-gray-50 transition">
-                                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                                        <i class="ph ph-link text-gray-500 text-base"></i>
                                         Linki Kopyala
                                     </button>
                                 </div>
@@ -421,27 +381,23 @@
                 </div>
 
                 <!-- Artist Info -->
-                <div class="bg-gray-50 p-5">
+                <div class="border-t border-gray-100 pt-6">
                     <div class="flex items-start gap-4">
-                        <a href="{{ route('artist.detail', $artwork->artist->slug) }}" class="w-14 h-14 rounded-full overflow-hidden flex-shrink-0 border border-gray-200">
+                        <a href="{{ route('artist.detail', $artwork->artist->slug) }}" class="w-14 h-14 rounded-full overflow-hidden flex-shrink-0 bg-gray-100 ring-1 ring-gray-200">
                             @if($artwork->artist->avatar_url)
                                 <img src="{{ $artwork->artist->avatar_url }}" alt="{{ $artwork->artist->name }}" class="w-full h-full object-cover">
                             @else
-                                <div class="w-full h-full bg-gray-200 flex items-center justify-center text-lg font-light text-gray-400">
-                                    {{ mb_substr($artwork->artist->name, 0, 1) }}
-                                </div>
+                                <div class="w-full h-full flex items-center justify-center text-lg text-gray-400">{{ mb_substr($artwork->artist->name, 0, 1) }}</div>
                             @endif
                         </a>
                         <div class="flex-1 min-w-0">
-                            <a href="{{ route('artist.detail', $artwork->artist->slug) }}" class="font-medium text-brand-black100 text-sm hover:underline">
-                                {{ $artwork->artist->name }}
-                            </a>
-                            <p class="text-gray-400 text-xs">{{ $artwork->artist->life_span }}</p>
+                            <a href="{{ route('artist.detail', $artwork->artist->slug) }}" class="font-medium text-brand-black100 hover:text-primary transition">{{ $artwork->artist->name }}</a>
+                            <p class="text-gray-400 text-sm">{{ $artwork->artist->life_span }}</p>
                             @if($artwork->artist->biography)
-                                <p class="text-gray-500 text-xs mt-2 line-clamp-2 leading-relaxed">{{ $artwork->artist->biography }}</p>
+                                <p class="text-gray-600 text-sm mt-2 line-clamp-2 leading-relaxed">{{ $artwork->artist->biography }}</p>
                             @endif
-                            <a href="{{ route('artist.detail', $artwork->artist->slug) }}" class="text-xs text-gray-400 hover:text-brand-black100 transition mt-2 inline-block link-underline pb-0.5">
-                                Sanatçının Tüm Eserleri &rarr;
+                            <a href="{{ route('artist.detail', $artwork->artist->slug) }}" class="inline-flex items-center gap-1 text-sm text-brand-black100 underline underline-offset-4 hover:text-primary transition mt-2">
+                                Sanatçının tüm eserleri <i class="ph ph-arrow-right"></i>
                             </a>
                         </div>
                     </div>
@@ -452,31 +408,11 @@
         <!-- Related Artworks -->
         @if($relatedArtworks->count() > 0)
             <div class="mt-16 pt-12 border-t border-gray-100">
-                <h2 class="text-xl font-semibold text-brand-black100 mb-8">Sanatçının Diğer Eserleri</h2>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-8">
+                <h2 class="text-2xl font-semibold tracking-tight text-brand-black100 mb-8">Sanatçının diğer eserleri</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-8">
                     @foreach($relatedArtworks as $related)
-                        <div class="group" wire:key="related-{{ $related->id }}">
-                            <a href="{{ route('artwork.detail', $related->slug) }}" class="block">
-                                <div class="relative bg-gray-50 overflow-hidden aspect-[4/3] mb-3">
-                                    @if($related->is_sold)
-                                        <span class="absolute top-2 left-2 bg-red-500 text-white text-[9px] px-2 py-0.5 z-10 uppercase tracking-wider">Satıldı</span>
-                                    @elseif($related->is_reserved)
-                                        <span class="absolute top-2 left-2 bg-amber-500 text-white text-[9px] px-2 py-0.5 z-10 uppercase tracking-wider">Rezerve</span>
-                                    @endif
-                                    @if($related->first_image)
-                                        <img src="{{ $related->first_image_url }}" alt="{{ $related->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                                    @else
-                                        <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
-                                            <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                            </svg>
-                                        </div>
-                                    @endif
-                                </div>
-                            </a>
-                            <h3 class="font-medium text-brand-black100 text-xs truncate">{{ $related->title }}</h3>
-                            <p class="font-medium text-brand-black100 text-xs mt-1">{{ $related->formatted_price_tl }}</p>
-                            <x-credit-card-badge :artwork="$related" />
+                        <div wire:key="related-{{ $related->id }}">
+                            <x-artwork-card :artwork="$related" aspect="aspect-[4/3]" size="sm" />
                         </div>
                     @endforeach
                 </div>

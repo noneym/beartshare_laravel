@@ -5,70 +5,58 @@
 >
     <x-page-header title="Hakkımızda" subtitle="Türkiye'nin güvenilir online sanat galerisi" />
 
-    <div class="container mx-auto px-4 py-12">
-        <div class="max-w-3xl mx-auto">
-            <p class="text-gray-500 text-sm leading-relaxed mb-8">
+    <div class="container mx-auto px-4 py-12 lg:py-16">
+        <div class="max-w-[65ch]">
+            <p class="text-lg text-gray-700 leading-relaxed">
                 BeArtShare, Türkiye'nin önde gelen online sanat galerisidir. Ülkemizin kıymetli sanatçılarına ve uluslararası Blue Chip sanatçılara güvenle ve kazançla ulaşmanın yolunu sunuyoruz.
             </p>
-
-            <p class="text-gray-500 text-sm leading-relaxed mb-8">
+            <p class="mt-5 text-gray-600 leading-relaxed">
                 Online sanat galerimiz tecrübesi ile seçilen eserleri sanatseverlerin beğenisine sunuyoruz. Her bir eser, uzman ekibimiz tarafından titizlikle değerlendirilmekte ve orijinalliği garanti altına alınmaktadır.
             </p>
+        </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 my-12">
-                <div class="border border-gray-100 p-8">
-                    <h2 class="text-lg font-semibold text-brand-black100 mb-4">Misyonumuz</h2>
-                    <p class="text-gray-500 text-sm leading-relaxed">
-                        Sanatı herkes için erişilebilir kılmak ve Türk sanatçılarını dünyaya tanıtmak en büyük hedefimizdir. Koleksiyonerler ve sanat severler arasında güvenilir bir köprü olmayı amaçlıyoruz.
-                    </p>
-                </div>
-                <div class="border border-gray-100 p-8">
-                    <h2 class="text-lg font-semibold text-brand-black100 mb-4">Vizyonumuz</h2>
-                    <p class="text-gray-500 text-sm leading-relaxed">
-                        Türkiye'nin en büyük ve en güvenilir online sanat platformu olmak ve uluslararası arenada Türk sanatını en iyi şekilde temsil etmek.
-                    </p>
-                </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 mt-14 border-t border-gray-100 pt-12">
+            <div>
+                <h2 class="text-2xl font-semibold tracking-tight text-brand-black100">Misyonumuz</h2>
+                <p class="mt-3 text-gray-600 leading-relaxed max-w-[55ch]">
+                    Sanatı herkes için erişilebilir kılmak ve Türk sanatçılarını dünyaya tanıtmak en büyük hedefimizdir. Koleksiyonerler ve sanatseverler arasında güvenilir bir köprü olmayı amaçlıyoruz.
+                </p>
             </div>
+            <div>
+                <h2 class="text-2xl font-semibold tracking-tight text-brand-black100">Vizyonumuz</h2>
+                <p class="mt-3 text-gray-600 leading-relaxed max-w-[55ch]">
+                    Türkiye'nin en büyük ve en güvenilir online sanat platformu olmak ve uluslararası arenada Türk sanatını en iyi şekilde temsil etmek.
+                </p>
+            </div>
+        </div>
 
-            <div class="bg-gray-50 p-8 mt-8">
-                <h2 class="text-lg font-semibold text-brand-black100 mb-6">Neden BeArtShare?</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="flex gap-3">
-                        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <h3 class="text-sm font-medium text-brand-black100 mb-2">Orijinallik Garantisi</h3>
-                            <p class="text-gray-400 text-xs leading-relaxed">Tüm eserler uzman ekibimiz tarafından değerlendirilmekte ve orijinalliği garanti altına alınmaktadır.</p>
-                        </div>
-                    </div>
-                    <div class="flex gap-3">
-                        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <h3 class="text-sm font-medium text-brand-black100 mb-2">Güvenli Ödeme</h3>
-                            <p class="text-gray-400 text-xs leading-relaxed">256-bit SSL şifreleme ile güvenli ödeme imkanı sunuyoruz.</p>
-                        </div>
-                    </div>
-                    <div class="flex gap-3">
-                        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <h3 class="text-sm font-medium text-brand-black100 mb-2">Sigortalı Kargo</h3>
-                            <p class="text-gray-400 text-xs leading-relaxed">Eserler profesyonel paketleme ile sigortalı olarak kapınıza teslim edilir.</p>
-                        </div>
-                    </div>
-                </div>
+        <div class="mt-14 border-t border-gray-100 pt-12 grid grid-cols-1 lg:grid-cols-12 gap-10">
+            <div class="lg:col-span-4">
+                <h2 class="text-2xl font-semibold tracking-tight text-brand-black100">Neden BeArtShare?</h2>
             </div>
+            <ul class="lg:col-span-8 divide-y divide-gray-100">
+                <li class="flex gap-5 py-6 first:pt-0">
+                    <i class="ph ph-seal-check text-2xl text-primary flex-shrink-0 mt-0.5"></i>
+                    <div>
+                        <h3 class="text-lg font-medium text-brand-black100">Orijinallik garantisi</h3>
+                        <p class="mt-1 text-gray-600 leading-relaxed max-w-[60ch]">Tüm eserler uzman ekibimiz tarafından değerlendirilir ve orijinalliği garanti altına alınır.</p>
+                    </div>
+                </li>
+                <li class="flex gap-5 py-6">
+                    <i class="ph ph-lock-key text-2xl text-primary flex-shrink-0 mt-0.5"></i>
+                    <div>
+                        <h3 class="text-lg font-medium text-brand-black100">Güvenli ödeme</h3>
+                        <p class="mt-1 text-gray-600 leading-relaxed max-w-[60ch]">256-bit SSL şifreleme ve banka 3D Secure altyapısıyla güvenli ödeme imkânı sunuyoruz.</p>
+                    </div>
+                </li>
+                <li class="flex gap-5 py-6 last:pb-0">
+                    <i class="ph ph-truck text-2xl text-primary flex-shrink-0 mt-0.5"></i>
+                    <div>
+                        <h3 class="text-lg font-medium text-brand-black100">Sigortalı kargo</h3>
+                        <p class="mt-1 text-gray-600 leading-relaxed max-w-[60ch]">Eserler profesyonel paketleme ile sigortalı olarak kapınıza teslim edilir.</p>
+                    </div>
+                </li>
+            </ul>
         </div>
     </div>
 </x-layouts.app>

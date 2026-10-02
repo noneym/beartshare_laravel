@@ -14,6 +14,8 @@ class MigrateImagesToR2 extends Command
     protected $signature = 'images:migrate
         {--only= : artworks|artists|blog (boş = hepsi)}
         {--limit=0 : En fazla kaç kayıt işlensin (0 = sınırsız)}
+        {--from=0 : Başlangıç id (dahil)}
+        {--to=0 : Bitiş id (dahil, 0 = sınırsız)}
         {--dry-run : İndirme/yazma yapma, sadece planı göster}
         {--rollback= : Yedek JSON dosyasından eski URL\'leri geri yükle}';
 
@@ -33,12 +35,16 @@ class MigrateImagesToR2 extends Command
         $only = $this->option('only');
         $limit = (int) $this->option('limit');
         $dry = (bool) $this->option('dry-run');
+        $from = (int) $this->option('from');
+        $to = (int) $this->option('to');
         $disk = Storage::disk(config('filesystems.uploads'));
 
         $this->info('Hedef disk: ' . config('filesystems.uploads') . ($dry ? '  [DRY RUN]' : ''));
 
         if (!$only || $only === 'artworks') {
             $q = Artwork::query()->orderBy('id');
+            if ($from) $q->where('id', '>=', $from);
+            if ($to) $q->where('id', '<=', $to);
             if ($limit) $q->limit($limit);
             foreach ($q->get() as $artwork) {
                 $images = (array) $artwork->images;
@@ -61,6 +67,8 @@ class MigrateImagesToR2 extends Command
 
         if (!$only || $only === 'artists') {
             $q = Artist::query()->orderBy('id');
+            if ($from) $q->where('id', '>=', $from);
+            if ($to) $q->where('id', '<=', $to);
             if ($limit) $q->limit($limit);
             foreach ($q->get() as $artist) {
                 $update = [];
@@ -80,6 +88,8 @@ class MigrateImagesToR2 extends Command
 
         if (!$only || $only === 'blog') {
             $q = BlogPost::query()->orderBy('id');
+            if ($from) $q->where('id', '>=', $from);
+            if ($to) $q->where('id', '<=', $to);
             if ($limit) $q->limit($limit);
             foreach ($q->get() as $post) {
                 $src = $post->image;
@@ -115,10 +125,13 @@ class MigrateImagesToR2 extends Command
      */
     protected function transfer($disk, string $src, string $keyBase, bool $dry): ?string
     {
+        // Bazı kayıtlarda "host//path" gibi çift eğik çizgi var; şema sonrası fazlalıkları tekle
+        $clean = preg_replace('#(?<!:)/{2,}#', '/', trim($src));
+
         // Cloudflare Images: /public gibi küçültülmüş varyant yerine /full (orijinal) dene
-        $candidates = [$src];
-        if (str_contains($src, 'imagedelivery.net/') && !str_ends_with($src, '/full')) {
-            array_unshift($candidates, preg_replace('#/[^/]+$#', '/full', $src));
+        $candidates = [$clean];
+        if (str_contains($clean, 'imagedelivery.net/') && !str_ends_with($clean, '/full')) {
+            array_unshift($candidates, preg_replace('#/[^/]+$#', '/full', $clean));
         }
 
         foreach ($candidates as $url) {

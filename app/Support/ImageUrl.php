@@ -93,9 +93,12 @@ class ImageUrl
             return $html;
         }
 
-        return preg_replace_callback('/(<img\b[^>]*\bsrc=)(["\'])([^"\']+)\2/i', function ($m) use ($width) {
+        $result = preg_replace_callback('/(<img\b[^>]*\bsrc=)(["\'])([^"\']+)\2/i', function ($m) use ($width) {
             $path = self::pathFromUrl($m[3]);
             return $path ? $m[1] . $m[2] . self::make($path, $width) . $m[2] : $m[0];
         }, $html);
+
+        // Çok büyük içerikte PCRE limiti aşılırsa içeriği olduğu gibi göster
+        return $result ?? $html;
     }
 }

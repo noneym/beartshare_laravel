@@ -41,6 +41,10 @@ class MigrateImagesToR2 extends Command
 
         $this->info('Hedef disk: ' . config('filesystems.uploads') . ($dry ? '  [DRY RUN]' : ''));
 
+        // Gömülü base64 görseller içeren çok büyük içeriklerde PCRE geri izleme sınırı aşılıyor
+        ini_set('pcre.backtrack_limit', '500000000');
+        ini_set('memory_limit', '1024M');
+
         if (!$only || $only === 'artworks') {
             $q = Artwork::query()->orderBy('id');
             if ($from) $q->where('id', '>=', $from);
@@ -132,6 +136,12 @@ class MigrateImagesToR2 extends Command
                     $changed = true;
                     return $m[1] . $m[2] . \App\Support\ImageUrl::make($stored, 'blog') . $m[2];
                 }, $original);
+
+                if ($new === null) {
+                    $this->line("  <fg=red>regex hatası</> blog #{$post->id}: " . preg_last_error_msg());
+                    $this->fail++;
+                    continue;
+                }
 
                 if ($changed && !$dry) {
                     $this->backup['content'][$post->id] = $original;

@@ -1,11 +1,5 @@
 <div>
-    <!-- Page Header -->
-    <section class="bg-brand-black100 py-16">
-        <div class="container mx-auto px-4">
-            <h1 class="text-3xl md:text-4xl font-semibold text-white">Eserler</h1>
-            <p class="text-white/50 text-sm mt-2">BeArtShare koleksiyonundaki tüm eserleri keşfedin</p>
-        </div>
-    </section>
+    <x-page-header title="Eserler" subtitle="BeArtShare koleksiyonundaki tüm eserleri keşfedin" />
 
     <div class="container mx-auto px-4 py-10">
         <!-- Filters -->

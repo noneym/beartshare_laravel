@@ -1,11 +1,5 @@
 <div>
-    <!-- Page Header -->
-    <section class="bg-brand-black100 py-16">
-        <div class="container mx-auto px-4">
-            <h1 class="text-3xl md:text-4xl font-semibold text-white">Haberler</h1>
-            <p class="text-white/50 text-sm mt-2">Sanat dünyasından haberler, yazılar ve daha fazlası</p>
-        </div>
-    </section>
+    <x-page-header title="Haberler" subtitle="Sanat dünyasından haberler, yazılar ve daha fazlası" />
 
     <div class="container mx-auto px-4 py-10">
         <!-- Filters -->

@@ -3,20 +3,7 @@
     metaDescription="BeArtShare banka hesap bilgileri. Havale ve EFT ile güvenli ödeme yapın."
     metaKeywords="beartshare banka hesapları, havale, eft, iban, ödeme bilgileri"
 >
-    <!-- Page Header -->
-    <section class="bg-brand-black100 py-16 relative overflow-hidden">
-        <div class="absolute inset-0 opacity-5">
-            <div class="absolute top-10 right-10 w-40 h-40 border border-white rounded-full"></div>
-            <div class="absolute bottom-10 left-20 w-60 h-60 border border-white rounded-full"></div>
-        </div>
-        <div class="container mx-auto px-4 relative z-10">
-            <div class="max-w-3xl">
-                <span class="inline-block bg-amber-500/20 text-amber-400 text-xs font-semibold px-3 py-1 rounded-full mb-4 tracking-wider uppercase">Ödeme Bilgileri</span>
-                <h1 class="text-3xl md:text-4xl font-semibold text-white">Banka Hesaplarımız</h1>
-                <p class="text-white/50 text-sm mt-3 max-w-xl leading-relaxed">Havale / EFT ile güvenli ödeme için banka hesap bilgilerimiz aşağıdadır.</p>
-            </div>
-        </div>
-    </section>
+    <x-page-header title="Banka Hesaplarımız" subtitle="Havale / EFT ile güvenli ödeme için banka hesap bilgilerimiz aşağıdadır." />
 
     <div class="container mx-auto px-4 py-12">
         <div class="max-w-3xl mx-auto">

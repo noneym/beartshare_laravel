@@ -3,13 +3,7 @@
     metaDescription="BeArtShare teslimat ve iade şartları, mesafeli satış sözleşmesi, kargo bilgileri ve cayma hakkı hakkında detaylı bilgi."
     metaKeywords="teslimat şartları, iade politikası, mesafeli satış sözleşmesi, kargo, cayma hakkı, beartshare"
 >
-    <!-- Page Header -->
-    <section class="bg-brand-black100 py-16">
-        <div class="container mx-auto px-4">
-            <h1 class="text-3xl md:text-4xl font-semibold text-white">Teslimat ve İade Şartları</h1>
-            <p class="text-white/50 text-sm mt-2">Mesafeli Satış Sözleşmesi ve Cayma Hakkı</p>
-        </div>
-    </section>
+    <x-page-header title="Teslimat ve İade Şartları" subtitle="Mesafeli Satış Sözleşmesi ve Cayma Hakkı" />
 
     <div class="container mx-auto px-4 py-12">
         <div class="max-w-4xl mx-auto prose prose-sm prose-gray">

@@ -3,13 +3,7 @@
     metaDescription="BeArtShare hakkında bilgi edinin. Türkiye'nin güvenilir online sanat galerisi olarak misyonumuz, vizyonumuz ve sanat dünyasına katkılarımız."
     metaKeywords="beartshare hakkında, online sanat galerisi, sanat platformu, misyon, vizyon, türk sanat galerisi"
 >
-    <!-- Page Header -->
-    <section class="bg-brand-black100 py-16">
-        <div class="container mx-auto px-4">
-            <h1 class="text-3xl md:text-4xl font-semibold text-white">Hakkımızda</h1>
-            <p class="text-white/50 text-sm mt-2">Türkiye'nin güvenilir online sanat galerisi</p>
-        </div>
-    </section>
+    <x-page-header title="Hakkımızda" subtitle="Türkiye'nin güvenilir online sanat galerisi" />
 
     <div class="container mx-auto px-4 py-12">
         <div class="max-w-3xl mx-auto">

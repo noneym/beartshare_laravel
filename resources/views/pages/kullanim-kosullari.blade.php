@@ -3,13 +3,7 @@
     metaDescription="BeArtShare kullanım koşulları ve üyelik sözleşmesi. Üyelik şartları, Art Puan programı, teslimat ve fatura bilgileri."
     metaKeywords="kullanım koşulları, üyelik sözleşmesi, beartshare, art puan, sanat galerisi"
 >
-    <!-- Page Header -->
-    <section class="bg-brand-black100 py-16">
-        <div class="container mx-auto px-4">
-            <h1 class="text-3xl md:text-4xl font-semibold text-white">Kullanım Koşulları ve Üyelik Sözleşmesi</h1>
-            <p class="text-white/50 text-sm mt-2">Hizmet kullanım şartları ve üyelik koşulları</p>
-        </div>
-    </section>
+    <x-page-header title="Kullanım Koşulları ve Üyelik Sözleşmesi" subtitle="Hizmet kullanım şartları ve üyelik koşulları" />
 
     <div class="container mx-auto px-4 py-12">
         <div class="max-w-4xl mx-auto">

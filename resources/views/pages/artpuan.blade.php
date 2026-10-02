@@ -3,21 +3,7 @@
     metaDescription="ArtPuan® ile sanat alışverişlerinizde puan kazanın, indirimlerden yararlanın. BeArtShare sadakat programı avantajlarını keşfedin."
     metaKeywords="artpuan, sadakat programı, sanat alışverişi puan, beartshare puan, sanat indirimi, referans programı"
 >
-    <!-- Page Header -->
-    <section class="bg-brand-black100 py-16 relative overflow-hidden">
-        <div class="absolute inset-0 opacity-5">
-            <div class="absolute top-10 left-10 w-40 h-40 border border-white rounded-full"></div>
-            <div class="absolute bottom-10 right-20 w-60 h-60 border border-white rounded-full"></div>
-            <div class="absolute top-1/2 left-1/3 w-20 h-20 border border-white rounded-full"></div>
-        </div>
-        <div class="container mx-auto px-4 relative z-10">
-            <div class="max-w-3xl">
-                <span class="inline-block bg-primary/20 text-primary text-xs font-semibold px-3 py-1 rounded-full mb-4 tracking-wider uppercase">Sadakat Programı</span>
-                <h1 class="text-3xl md:text-5xl font-light text-white leading-tight whitespace-nowrap"><span class="font-bold text-primary">ArtPuan</span><sup class="text-lg md:text-2xl font-normal text-primary/80 align-super">&reg;</sup></h1>
-                <p class="text-white/50 text-sm mt-3 max-w-xl leading-relaxed">Sanat galericiliğinde bir ilk... Her alışverişinizde puan kazanın, sanat koleksiyonunuzu büyütün.</p>
-            </div>
-        </div>
-    </section>
+    <x-page-header title="ArtPuan®" subtitle="Sanat galericiliğinde bir ilk. Her alışverişinizde puan kazanın, sanat koleksiyonunuzu büyütün." />
 
     <!-- How It Works -->
     <section class="py-16">

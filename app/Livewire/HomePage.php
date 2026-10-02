@@ -34,8 +34,11 @@ class HomePage extends Component
             ->where('is_active', true)
             ->where('is_sold', true)
             ->orderByDesc('updated_at')
-            ->take(12)
+            ->take(6)
             ->get();
+
+        $heroArtwork = $featuredArtworks->first(fn ($a) => $a->first_image)
+            ?? $latestArtworks->first(fn ($a) => $a->first_image);
 
         $blogPosts = BlogPost::active()
             ->with('category')
@@ -52,6 +55,7 @@ class HomePage extends Component
             'featuredArtworks' => $featuredArtworks,
             'latestArtworks' => $latestArtworks,
             'soldArtworks' => $soldArtworks,
+            'heroArtwork' => $heroArtwork,
             'blogPosts' => $blogPosts,
         ])->layoutData([
             'title' => 'BeArtShare - Yeni Çağın Sanat Galerisi | Online Sanat Eseri Al',

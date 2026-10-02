@@ -70,6 +70,11 @@
     <script>
         tailwind.config = {
             theme: {
+                container: {
+                    center: true,
+                    padding: '1rem',
+                    screens: { sm: '640px', md: '768px', lg: '1024px', xl: '1280px', '2xl': '1400px' },
+                },
                 extend: {
                     colors: {
                         primary: '#D4A017',
@@ -94,8 +99,18 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
 
+    <!-- Phosphor Icons (regular) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+
     <style>
         [x-cloak] { display: none !important; }
+        /* Scroll-reveal: yalnızca hareket tercihi kısıtlanmamışsa animasyon */
+        @media (prefers-reduced-motion: no-preference) {
+            .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s cubic-bezier(.16,1,.3,1), transform .6s cubic-bezier(.16,1,.3,1); }
+            .reveal.is-in { opacity: 1; transform: none; }
+        }
+        .btn-press:active { transform: translateY(1px); }
+        .ph { line-height: 1; }
         .link-underline {
             position: relative;
         }
@@ -197,7 +212,7 @@
     <div x-data="{ mobileMenu: false, searchOpen: false }" class="sticky top-0 z-50">
         <header class="bg-white border-b border-gray-100 shadow-sm">
             <div class="container mx-auto px-4">
-                <div class="flex items-center justify-between h-[76px] lg:h-[88px]">
+                <div class="flex items-center justify-between h-[72px] lg:h-[80px]">
 
                     <!-- Mobile: Hamburger (Left) -->
                     <button @click="mobileMenu = !mobileMenu" class="lg:hidden p-2 -ml-2 text-brand-black100 hover:text-primary transition-colors">
@@ -211,7 +226,7 @@
 
                     <!-- Logo -->
                     <a href="/" class="flex items-center gap-2 group">
-                        <img alt="BeArtShare Logo" src="{{ asset('images/logo.svg') }}" class="h-12 lg:h-16 w-auto transition-transform duration-300 group-hover:scale-105" width="65" height="65">
+                        <img alt="BeArtShare Logo" src="{{ asset('images/logo.svg') }}" class="h-11 lg:h-14 w-auto" width="65" height="65">
                         <span class="hidden xl:inline-block text-[11px] text-gray-400 font-light tracking-wider border-l border-gray-200 pl-2.5 ml-1 leading-tight whitespace-nowrap">Yeni Çağın Sanat Galerisi</span>
                     </a>
 

@@ -1,11 +1,5 @@
 <x-layouts.app title="Blog - BeArtShare">
-    <!-- Page Header -->
-    <section class="bg-brand-black100 py-16">
-        <div class="container mx-auto px-4">
-            <h1 class="text-3xl md:text-4xl font-semibold text-white">Blog</h1>
-            <p class="text-white/50 text-sm mt-2">Sanat dünyasından haberler ve yazılar</p>
-        </div>
-    </section>
+    <x-page-header title="Blog" subtitle="Sanat dünyasından haberler ve yazılar" />
 
     <div class="container mx-auto px-4 py-10">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">

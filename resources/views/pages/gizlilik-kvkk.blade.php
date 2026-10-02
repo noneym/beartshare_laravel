@@ -3,20 +3,14 @@
     metaDescription="BeArtShare gizlilik sözleşmesi ve KVKK aydınlatma metni. Kişisel verilerinizin nasıl toplandığı, işlendiği ve korunduğu hakkında detaylı bilgi."
     metaKeywords="gizlilik sözleşmesi, kvkk, kişisel veriler, aydınlatma metni, beartshare, veri koruma"
 >
-    <!-- Page Header -->
-    <section class="bg-brand-black100 py-16">
-        <div class="container mx-auto px-4">
-            <h1 class="text-3xl md:text-4xl font-semibold text-white">Gizlilik Sözleşmesi ve KVKK Aydınlatma Metni</h1>
-            <p class="text-white/50 text-sm mt-2">Kişisel Verilerin Korunması Hakkında Bilgilendirme</p>
-        </div>
-    </section>
+    <x-page-header title="Gizlilik Sözleşmesi ve KVKK Aydınlatma Metni" subtitle="Kişisel Verilerin Korunması Hakkında Bilgilendirme" />
 
     <div class="container mx-auto px-4 py-12">
         <div class="max-w-4xl mx-auto">
 
             <!-- Madde 1 -->
             <article class="mb-10">
-                <h2 class="text-xl font-semibold text-brand-black100 mb-4 pb-2 border-b border-gray-200">Madde 1 — Giriş</h2>
+                <h2 class="text-xl font-semibold text-brand-black100 mb-4 pb-2 border-b border-gray-200">Madde 1 - Giriş</h2>
                 <div class="text-gray-600 text-sm leading-relaxed space-y-4">
                     <p>İşbu Gizlilik Sözleşmesi ve KVKK Aydınlatma Metni, Beartshare Online Sanat Galerisi A.Ş. (bundan böyle "BeArtShare", "Şirket", "Veri Sorumlusu" veya "biz" olarak anılacaktır) tarafından <a href="https://www.beartshare.com" class="text-primary hover:underline">www.beartshare.com</a> internet sitesi ve mobil uygulamaları aracılığıyla toplanan kişisel verilerin işlenmesine ilişkin usul ve esasları düzenlemektedir.</p>
                     <p>BeArtShare olarak, 6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") kapsamında veri sorumlusu sıfatıyla, kişisel verilerinizi aşağıda açıklanan amaçlar doğrultusunda; hukuka ve dürüstlük kurallarına uygun, doğru ve gerektiğinde güncel olarak, belirli, açık ve meşru amaçlar doğrultusunda, işlendikleri amaçla bağlantılı, sınırlı ve ölçülü şekilde, ilgili mevzuatta öngörülen veya işlendikleri amaç için gerekli süre kadar muhafaza ederek işlemekteyiz.</p>
@@ -26,7 +20,7 @@
 
             <!-- Madde 2 -->
             <article class="mb-10">
-                <h2 class="text-xl font-semibold text-brand-black100 mb-4 pb-2 border-b border-gray-200">Madde 2 — Veri Sorumlusunun Kimliği</h2>
+                <h2 class="text-xl font-semibold text-brand-black100 mb-4 pb-2 border-b border-gray-200">Madde 2 - Veri Sorumlusunun Kimliği</h2>
                 <div class="bg-gray-50 p-6 rounded-lg">
                     <dl class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                         <div>
@@ -58,7 +52,7 @@
 
             <!-- Madde 3 -->
             <article class="mb-10">
-                <h2 class="text-xl font-semibold text-brand-black100 mb-4 pb-2 border-b border-gray-200">Madde 3 — Toplanan Kişisel Veriler</h2>
+                <h2 class="text-xl font-semibold text-brand-black100 mb-4 pb-2 border-b border-gray-200">Madde 3 - Toplanan Kişisel Veriler</h2>
 
                 <div class="space-y-6">
                     <div>
@@ -144,7 +138,7 @@
 
             <!-- Madde 4 -->
             <article class="mb-10">
-                <h2 class="text-xl font-semibold text-brand-black100 mb-4 pb-2 border-b border-gray-200">Madde 4 — Kişisel Verilerin İşlenme Amaçları</h2>
+                <h2 class="text-xl font-semibold text-brand-black100 mb-4 pb-2 border-b border-gray-200">Madde 4 - Kişisel Verilerin İşlenme Amaçları</h2>
                 <p class="text-gray-600 text-sm mb-4">Toplanan kişisel veriler aşağıdaki amaçlarla işlenmektedir:</p>
 
                 <div class="space-y-6">
@@ -198,7 +192,7 @@
 
             <!-- Madde 5 -->
             <article class="mb-10">
-                <h2 class="text-xl font-semibold text-brand-black100 mb-4 pb-2 border-b border-gray-200">Madde 5 — Kişisel Verilerin Toplanma Yöntemleri ve Hukuki Sebepleri</h2>
+                <h2 class="text-xl font-semibold text-brand-black100 mb-4 pb-2 border-b border-gray-200">Madde 5 - Kişisel Verilerin Toplanma Yöntemleri ve Hukuki Sebepleri</h2>
 
                 <div class="space-y-6">
                     <div>
@@ -233,7 +227,7 @@
 
             <!-- Madde 6 -->
             <article class="mb-10">
-                <h2 class="text-xl font-semibold text-brand-black100 mb-4 pb-2 border-b border-gray-200">Madde 6 — Kişisel Verilerin Aktarılması</h2>
+                <h2 class="text-xl font-semibold text-brand-black100 mb-4 pb-2 border-b border-gray-200">Madde 6 - Kişisel Verilerin Aktarılması</h2>
 
                 <div class="space-y-6">
                     <div>
@@ -272,7 +266,7 @@
 
             <!-- Madde 7 -->
             <article class="mb-10">
-                <h2 class="text-xl font-semibold text-brand-black100 mb-4 pb-2 border-b border-gray-200">Madde 7 — Çerez Politikası</h2>
+                <h2 class="text-xl font-semibold text-brand-black100 mb-4 pb-2 border-b border-gray-200">Madde 7 - Çerez Politikası</h2>
 
                 <div class="space-y-6">
                     <div>
@@ -324,7 +318,7 @@
 
             <!-- Madde 8 -->
             <article class="mb-10">
-                <h2 class="text-xl font-semibold text-brand-black100 mb-4 pb-2 border-b border-gray-200">Madde 8 — Kişisel Verilerin Saklama Süresi</h2>
+                <h2 class="text-xl font-semibold text-brand-black100 mb-4 pb-2 border-b border-gray-200">Madde 8 - Kişisel Verilerin Saklama Süresi</h2>
 
                 <div class="space-y-6">
                     <div>
@@ -393,7 +387,7 @@
 
             <!-- Madde 9 -->
             <article class="mb-10">
-                <h2 class="text-xl font-semibold text-brand-black100 mb-4 pb-2 border-b border-gray-200">Madde 9 — İlgili Kişinin Hakları</h2>
+                <h2 class="text-xl font-semibold text-brand-black100 mb-4 pb-2 border-b border-gray-200">Madde 9 - İlgili Kişinin Hakları</h2>
 
                 <div class="bg-primary/5 border border-primary/20 p-4 rounded-lg mb-6">
                     <p class="text-sm font-medium text-brand-black100">KVKK'nın 11. maddesi uyarınca, ilgili kişi olarak aşağıdaki haklara sahipsiniz:</p>
@@ -448,7 +442,7 @@
 
             <!-- Madde 10 -->
             <article class="mb-10">
-                <h2 class="text-xl font-semibold text-brand-black100 mb-4 pb-2 border-b border-gray-200">Madde 10 — Veri Güvenliği</h2>
+                <h2 class="text-xl font-semibold text-brand-black100 mb-4 pb-2 border-b border-gray-200">Madde 10 - Veri Güvenliği</h2>
 
                 <div class="space-y-6">
                     <div>
@@ -488,7 +482,7 @@
 
             <!-- Madde 11 -->
             <article class="mb-10">
-                <h2 class="text-xl font-semibold text-brand-black100 mb-4 pb-2 border-b border-gray-200">Madde 11 — Üçüncü Taraf Bağlantıları</h2>
+                <h2 class="text-xl font-semibold text-brand-black100 mb-4 pb-2 border-b border-gray-200">Madde 11 - Üçüncü Taraf Bağlantıları</h2>
                 <div class="text-gray-600 text-sm leading-relaxed space-y-3">
                     <p>Web sitemizde üçüncü taraf web sitelerine bağlantılar bulunabilir. Bu sitelere eriştiğinizde, söz konusu sitelerin gizlilik politikaları geçerli olacaktır.</p>
                     <p>BeArtShare, üçüncü taraf web sitelerinin içeriğinden veya gizlilik uygulamalarından sorumlu değildir.</p>
@@ -498,7 +492,7 @@
 
             <!-- Madde 12 -->
             <article class="mb-10">
-                <h2 class="text-xl font-semibold text-brand-black100 mb-4 pb-2 border-b border-gray-200">Madde 12 — Çocukların Gizliliği</h2>
+                <h2 class="text-xl font-semibold text-brand-black100 mb-4 pb-2 border-b border-gray-200">Madde 12 - Çocukların Gizliliği</h2>
                 <div class="bg-red-50 border border-red-200 p-4 rounded-lg mb-4">
                     <p class="text-sm font-medium text-red-800">18 Yaş Sınırı: Web sitemiz ve hizmetlerimiz, 18 yaşın altındaki kişilere yönelik değildir.</p>
                 </div>
@@ -510,7 +504,7 @@
 
             <!-- Madde 13 -->
             <article class="mb-10">
-                <h2 class="text-xl font-semibold text-brand-black100 mb-4 pb-2 border-b border-gray-200">Madde 13 — Gizlilik Politikası Değişiklikleri</h2>
+                <h2 class="text-xl font-semibold text-brand-black100 mb-4 pb-2 border-b border-gray-200">Madde 13 - Gizlilik Politikası Değişiklikleri</h2>
                 <div class="text-gray-600 text-sm leading-relaxed space-y-3">
                     <p>BeArtShare, işbu Gizlilik Sözleşmesi'nde her zaman değişiklik yapma hakkını saklı tutar.</p>
                     <p>Değişiklikler, web sitesinde yayımlandığı tarihte yürürlüğe girer.</p>
@@ -521,7 +515,7 @@
 
             <!-- Madde 14 -->
             <article class="mb-10">
-                <h2 class="text-xl font-semibold text-brand-black100 mb-4 pb-2 border-b border-gray-200">Madde 14 — İletişim</h2>
+                <h2 class="text-xl font-semibold text-brand-black100 mb-4 pb-2 border-b border-gray-200">Madde 14 - İletişim</h2>
                 <p class="text-gray-600 text-sm mb-4">Gizlilik ve kişisel verilerinizle ilgili her türlü soru, talep ve başvurularınız için aşağıdaki kanallardan bize ulaşabilirsiniz:</p>
                 <div class="bg-gray-50 p-6 rounded-lg">
                     <dl class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
@@ -558,7 +552,7 @@
 
             <!-- Madde 15 -->
             <article class="mb-10">
-                <h2 class="text-xl font-semibold text-brand-black100 mb-4 pb-2 border-b border-gray-200">Madde 15 — Yürürlük</h2>
+                <h2 class="text-xl font-semibold text-brand-black100 mb-4 pb-2 border-b border-gray-200">Madde 15 - Yürürlük</h2>
                 <p class="text-gray-600 text-sm">İşbu Gizlilik Sözleşmesi ve KVKK Aydınlatma Metni, <a href="https://www.beartshare.com" class="text-primary hover:underline">www.beartshare.com</a> adresinde yayımlandığı tarihte yürürlüğe girmiştir.</p>
             </article>
 

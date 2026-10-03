@@ -83,15 +83,25 @@
     <div class="bg-white rounded-xl shadow-sm overflow-hidden">
         <table class="w-full">
             <thead class="bg-gray-50">
+                @php
+                    // Başlığa tıklayınca sıralama; aynı başlığa tekrar tıklayınca yön değişir
+                    $sortLink = function (string $key, string $label, string $firstDir = 'desc') {
+                        $active = request('sort') === $key && request()->filled('dir');
+                        $dir = $active ? (request('dir') === 'asc' ? 'desc' : 'asc') : $firstDir;
+                        $url = request()->fullUrlWithQuery(['sort' => $key, 'dir' => $dir, 'page' => null]);
+                        $arrow = $active ? (request('dir') === 'asc' ? ' ▲' : ' ▼') : '';
+                        return '<a href="' . e($url) . '" class="hover:text-gray-800 ' . ($active ? 'text-gray-800' : '') . '">' . e($label) . $arrow . '</a>';
+                    };
+                @endphp
                 <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kullanici</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Telefon</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Siparisler</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ArtPuan</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Referanslar</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rol</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kayit</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{!! $sortLink('id', 'ID') !!}</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{!! $sortLink('name', 'Kullanici', 'asc') !!}</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{!! $sortLink('phone', 'Telefon', 'asc') !!}</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{!! $sortLink('orders', 'Siparisler') !!}</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{!! $sortLink('artpuan', 'ArtPuan') !!}</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{!! $sortLink('referrals', 'Referanslar') !!}</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{!! $sortLink('role', 'Rol') !!}</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{!! $sortLink('created', 'Kayit') !!}</th>
                     <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Islemler</th>
                 </tr>
             </thead>

@@ -68,6 +68,10 @@
                 <input type="checkbox" name="group" value="1" {{ request()->boolean('group') ? 'checked' : '' }} class="rounded border-gray-300 text-primary focus:ring-primary">
                 Esere göre grupla
             </label>
+            <label class="flex items-center gap-2 text-sm text-gray-700 py-2">
+                <input type="checkbox" name="hide_sold" value="1" {{ request()->boolean('hide_sold') ? 'checked' : '' }} class="rounded border-gray-300 text-primary focus:ring-primary">
+                Satılmış eserleri gizle
+            </label>
             <div class="min-w-[180px]">
                 <label class="block text-xs text-gray-500 mb-1">Siralama</label>
                 <select name="sort" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary">
@@ -81,7 +85,7 @@
             <button type="submit" class="bg-gray-800 text-white px-4 py-2 rounded text-sm hover:bg-gray-700 transition">
                 Filtrele
             </button>
-            @if(request()->hasAny(['search', 'sort', 'artwork_id', 'group']))
+            @if(request()->hasAny(['search', 'sort', 'artwork_id', 'group', 'hide_sold']))
                 <a href="{{ route('admin.favorites.index') }}" class="text-sm text-gray-500 hover:text-gray-700 py-2">
                     Temizle
                 </a>

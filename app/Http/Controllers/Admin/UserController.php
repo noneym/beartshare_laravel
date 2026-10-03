@@ -47,6 +47,16 @@ class UserController extends Controller
                 };
             })
             ->when($request->filled('sort'), function ($query) use ($request) {
+                // Tablo başlığına tıklayarak sıralama: ?sort=<sütun>&dir=asc|desc
+                $columns = [
+                    'id' => 'id', 'name' => 'name', 'phone' => 'phone', 'orders' => 'orders_count',
+                    'artpuan' => 'art_puan', 'referrals' => 'referrals_count', 'role' => 'is_admin', 'created' => 'created_at',
+                ];
+                if (isset($columns[$request->input('sort')]) && $request->filled('dir')) {
+                    $query->orderBy($columns[$request->input('sort')], $request->input('dir') === 'asc' ? 'asc' : 'desc')
+                          ->orderBy('id', 'desc');
+                    return;
+                }
                 match ($request->input('sort')) {
                     'oldest' => $query->oldest(),
                     'name' => $query->orderBy('name', 'asc'),

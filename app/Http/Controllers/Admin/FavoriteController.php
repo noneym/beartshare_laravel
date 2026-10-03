@@ -50,6 +50,11 @@ class FavoriteController extends Controller
             $query->where('artwork_id', $request->artwork_id);
         }
 
+        // Satılmış eserleri gizle
+        if ($request->boolean('hide_sold')) {
+            $query->whereHas('artwork', fn ($q) => $q->where('is_sold', false));
+        }
+
         // Arama
         if ($request->filled('search')) {
             $search = $request->search;

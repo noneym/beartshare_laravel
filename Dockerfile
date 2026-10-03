@@ -2,6 +2,16 @@
 # BeArtShare - FrankenPHP Production Dockerfile
 # ============================================
 
+# Vite asset'leri (ör. 3D galeri / three.js) ayrı aşamada derlenir;
+# son imaja yalnızca public/build girer, Node imajda kalmaz.
+FROM node:20-alpine AS assets
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY vite.config.js ./
+COPY resources ./resources
+RUN npm run build
+
 FROM dunglas/frankenphp:1.7-php8.2-alpine
 
 # PHP ayarları
@@ -74,6 +84,7 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 # Uygulama kodu
 WORKDIR /app
 COPY . .
+COPY --from=assets /app/public/build /app/public/build
 
 # Composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer

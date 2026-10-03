@@ -15,3 +15,5 @@ phpunit.xml
 .gitattributes
 *.md
 docker-compose*.yml
+public/build
+public/hot

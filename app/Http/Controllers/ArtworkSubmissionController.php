@@ -3,9 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\ArtworkSubmission;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class ArtworkSubmissionController extends Controller
 {
@@ -48,8 +52,12 @@ class ArtworkSubmissionController extends Controller
             }
         }
 
+        // Başvuran üye değilse otomatik hesap aç / mevcut hesaba bağla
+        [$user, $newAccount] = $this->resolveUser($validated);
+
         // Veritabanina kaydet
         $submission = ArtworkSubmission::create([
+            'user_id' => $user?->id,
             'name' => $validated['name'],
             'phone' => $validated['phone'],
             'email' => $validated['email'],
@@ -89,8 +97,92 @@ class ArtworkSubmissionController extends Controller
             'images' => count($imagePaths),
         ]);
 
-        return redirect()->route('eser-kabulu')
-            ->with('success', 'Başvurunuz başarıyla alındı. Ekibimiz en kısa sürede sizinle iletişime geçecektir.');
+        $message = 'Başvurunuz başarıyla alındı. Ekibimiz en kısa sürede sizinle iletişime geçecektir.';
+        if ($newAccount) {
+            $message .= ' Sizin için bir BeArtShare hesabı oluşturuldu; giriş bilgileriniz e-posta adresinize gönderildi.';
+        }
+
+        return redirect()->route('eser-kabulu')->with('success', $message);
+    }
+
+    /**
+     * Giriş yapmışsa o kullanıcı; değilse e-posta/telefonla eşleşen hesap; yoksa yeni hesap açar.
+     *
+     * @return array{0: ?User, 1: bool} [kullanıcı, yeni hesap açıldı mı]
+     */
+    protected function resolveUser(array $data): array
+    {
+        if (Auth::check()) {
+            return [Auth::user(), false];
+        }
+
+        $phone = preg_replace('/[^0-9]/', '', $data['phone']);
+        if (str_starts_with($phone, '90') && strlen($phone) === 12) {
+            $phone = substr($phone, 2);
+        }
+        if (str_starts_with($phone, '0')) {
+            $phone = substr($phone, 1);
+        }
+
+        $existing = User::where('email', $data['email'])->first()
+            ?? ($phone ? User::where('phone', $phone)->first() : null);
+        if ($existing) {
+            // Mevcut hesaba bağla ama başkası adına oturum açma
+            return [$existing, false];
+        }
+
+        try {
+            $password = Str::password(10, symbols: false);
+            $user = User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'phone' => $phone ?: null,
+                'password' => Hash::make($password),
+            ]);
+            Auth::login($user);
+            $this->sendWelcomeEmail($user, $password);
+
+            return [$user, true];
+        } catch (\Throwable $e) {
+            Log::error('Eser kabul otomatik üyelik hatası: ' . $e->getMessage());
+            return [null, false];
+        }
+    }
+
+    protected function sendWelcomeEmail(User $user, string $password): void
+    {
+        $loginUrl = route('login');
+        $name = e($user->name);
+        $email = e($user->email);
+
+        $html = "
+        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
+            <div style='background: #14171c; padding: 24px; text-align: center;'>
+                <h1 style='color: #fff; font-size: 20px; margin: 0;'>BeArtShare</h1>
+            </div>
+            <div style='padding: 32px 24px; background: #fff; color: #333; font-size: 14px; line-height: 1.6;'>
+                <p>Merhaba {$name},</p>
+                <p>Eser başvurunuz alındı. Başvurunuzu takip edebilmeniz için sizin adınıza bir BeArtShare hesabı oluşturduk.</p>
+                <div style='background: #f8f8f8; border-left: 3px solid #D4A017; padding: 16px; margin: 20px 0;'>
+                    <p style='margin: 0;'><strong>E-posta:</strong> {$email}</p>
+                    <p style='margin: 6px 0 0;'><strong>Geçici şifre:</strong> <span style='font-family: monospace; font-size: 16px;'>{$password}</span></p>
+                </div>
+                <p>Güvenliğiniz için ilk girişinizden sonra Hesabım &gt; Ayarlar bölümünden şifrenizi değiştirmenizi öneririz.</p>
+                <p style='text-align: center; margin: 28px 0;'>
+                    <a href='{$loginUrl}' style='background: #14171c; color: #fff; padding: 12px 32px; text-decoration: none;'>Giriş Yap</a>
+                </p>
+            </div>
+        </div>";
+
+        try {
+            Mail::html($html, function ($m) use ($user) {
+                $m->to($user->email, $user->name)
+                    ->subject('BeArtShare hesabınız oluşturuldu')
+                    ->from(config('mail.from.address', 'info@beartshare.com'), 'BeArtShare');
+            });
+        } catch (\Throwable $e) {
+            Log::error('Hoş geldin e-postası gönderilemedi: ' . $e->getMessage());
+        }
     }
 
     /**

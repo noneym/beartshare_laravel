@@ -21,6 +21,7 @@ class ArtworkSubmission extends Model
         'status',
         'admin_notes',
         'ip_address',
+        'user_id',
     ];
 
     protected $casts = [

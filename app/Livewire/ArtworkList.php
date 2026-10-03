@@ -26,14 +26,14 @@ class ArtworkList extends Component
         'soldFilter' => ['except' => '', 'as' => 'satilanlar'],
     ];
 
-    public function updatingSearch()
+    /**
+     * Herhangi bir filtre/sıralama değişince 1. sayfaya dön.
+     */
+    public function updating($property)
     {
-        $this->resetPage();
-    }
-
-    public function updatingSoldFilter()
-    {
-        $this->resetPage();
+        if (in_array($property, ['search', 'artistId', 'categoryId', 'sortBy', 'soldFilter'], true)) {
+            $this->resetPage();
+        }
     }
 
     public function render()

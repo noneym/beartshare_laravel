@@ -110,8 +110,9 @@ class Order extends Model
      */
     public static function generatePaymentCode(): string
     {
+        // Sadece rakam: banka açıklamasına kolay yazılır, karışan harf yok
         do {
-            $code = 'BA-' . strtoupper(substr(uniqid(), -6));
+            $code = (string) random_int(10000000, 99999999);
         } while (self::where('payment_code', $code)->exists());
 
         return $code;

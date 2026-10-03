@@ -678,6 +678,46 @@
         </div>
     </footer>
 
+    {{-- Sepete eklendi modalı (cart-added event'i ile her sayfada açılır) --}}
+    <div x-data="{ open: false, item: {} }"
+         @cart-added.window="item = $event.detail; open = true"
+         @keydown.escape.window="open = false"
+         x-show="open" x-cloak
+         class="fixed inset-0 z-[200] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/50" @click="open = false"></div>
+        <div x-show="open"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             class="relative bg-white w-full max-w-md shadow-2xl">
+            <button @click="open = false" class="absolute top-3 right-3 text-gray-400 hover:text-gray-700 transition" aria-label="Kapat">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            <div class="px-6 pt-6 pb-4 flex items-center gap-2 text-green-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span class="text-sm font-semibold">Ürününüz sepete eklendi</span>
+            </div>
+            <div class="px-6 pb-6 flex gap-4" x-show="item.title">
+                <template x-if="item.image">
+                    <img :src="item.image" :alt="item.title" class="w-20 h-20 object-cover bg-gray-100 flex-shrink-0">
+                </template>
+                <div class="min-w-0">
+                    <p class="text-sm font-medium text-brand-black100 truncate" x-text="item.artist"></p>
+                    <p class="text-sm text-gray-500 truncate" x-text="item.title"></p>
+                    <p class="text-sm font-semibold text-brand-black100 mt-1" x-text="item.price"></p>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3 px-6 pb-6">
+                <button @click="open = false" class="border border-gray-300 py-3 text-sm font-medium text-brand-black100 hover:border-brand-black100 transition">
+                    Alışverişe Devam Et
+                </button>
+                <a href="{{ route('cart') }}" class="bg-brand-black100 text-white py-3 text-sm font-medium text-center hover:bg-primary transition">
+                    Sepete Git
+                </a>
+            </div>
+        </div>
+    </div>
+
     @livewireScripts
 </body>
 </html>

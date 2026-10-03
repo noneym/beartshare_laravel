@@ -148,8 +148,14 @@ class ArtworkController extends Controller
 
         $validated['allow_credit_card'] = $request->boolean('allow_credit_card');
 
+        // Mevcut görsellerin sırası / silinenler (yalnızca bu eserde olan yollar kabul edilir)
+        $images = $artwork->images ?? [];
+        if ($request->boolean('images_managed')) {
+            $images = array_values(array_intersect((array) $request->input('existing_images', []), $images));
+            $validated['images'] = $images;
+        }
+
         if ($request->hasFile('images')) {
-            $images = $artwork->images ?? [];
             foreach ($request->file('images') as $image) {
                 $images[] = $image->store('artworks', config('filesystems.uploads'));
             }

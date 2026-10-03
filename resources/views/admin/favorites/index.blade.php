@@ -59,6 +59,15 @@
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Kullanici, eser, sanatci..."
                        class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary">
             </div>
+            <div class="w-[120px]">
+                <label class="block text-xs text-gray-500 mb-1">Eser ID</label>
+                <input type="number" name="artwork_id" value="{{ request('artwork_id') }}" placeholder="örn. 185" min="1"
+                       class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary">
+            </div>
+            <label class="flex items-center gap-2 text-sm text-gray-700 py-2">
+                <input type="checkbox" name="group" value="1" {{ request()->boolean('group') ? 'checked' : '' }} class="rounded border-gray-300 text-primary focus:ring-primary">
+                Esere göre grupla
+            </label>
             <div class="min-w-[180px]">
                 <label class="block text-xs text-gray-500 mb-1">Siralama</label>
                 <select name="sort" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary">
@@ -72,7 +81,7 @@
             <button type="submit" class="bg-gray-800 text-white px-4 py-2 rounded text-sm hover:bg-gray-700 transition">
                 Filtrele
             </button>
-            @if(request()->hasAny(['search', 'sort']))
+            @if(request()->hasAny(['search', 'sort', 'artwork_id', 'group']))
                 <a href="{{ route('admin.favorites.index') }}" class="text-sm text-gray-500 hover:text-gray-700 py-2">
                     Temizle
                 </a>
@@ -91,10 +100,27 @@
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fiyat</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Durum</th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Eklenme Tarihi</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[280px]">Admin Notu</th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
+                @php $prevArtworkId = null; @endphp
                 @forelse($favorites as $favorite)
+                    @if($grouped && $favorite->artwork_id !== $prevArtworkId)
+                        @php $prevArtworkId = $favorite->artwork_id; @endphp
+                        <tr class="bg-gray-100">
+                            <td colspan="7" class="px-4 py-2 text-sm">
+                                <span class="font-semibold text-gray-800">#{{ $favorite->artwork_id }} {{ $favorite->artwork?->title ?? 'Silinmiş eser' }}</span>
+                                @if($favorite->artwork?->artist)
+                                    <span class="text-gray-500">, {{ $favorite->artwork->artist->name }}</span>
+                                @endif
+                                <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary/15 text-gray-800">
+                                    {{ $groupCounts[$favorite->artwork_id] ?? 1 }} favori
+                                </span>
+                                <a href="{{ route('admin.favorites.index', ['artwork_id' => $favorite->artwork_id]) }}" class="ml-2 text-xs text-primary hover:underline">Sadece bu eser</a>
+                            </td>
+                        </tr>
+                    @endif
                     <tr class="hover:bg-gray-50">
                         {{-- Eser --}}
                         <td class="px-4 py-3">
@@ -190,10 +216,32 @@
                             <div class="text-sm text-gray-900">{{ $favorite->created_at->format('d.m.Y') }}</div>
                             <div class="text-xs text-gray-400">{{ $favorite->created_at->format('H:i') }}</div>
                         </td>
+
+                        {{-- Admin Notu (satır içi kaydetme) --}}
+                        <td class="px-4 py-3 align-top"
+                            x-data="{ note: @js($favorite->admin_note ?? ''), saved: @js($favorite->admin_note ?? ''), state: '' }">
+                            <textarea x-model="note" rows="2" placeholder="Not ekle..."
+                                      class="w-full border border-gray-200 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary resize-y"></textarea>
+                            <div class="flex items-center justify-between mt-1" x-show="note !== saved || state">
+                                <span class="text-[11px]"
+                                      :class="state === 'error' ? 'text-red-600' : 'text-green-600'"
+                                      x-text="state === 'ok' ? 'Kaydedildi' : (state === 'error' ? 'Kaydedilemedi' : '')"></span>
+                                <button type="button" x-show="note !== saved"
+                                        @click="state = 'saving';
+                                                fetch('{{ route('admin.favorites.note', $favorite) }}', {
+                                                    method: 'PATCH',
+                                                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                                                    body: JSON.stringify({ admin_note: note })
+                                                }).then(r => { if (!r.ok) throw r; saved = note; state = 'ok'; setTimeout(() => state = '', 2000); })
+                                                  .catch(() => state = 'error')"
+                                        class="text-xs bg-gray-800 text-white px-3 py-1 rounded hover:bg-gray-700 transition"
+                                        x-text="state === 'saving' ? 'Kaydediliyor...' : 'Kaydet'"></button>
+                            </div>
+                        </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-4 py-12 text-center text-sm text-gray-400">
+                        <td colspan="7" class="px-4 py-12 text-center text-sm text-gray-400">
                             Henuz favori eklenmemis.
                         </td>
                     </tr>

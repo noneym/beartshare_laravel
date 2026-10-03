@@ -14,8 +14,12 @@ class FavoriteController extends Controller
 
         // Siralama
         $sort = $request->get('sort', 'latest');
+        $grouped = $request->boolean('group');
 
-        switch ($sort) {
+        if ($grouped) {
+            // Esere göre grupla: aynı eserin favorileri alt alta, grup içinde en yeni üstte
+            $query->orderBy('artwork_id', $sort === 'artwork_desc' ? 'desc' : 'asc')->latest();
+        } else switch ($sort) {
             case 'oldest':
                 $query->oldest();
                 break;
@@ -82,6 +86,23 @@ class FavoriteController extends Controller
             ->with('artwork:id,title')
             ->get();
 
-        return view('admin.favorites.index', compact('favorites', 'stats', 'topArtworks'));
+        $groupCounts = $grouped
+            ? Favorite::whereIn('artwork_id', $favorites->pluck('artwork_id')->unique())
+                ->selectRaw('artwork_id, COUNT(*) as c')->groupBy('artwork_id')->pluck('c', 'artwork_id')
+            : collect();
+
+        return view('admin.favorites.index', compact('favorites', 'stats', 'topArtworks', 'grouped', 'groupCounts'));
+    }
+
+    public function updateNote(Request $request, Favorite $favorite)
+    {
+        $validated = $request->validate(['admin_note' => ['nullable', 'string', 'max:2000']]);
+        $favorite->update(['admin_note' => $validated['admin_note'] ?: null]);
+
+        if ($request->expectsJson()) {
+            return response()->json(['ok' => true, 'admin_note' => $favorite->admin_note]);
+        }
+
+        return back()->with('success', 'Not kaydedildi.');
     }
 }

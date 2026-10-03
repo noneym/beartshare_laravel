@@ -147,6 +147,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     // Favorites
     Route::get('favorites', [App\Http\Controllers\Admin\FavoriteController::class, 'index'])->name('favorites.index');
+    Route::patch('favorites/{favorite}/note', [App\Http\Controllers\Admin\FavoriteController::class, 'updateNote'])->name('favorites.note');
 
     // FAQs
     Route::resource('faqs', App\Http\Controllers\Admin\FaqController::class)->except(['show']);

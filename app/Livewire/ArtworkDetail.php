@@ -138,7 +138,13 @@ class ArtworkDetail extends Component
         ]);
 
         $this->dispatch('cart-updated');
-        $this->dispatch('cart-added', message: 'Eser sepete eklendi!');
+        $this->dispatch('cart-added',
+            message: 'Eser sepete eklendi!',
+            title: $this->artwork->title,
+            artist: $this->artwork->artist->name ?? '',
+            image: $this->artwork->imageUrl('thumb'),
+            price: $this->artwork->formatted_price_tl,
+        );
     }
 
     public function render()

@@ -68,48 +68,68 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Fiyat (TL) *</label>
                         @php $priceTl = old('price_tl', $artwork->price_tl); @endphp
-                        <input type="text" inputmode="numeric" data-price-format value="{{ $priceTl ? number_format((float) $priceTl, 0, ',', '.') : '' }}" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary" placeholder="100.000" required>
+                        <input type="text" inputmode="decimal" data-price-format value="{{ $priceTl ? number_format((float) $priceTl, 2, ',', '.') : '' }}" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary" placeholder="100.000" required>
                         <input type="hidden" name="price_tl" value="{{ $priceTl }}">
-                        <p class="text-gray-400 text-xs mt-1">Otomatik binlik ayraç (örn. 100.000)</p>
+                        <p class="text-gray-400 text-xs mt-1">Örn. 100.000 veya 100.000,50</p>
                         @error('price_tl') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Fiyat (USD) *</label>
                         @php $priceUsd = old('price_usd', $artwork->price_usd); @endphp
-                        <input type="text" inputmode="numeric" data-price-format value="{{ $priceUsd ? number_format((float) $priceUsd, 0, ',', '.') : '' }}" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary" placeholder="3.500" required>
+                        <input type="text" inputmode="decimal" data-price-format value="{{ $priceUsd ? number_format((float) $priceUsd, 2, ',', '.') : '' }}" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary" placeholder="3.500" required>
                         <input type="hidden" name="price_usd" value="{{ $priceUsd }}">
-                        <p class="text-gray-400 text-xs mt-1">Otomatik binlik ayraç (örn. 3.500)</p>
+                        <p class="text-gray-400 text-xs mt-1">Örn. 3.500 veya 3.500,50</p>
                         @error('price_usd') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                     </div>
                 </div>
 
-                <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    document.querySelectorAll('[data-price-format]').forEach(function (input) {
-                        const hidden = input.parentElement.querySelector('input[type="hidden"]');
-                        const sync = function () {
-                            const raw = input.value.replace(/[^\d]/g, '');
-                            if (hidden) hidden.value = raw;
-                            if (raw === '') { input.value = ''; return; }
-                            input.value = Number(raw).toLocaleString('tr-TR');
-                        };
-                        input.addEventListener('input', sync);
-                        sync();
-                    });
-                });
-                </script>
+                @include('admin.partials.price-format-script')
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Mevcut Gorseller</label>
-                    @if($artwork->images && count($artwork->images) > 0)
-                        <div class="flex gap-2 flex-wrap mb-4">
-                            @foreach($artwork->images as $image)
-                                <img src="{{ asset('storage/' . $image) }}" alt="" class="w-20 h-20 object-cover rounded-lg">
-                            @endforeach
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Mevcut Görseller</label>
+                    @php
+                        $imageItems = collect($artwork->images ?? [])->map(fn ($p) => [
+                            'path' => $p,
+                            'url' => \App\Support\ImageUrl::make($p, 'thumb'),
+                        ])->values();
+                    @endphp
+                    <input type="hidden" name="images_managed" value="1">
+                    <div x-data="{
+                            items: @js($imageItems),
+                            drag: null,
+                            move(from, to) {
+                                if (to < 0 || to >= this.items.length || from === to) return;
+                                const [it] = this.items.splice(from, 1);
+                                this.items.splice(to, 0, it);
+                            }
+                         }" class="mb-4">
+                        <template x-if="items.length === 0">
+                            <p class="text-gray-500 text-sm">Görsel yok</p>
+                        </template>
+                        <div class="flex gap-3 flex-wrap">
+                            <template x-for="(item, i) in items" :key="item.path">
+                                <div class="relative w-28 group select-none"
+                                     draggable="true"
+                                     @dragstart="drag = i; $event.dataTransfer.effectAllowed = 'move'"
+                                     @dragover.prevent
+                                     @drop.prevent="move(drag, i); drag = null"
+                                     :class="drag === i ? 'opacity-40' : ''">
+                                    <input type="hidden" name="existing_images[]" :value="item.path">
+                                    <img :src="item.url" alt="" class="w-28 h-28 object-cover rounded-lg border border-gray-200 cursor-move bg-gray-100">
+                                    <span class="absolute top-1 left-1 bg-black/70 text-white text-[10px] px-1.5 py-0.5 rounded" x-text="i === 0 ? 'Kapak' : (i + 1)"></span>
+                                    <button type="button" @click="items.splice(i, 1)" title="Kaldır"
+                                            class="absolute top-1 right-1 bg-white/90 text-red-600 w-6 h-6 rounded-full text-sm leading-none shadow hover:bg-red-600 hover:text-white transition">&times;</button>
+                                    <div class="flex justify-between mt-1">
+                                        <button type="button" @click="move(i, i - 1)" :disabled="i === 0"
+                                                class="text-xs px-2 py-0.5 border border-gray-200 rounded disabled:opacity-30 hover:bg-gray-50">&larr;</button>
+                                        <button type="button" @click="move(i, i + 1)" :disabled="i === items.length - 1"
+                                                class="text-xs px-2 py-0.5 border border-gray-200 rounded disabled:opacity-30 hover:bg-gray-50">&rarr;</button>
+                                    </div>
+                                </div>
+                            </template>
                         </div>
-                    @else
-                        <p class="text-gray-500 mb-4">Gorsel yok</p>
-                    @endif
+                        <p class="text-xs text-gray-500 mt-2">Sürükleyip bırakarak ya da oklarla sıralayın. İlk görsel kapak olarak kullanılır. Değişiklikler "Güncelle" ile kaydedilir.</p>
+                    </div>
 
                     <label class="block text-sm font-medium text-gray-700 mb-2">Yeni Gorsel Ekle</label>
                     <input type="file" name="images[]" multiple accept="image/*" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary">

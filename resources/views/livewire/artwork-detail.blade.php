@@ -45,7 +45,6 @@
             }
         }
      }"
-     @cart-added.window="showToast($event.detail.message, 'success')"
      @cart-error.window="showToast($event.detail.message, 'error')"
      @cart-info.window="showToast($event.detail.message, 'info')"
      @toast.window="showToast($event.detail.message, $event.detail.type || 'success')"

@@ -74,9 +74,10 @@
                         @error('price_tl') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Fiyat (USD) *</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Fiyat (USD)</label>
                         @php $priceUsd = old('price_usd', $artwork->price_usd); @endphp
-                        <input type="text" inputmode="decimal" data-price-format value="{{ $priceUsd ? number_format((float) $priceUsd, 2, ',', '.') : '' }}" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary" placeholder="3.500" required>
+                        <input type="text" inputmode="decimal" data-price-format value="{{ $priceUsd ? number_format((float) $priceUsd, 2, ',', '.') : '' }}" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary" placeholder="3.500">
+                        <p class="text-gray-400 text-xs mt-1">TL fiyatı ve güncel TCMB kuru ile otomatik hesaplanır (saatlik güncellenir).</p>
                         <input type="hidden" name="price_usd" value="{{ $priceUsd }}">
                         <p class="text-gray-400 text-xs mt-1">Örn. 3.500 veya 3.500,50</p>
                         @error('price_usd') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror

@@ -90,5 +90,12 @@ RUN mkdir -p /app/storage/logs /app/storage/framework/{sessions,views,cache} /ap
 
 EXPOSE 80
 
+# Cronxo agent (zamanlanmış komutlar, ör. saatlik `php artisan rates:update`).
+# Uygulamayı (supervisord) alt süreç olarak başlatır, sinyalleri iletir, onun çıkış koduyla çıkar.
+# CRONXO_TOKEN imaja yazılmaz; Easypanel > Environment'ta tanımlanır.
+ADD https://cronxo.com/download/cronxo-agent-linux-amd64 /usr/local/bin/cronxo-agent
+RUN chmod +x /usr/local/bin/cronxo-agent
+ENV CRONXO_SERVER=https://cronxo.com
+
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+CMD ["cronxo-agent", "exec", "--", "/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

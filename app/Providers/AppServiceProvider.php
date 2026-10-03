@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use App\Http\Controllers\Admin\QueueController;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,5 +26,10 @@ class AppServiceProvider extends ServiceProvider
         // Carbon Türkçe locale ayarı
         Carbon::setLocale('tr');
         setlocale(LC_TIME, 'tr_TR.UTF-8', 'tr_TR', 'turkish', 'tr');
+
+        // Worker canlılık sinyali (Admin > Kuyruk)
+        Queue::looping(function () {
+            Cache::put(QueueController::HEARTBEAT_KEY, now()->timestamp, 600);
+        });
     }
 }

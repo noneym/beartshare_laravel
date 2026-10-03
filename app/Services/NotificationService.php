@@ -57,7 +57,7 @@ class NotificationService
         }
     }
 
-    protected function sendEmailAndLog(string $to, string $subject, string $htmlBody, string $type, ?int $orderId = null, ?int $userId = null): void
+    protected function sendEmailAndLog(string $to, string $subject, string $htmlBody, string $type, ?int $orderId = null, ?int $userId = null): bool
     {
         try {
             $this->sendEmail($to, $subject, $htmlBody);
@@ -72,6 +72,8 @@ class NotificationService
                 'order_id' => $orderId,
                 'user_id' => $userId,
             ]);
+
+            return true;
         } catch (\Exception $e) {
             Log::error("E-posta gonderim hatasi ({$type}): " . $e->getMessage());
 
@@ -86,6 +88,8 @@ class NotificationService
                 'order_id' => $orderId,
                 'user_id' => $userId,
             ]);
+
+            return false;
         }
     }
 
@@ -131,9 +135,9 @@ class NotificationService
     /**
      * Admin panelden e-posta gonder ve logla (public)
      */
-    public function sendAdminEmail(string $to, string $subject, string $htmlBody, ?int $userId = null): void
+    public function sendAdminEmail(string $to, string $subject, string $htmlBody, ?int $userId = null): bool
     {
-        $this->sendEmailAndLog($to, $subject, $htmlBody, 'admin_email', null, $userId);
+        return $this->sendEmailAndLog($to, $subject, $htmlBody, 'admin_email', null, $userId);
     }
 
     // ── Bildirim Methodlari ──

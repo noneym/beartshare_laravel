@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Artist;
 use App\Models\Artwork;
 use App\Models\Category;
+use App\Models\ExchangeRate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -89,7 +90,7 @@ class ArtworkController extends Controller
             'dimensions' => 'nullable|string|max:255',
             'year' => 'nullable|integer|min:1800|max:' . date('Y'),
             'price_tl' => 'required|numeric|min:0',
-            'price_usd' => 'required|numeric|min:0',
+            'price_usd' => 'nullable|numeric|min:0',
             'is_sold' => 'boolean',
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
@@ -102,6 +103,7 @@ class ArtworkController extends Controller
 
         $validated['slug'] = Str::slug($validated['title'] . '-' . uniqid());
         $validated['allow_credit_card'] = $request->boolean('allow_credit_card');
+        $validated['price_usd'] = $this->usdPrice($validated);
 
         if ($request->hasFile('images')) {
             $images = [];
@@ -137,7 +139,7 @@ class ArtworkController extends Controller
             'dimensions' => 'nullable|string|max:255',
             'year' => 'nullable|integer|min:1800|max:' . date('Y'),
             'price_tl' => 'required|numeric|min:0',
-            'price_usd' => 'required|numeric|min:0',
+            'price_usd' => 'nullable|numeric|min:0',
             'is_sold' => 'boolean',
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
@@ -149,6 +151,7 @@ class ArtworkController extends Controller
         ]);
 
         $validated['allow_credit_card'] = $request->boolean('allow_credit_card');
+        $validated['price_usd'] = $this->usdPrice($validated);
 
         // Mevcut görsellerin sırası / silinenler (yalnızca bu eserde olan yollar kabul edilir)
         $images = $artwork->images ?? [];
@@ -176,5 +179,18 @@ class ArtworkController extends Controller
 
         return redirect()->route('admin.artworks.index')
             ->with('success', 'Eser başarıyla silindi.');
+    }
+
+    /**
+     * USD fiyatı güncel TCMB kurundan hesaplanır (rates:update saatlik günceller);
+     * kur henüz yoksa formdaki değer kullanılır.
+     */
+    protected function usdPrice(array $validated): float
+    {
+        $rate = ExchangeRate::latestRate('USD');
+        if ($rate) {
+            return round((float) $validated['price_tl'] / $rate, 2);
+        }
+        return (float) ($validated['price_usd'] ?? 0);
     }
 }

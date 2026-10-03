@@ -131,7 +131,14 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::delete('payments/{payment}', [App\Http\Controllers\Admin\PaymentController::class, 'destroy'])->name('payments.destroy');
     Route::post('payments/{id}/restore', [App\Http\Controllers\Admin\PaymentController::class, 'restore'])->name('payments.restore');
 
-    Route::get('notification-logs', [App\Http\Controllers\Admin\NotificationLogController::class, 'index'])->name('notification-logs.index');
+    // Kuyruk / döviz kuru
+    Route::get('queue', [App\Http\Controllers\Admin\QueueController::class, 'index'])->name('queue.index');
+    Route::post('queue/retry', [App\Http\Controllers\Admin\QueueController::class, 'retry'])->name('queue.retry');
+    Route::post('queue/forget', [App\Http\Controllers\Admin\QueueController::class, 'forget'])->name('queue.forget');
+    Route::post('queue/batches/{id}/cancel', [App\Http\Controllers\Admin\QueueController::class, 'cancelBatch'])->name('queue.batches.cancel');
+    Route::post('queue/rates', [App\Http\Controllers\Admin\QueueController::class, 'updateRates'])->name('queue.rates');
+
+    Route::get('notification-logs',[App\Http\Controllers\Admin\NotificationLogController::class, 'index'])->name('notification-logs.index');
 
     // İletişim Mesajları
     Route::get('contact-messages', [App\Http\Controllers\Admin\ContactMessageController::class, 'index'])->name('contact-messages.index');

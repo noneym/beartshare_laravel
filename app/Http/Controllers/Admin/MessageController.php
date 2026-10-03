@@ -3,40 +3,19 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SendBulkEmail;
+use App\Jobs\SendBulkSms;
 use App\Models\User;
-use App\Services\NotificationService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Str;
 
+/**
+ * Toplu SMS / e-posta. Gönderimler kuyruğa (alıcı başına bir iş, tek batch) atılır;
+ * ilerleme Admin > Kuyruk sayfasında izlenir. Değişkenler: App\Support\MessageTemplate
+ */
 class MessageController extends Controller
 {
-    /**
-     * Mesaj icerigindeki degiskenleri kullanici bilgileriyle degistir
-     */
-    protected function replaceVariables(string $content, User $user): string
-    {
-        $firstName = explode(' ', trim($user->name))[0];
-
-        return str_replace([
-            '{isim}',
-            '{ad}',
-            '{email}',
-            '{telefon}',
-            '{artpuan}',
-            '{referans_kodu}',
-            '{referans_linki}',
-            '{id}',
-        ], [
-            $user->name,
-            $firstName,
-            $user->email ?? '',
-            $user->phone ?? '',
-            number_format($user->art_puan, 2, ',', '.'),
-            $user->referral_code ?? '',
-            $user->referral_link ?? '',
-            $user->id,
-        ], $content);
-    }
-
     // ── SMS ──
 
     public function smsForm(Request $request)
@@ -59,42 +38,23 @@ class MessageController extends Controller
             'message.max' => 'SMS mesaji en fazla 480 karakter olabilir.',
         ]);
 
-        $users = User::whereIn('id', $validated['user_ids'])->get();
-        $notificationService = new NotificationService();
+        $users = User::whereIn('id', $validated['user_ids'])->get(['id', 'phone']);
+        $withPhone = $users->filter(fn ($u) => $u->phone);
+        $noPhone = $users->count() - $withPhone->count();
 
-        $sent = 0;
-        $failed = 0;
-        $noPhone = 0;
-
-        foreach ($users as $user) {
-            if (!$user->phone) {
-                $noPhone++;
-                continue;
-            }
-
-            $personalizedMessage = $this->replaceVariables($validated['message'], $user);
-
-            $result = $notificationService->sendSmsWithLog(
-                $user->phone,
-                $personalizedMessage,
-                'admin_sms',
-                null,
-                $user->id
-            );
-
-            if ($result['success']) {
-                $sent++;
-            } else {
-                $failed++;
-            }
+        if ($withPhone->isEmpty()) {
+            return back()->withInput()->with('error', 'Seçilen kullanıcıların telefon numarası yok.');
         }
 
-        $msg = "{$sent} kullaniciya SMS basariyla gonderildi.";
-        if ($failed > 0) $msg .= " {$failed} gonderim basarisiz oldu.";
-        if ($noPhone > 0) $msg .= " {$noPhone} kullanicinin telefon numarasi yok.";
+        $batch = Bus::batch($withPhone->map(fn ($u) => new SendBulkSms($u->id, $validated['message']))->values()->all())
+            ->name('SMS: ' . Str::limit($validated['message'], 60))
+            ->allowFailures()
+            ->dispatch();
 
-        return redirect()->route('admin.messages.sms')
-            ->with('success', $msg);
+        $msg = "{$withPhone->count()} SMS gönderim kuyruğuna alındı.";
+        if ($noPhone > 0) $msg .= " {$noPhone} kullanıcının telefonu yok, atlandı.";
+
+        return redirect()->route('admin.queue.index', ['batch' => $batch->id])->with('success', $msg);
     }
 
     // ── Email ──
@@ -120,38 +80,15 @@ class MessageController extends Controller
             'body.required' => 'E-posta icerigi zorunludur.',
         ]);
 
-        $users = User::whereIn('id', $validated['user_ids'])->get();
-        $notificationService = new NotificationService();
+        $users = User::whereIn('id', $validated['user_ids'])->get(['id', 'email']);
+        $withEmail = $users->filter(fn ($u) => $u->email);
 
-        $sent = 0;
-        $failed = 0;
+        $batch = Bus::batch($withEmail->map(fn ($u) => new SendBulkEmail($u->id, $validated['subject'], $validated['body']))->values()->all())
+            ->name('E-posta: ' . Str::limit($validated['subject'], 60))
+            ->allowFailures()
+            ->dispatch();
 
-        foreach ($users as $user) {
-            if (!$user->email) {
-                $failed++;
-                continue;
-            }
-
-            try {
-                $personalizedSubject = $this->replaceVariables($validated['subject'], $user);
-                $personalizedBody = $this->replaceVariables($validated['body'], $user);
-
-                $notificationService->sendAdminEmail(
-                    $user->email,
-                    $personalizedSubject,
-                    $personalizedBody,
-                    $user->id
-                );
-                $sent++;
-            } catch (\Exception $e) {
-                $failed++;
-            }
-        }
-
-        $msg = "{$sent} kullaniciya e-posta basariyla gonderildi.";
-        if ($failed > 0) $msg .= " {$failed} gonderim basarisiz oldu.";
-
-        return redirect()->route('admin.messages.email')
-            ->with('success', $msg);
+        return redirect()->route('admin.queue.index', ['batch' => $batch->id])
+            ->with('success', "{$withEmail->count()} e-posta gönderim kuyruğuna alındı.");
     }
 }

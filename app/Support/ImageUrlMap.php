@@ -49,6 +49,12 @@ class ImageUrlMap
         }
     }
 
+    public static function all(): array
+    {
+        static::load();
+        return static::$map;
+    }
+
     public static function count(): int
     {
         static::load();

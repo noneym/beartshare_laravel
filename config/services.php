@@ -31,6 +31,13 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    // Eski sistemin görsel deposu; orijinal dosyalar /blob ile alınır
+    'cloudflare_images' => [
+        'account_id' => env('CLOUDFLARE_ACCOUNT_ID', env('R2_ACCOUNT_ID')),
+        'email' => env('CLOUDFLARE_EMAIL'),
+        'key' => env('CLOUDFLARE_API_KEY'),
+    ],
+
     'netgsm' => [
         'username' => env('NETGSM_USERNAME'),
         'password' => env('NETGSM_PASSWORD'),

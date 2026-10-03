@@ -117,6 +117,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::post('messages/sms', [App\Http\Controllers\Admin\MessageController::class, 'sendSms'])->name('messages.sms.send');
     Route::get('messages/email', [App\Http\Controllers\Admin\MessageController::class, 'emailForm'])->name('messages.email');
     Route::post('messages/email', [App\Http\Controllers\Admin\MessageController::class, 'sendEmail'])->name('messages.email.send');
+    Route::post('messages/upload-image', [App\Http\Controllers\Admin\MessageController::class, 'uploadImage'])->name('messages.upload-image');
     Route::resource('blog-categories', App\Http\Controllers\Admin\BlogCategoryController::class)->except(['show']);
     Route::post('blog-posts/upload-image', [App\Http\Controllers\Admin\BlogPostController::class, 'uploadImage'])->name('blog-posts.upload-image');
     Route::resource('blog-posts', App\Http\Controllers\Admin\BlogPostController::class)->except(['show']);

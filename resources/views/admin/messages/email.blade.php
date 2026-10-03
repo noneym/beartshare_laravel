@@ -215,6 +215,25 @@
             convert_urls: false,
             relative_urls: false,
             remove_script_host: false,
+            // Görseller R2'ye yüklenir; e-postada mutlak (Thumbor) URL ile gösterilir
+            image_title: true,
+            automatic_uploads: true,
+            paste_data_images: true,
+            file_picker_types: 'image',
+            images_upload_handler: function (blobInfo, progress) {
+                const form = new FormData();
+                form.append('image', blobInfo.blob(), blobInfo.filename());
+                return fetch('{{ route('admin.messages.upload-image') }}', {
+                    method: 'POST',
+                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                    body: form,
+                    credentials: 'same-origin'
+                }).then(async r => {
+                    const data = await r.json().catch(() => ({}));
+                    if (!r.ok || !data.location) throw new Error(data.message || ('Yükleme başarısız (HTTP ' + r.status + ')'));
+                    return data.location;
+                });
+            },
             setup: function(editor) {
                 editor.on('change', function() {
                     editor.save();

@@ -23,5 +23,6 @@ return [
         'detail' => [1600, 0],
         'avatar' => [320, 320],
         'blog'   => [1200, 0],
+        'email'  => [1200, 0], // 600px e-posta gövdesi, retina için 2x
     ],
 ];

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\SendBulkEmail;
 use App\Jobs\SendBulkSms;
 use App\Models\User;
+use App\Support\ImageUrl;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Str;
@@ -65,6 +66,32 @@ class MessageController extends Controller
         $preselected = $request->input('users', []);
 
         return view('admin.messages.email', compact('users', 'preselected'));
+    }
+
+    /**
+     * E-posta editöründen (TinyMCE) görsel yükleme — R2'ye yazılır, Thumbor URL'i döner.
+     */
+    public function uploadImage(Request $request)
+    {
+        $request->validate([
+            'image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp,gif', 'max:15360'],
+        ], [
+            'image.max' => 'Görsel en fazla 15 MB olabilir.',
+            'image.mimes' => 'Sadece JPG, PNG, WEBP veya GIF yükleyebilirsiniz.',
+        ]);
+
+        $file = $request->file('image');
+        $name = date('Ymd') . '-' . Str::random(12) . '.' . strtolower($file->getClientOriginalExtension() ?: $file->extension());
+        $path = $file->storeAs('emails', $name, config('filesystems.uploads'));
+
+        if (!$path) {
+            return response()->json(['message' => 'Görsel kaydedilemedi.'], 500);
+        }
+
+        return response()->json([
+            'location' => ImageUrl::make($path, 'email'),
+            'path' => $path,
+        ]);
     }
 
     public function sendEmail(Request $request)

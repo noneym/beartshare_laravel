@@ -17,6 +17,13 @@
         .glass { background: rgba(255,255,255,.82); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,.08); }
         #top { top: 16px; left: 16px; right: 16px; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; pointer-events: none; }
         #top > * { pointer-events: auto; }
+        #top .left { display: flex; gap: 8px; align-items: center; }
+        .light-btn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border: 0; font: inherit; font-size: 14px; color: #777; cursor: pointer; transition: color .3s; }
+        .light-btn svg { width: 18px; height: 18px; }
+        .light-btn .glow { opacity: 0; transition: opacity .3s; }
+        .light-btn.on { color: #1a1a1a; }
+        .light-btn.on svg { color: #d99a16; }
+        .light-btn.on .glow { opacity: 1; }
         .back { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; font-size: 14px; text-decoration: none; color: inherit; }
         .tools { display: flex; gap: 6px; padding: 6px; align-items: center; }
         .tools button { border: 0; background: transparent; font: inherit; font-size: 13px; padding: 7px 10px; border-radius: 8px; cursor: pointer; color: inherit; }
@@ -64,7 +71,7 @@
         @keyframes ld-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
         @media (prefers-reduced-motion: reduce) { .ld-frame, .ld-frame::before { animation: none; } }
         @media (max-width: 640px) {
-            .back span, #hint .desk, .tools .label { display: none; }
+            .back span, .light-btn span, #hint .desk, .tools .label { display: none; }
             #info { right: 16px; max-width: none; bottom: 16px; }
             #hint { display: none; }
         }
@@ -76,7 +83,13 @@
     <div id="stage"></div>
 
     <div id="top" class="ui">
-        <a href="{{ $page['backUrl'] }}" class="glass back">← <span>{{ $page['backLabel'] }}</span></a>
+        <div class="left">
+            <a href="{{ $page['backUrl'] }}" class="glass back">← <span>{{ $page['backLabel'] }}</span></a>
+            <button id="btn-lights" class="glass light-btn on" type="button" title="Genel aydınlatmayı aç/kapat">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path class="glow" d="M12 2.5v1.5M4.6 5.6l1 1M19.4 5.6l-1 1M2.5 12H4M20 12h1.5"/><path d="M9 18h6M10 21h4M8.2 14.5A5.5 5.5 0 1 1 15.8 14.5c-.8.8-1.3 1.7-1.3 2.5V18h-5v-1c0-.8-.5-1.7-1.3-2.5Z"/></svg>
+                <span>Genel ışık</span>
+            </button>
+        </div>
         <div class="glass tools">
             <button id="btn-focus" title="Ana esere git">⌖ <span class="label">Esere odaklan</span></button>
             <div class="sep"></div>
@@ -97,7 +110,7 @@
     </div>
 
     <div id="hint" class="ui glass">
-        <div class="desk">Sürükle: etrafa bak · Tıkla: oraya yürü<br>Esere tıkla: yaklaş · WASD / oklar: yürü</div>
+        <div class="desk">Sürükle: etrafa bak · Tıkla: oraya yürü<br>Esere tıkla: yaklaş · WASD / oklar: yürü<br>Duvardaki anahtar: eserin ışığını aç/kapa</div>
     </div>
 
     <div id="loading">

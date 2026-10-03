@@ -165,6 +165,17 @@ async function loadTexture(url) {
 // ---------------------------------------------------------------- sahne
 
 const wallMat = new THREE.MeshStandardMaterial({ color: '#f4f2ee', roughness: 0.95 });
+// anahtarlar duvarla zıt tonda: açık duvarda mat antrasit, koyu duvarda kırık beyaz
+const switchMat = new THREE.MeshStandardMaterial({ color: '#2b2c2e', roughness: 0.45, metalness: 0.1 });
+const switchBezelMat = new THREE.MeshStandardMaterial({ color: '#3d3f42', roughness: 0.55 });
+
+function matchSwitchesToWall() {
+    const dark = wallMat.color.getHSL({}).l < 0.4;
+    switchMat.color.set(dark ? '#ecebe6' : '#2b2c2e');
+    switchBezelMat.color.set(dark ? '#d9d7d1' : '#3d3f42');
+}
+// genel aydınlatma (sol üstteki buton) ve ortamla birlikte kısılan, ışıktan bağımsız malzemeler
+const lighting = { level: 1, target: 1, hemi: null, basics: [] };
 const arts = [];      // { art, mesh, label, center, normal, size }
 const clickables = [];
 let floor, room, bench;
@@ -370,7 +381,8 @@ function buildRoom(W, D, H) {
         scene.add(base);
     }
 
-    scene.add(new THREE.HemisphereLight('#ffffff', '#cbbca8', 1.7));
+    lighting.hemi = new THREE.HemisphereLight('#ffffff', '#cbbca8', 1.7);
+    scene.add(lighting.hemi);
 
     // tavan rayları
     const railMat = new THREE.MeshStandardMaterial({ color: '#222', roughness: 0.4, metalness: 0.6 });
@@ -431,6 +443,7 @@ function placeOnWall(it, wallPoint, normal, H, shadows) {
     );
     label.position.set(w / 2 + 0.22 + LABEL.w / 2, 1.45 - cy, 0.003);
     group.add(label);
+    lighting.basics.push(...label.material);
 
     const center = new THREE.Vector3(wallPoint.x, cy, wallPoint.z).addScaledVector(normal, d);
 
@@ -439,7 +452,8 @@ function placeOnWall(it, wallPoint, normal, H, shadows) {
     spot.position.copy(center).addScaledVector(normal, 1.3).setY(H - 0.06);
     const dist = spot.position.distanceTo(center);
     spot.angle = Math.min(1.1, Math.atan((Math.max(w, h) * 0.62 + 0.15) / dist));
-    spot.intensity = 10 + dist * dist * 4;
+    const spotMax = 10 + dist * dist * 4;
+    spot.intensity = spotMax;
     spot.target.position.copy(center);
     if (shadows) {
         spot.castShadow = true;
@@ -458,10 +472,113 @@ function placeOnWall(it, wallPoint, normal, H, shadows) {
     fixture.rotateX(Math.PI / 2);
     scene.add(fixture);
 
-    const entry = { art: it.art, mesh, label, front, center, normal: normal.clone(), size: it.size, full: false };
+    // armatürün ışık veren camı, spotla birlikte parlar/söner
+    const lens = new THREE.Mesh(
+        new THREE.CircleGeometry(0.04, 24),
+        new THREE.MeshBasicMaterial({ color: '#fff3dc', toneMapped: false }),
+    );
+    lens.position.y = 0.081;
+    lens.rotation.x = -Math.PI / 2;
+    fixture.add(lens);
+
+    const entry = {
+        art: it.art, mesh, label, front, center, normal: normal.clone(), size: it.size, full: false,
+        spot, spotMax, lens, on: true, level: 1,
+    };
+    entry.switch = buildSwitch(entry, group, -(w / 2 + 0.28), 1.1 - cy);
     mesh.userData.entry = label.userData.entry = entry;
     arts.push(entry);
     clickables.push(mesh, label);
+}
+
+/** Duvara gömme, ışıklı (gösterge LED'li) tek anahtar; 110 cm yükseklikte. */
+function buildSwitch(entry, group, x, y) {
+    const sw = new THREE.Group();
+    sw.position.set(x, y, 0);
+    group.add(sw);
+
+    const plate = new THREE.Mesh(new RoundedBoxGeometry(0.086, 0.086, 0.01, 3, 0.008), switchMat);
+    plate.position.z = 0.005;
+    plate.castShadow = true;
+    sw.add(plate);
+
+    const bezel = new THREE.Mesh(new RoundedBoxGeometry(0.06, 0.066, 0.004, 2, 0.003), switchBezelMat);
+    bezel.position.z = 0.0105;
+    sw.add(bezel);
+
+    // düğme ortasından devrilir
+    const pivot = new THREE.Group();
+    pivot.position.z = 0.012;
+    sw.add(pivot);
+    const rocker = new THREE.Mesh(new RoundedBoxGeometry(0.052, 0.058, 0.01, 3, 0.004), switchMat);
+    rocker.position.z = 0.004;
+    rocker.castShadow = true;
+    pivot.add(rocker);
+
+    const led = new THREE.Mesh(
+        new THREE.CircleGeometry(0.0028, 16),
+        new THREE.MeshBasicMaterial({ color: '#ff8a1f', toneMapped: false }),
+    );
+    led.position.set(0, -0.019, 0.0092);
+    pivot.add(led);
+
+    for (const m of [plate, bezel, rocker, led]) m.userData.switchFor = entry;
+    clickables.push(plate, bezel, rocker, led);
+    return { pivot, led };
+}
+
+let audio = null;
+function clickSound(on) {
+    try {
+        audio ??= new AudioContext();
+        const t = audio.currentTime;
+        const len = Math.floor(audio.sampleRate * 0.025);
+        const buf = audio.createBuffer(1, len, audio.sampleRate);
+        const ch = buf.getChannelData(0);
+        for (let i = 0; i < len; i++) ch[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 4);
+        const src = audio.createBufferSource();
+        src.buffer = buf;
+        const filter = audio.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.value = on ? 2600 : 1900;
+        filter.Q.value = 1.2;
+        const gain = audio.createGain();
+        gain.gain.setValueAtTime(0.55, t);
+        src.connect(filter).connect(gain).connect(audio.destination);
+        src.start(t);
+    } catch {
+        // ses desteklenmiyorsa sessiz geç
+    }
+}
+
+function toggleSpot(entry) {
+    entry.on = !entry.on;
+    clickSound(entry.on);
+}
+
+function setRoomLights(on) {
+    lighting.target = on ? 1 : 0;
+    document.getElementById('btn-lights').classList.toggle('on', on);
+    clickSound(on);
+}
+
+/** Işık geçişleri: her karede hedefe doğru yumuşakça yaklaşır. */
+function updateLights(dt) {
+    lighting.level += (lighting.target - lighting.level) * Math.min(1, dt * 7);
+    const a = lighting.level;
+    if (lighting.hemi) lighting.hemi.intensity = 0.06 + 1.64 * a;
+    scene.environmentIntensity = 0.03 + 0.32 * a;
+    for (const m of lighting.basics) m.color.setScalar(0.3 + 0.7 * a);
+
+    for (const e of arts) {
+        e.level += ((e.on ? 1 : 0) - e.level) * Math.min(1, dt * 10);
+        e.spot.intensity = e.spotMax * e.level;
+        e.lens.material.color.setRGB(1, 0.95, 0.86).multiplyScalar(0.12 + 0.88 * e.level);
+        const sw = e.switch;
+        sw.pivot.rotation.x += ((e.on ? -0.13 : 0.13) - sw.pivot.rotation.x) * Math.min(1, dt * 30);
+        // spot kapalıyken gösterge yanar, karanlıkta anahtar bulunabilsin
+        sw.led.material.color.setRGB(1, 0.54, 0.12).multiplyScalar(e.on ? 0.15 : 1);
+    }
 }
 
 function buildBench(D) {
@@ -580,6 +697,7 @@ function buildEntranceSign(W, D, H, photoTex) {
         new THREE.PlaneGeometry(3.2, 0.8),
         new THREE.MeshBasicMaterial({ map: tex, transparent: true, toneMapped: false }),
     );
+    lighting.basics.push(sign.material);
     sign.position.y = top - 0.4;
     group.add(sign);
 
@@ -741,7 +859,7 @@ dom.addEventListener('pointermove', (e) => {
     }
     if (!floor) return;
     const hit = pick(e.clientX, e.clientY);
-    const onArt = hit && hit.object.userData.entry;
+    const onArt = hit && (hit.object.userData.entry || hit.object.userData.switchFor);
     dom.style.cursor = hit ? 'pointer' : 'grab';
     controls.ring.visible = !!hit && !onArt;
     if (hit && !onArt) controls.ring.position.set(hit.point.x, 0.003, hit.point.z);
@@ -752,7 +870,9 @@ dom.addEventListener('pointerup', (e) => {
     if (!p || p.moved > 8 || !floor) return;
     const hit = pick(e.clientX, e.clientY);
     if (!hit) return;
-    if (hit.object.userData.entry) {
+    if (hit.object.userData.switchFor) {
+        toggleSpot(hit.object.userData.switchFor);
+    } else if (hit.object.userData.entry) {
         focusOn(hit.object.userData.entry);
     } else {
         moveTo(new THREE.Vector3(hit.point.x, EYE, hit.point.z));
@@ -786,9 +906,15 @@ window.addEventListener('resize', () => {
 // ---------------------------------------------------------------- arayüz
 
 document.getElementById('btn-focus').addEventListener('click', () => arts[0] && focusOn(arts[0]));
+document.getElementById('btn-lights').addEventListener('click', (e) => {
+    setRoomLights(lighting.target < 0.5);
+    e.currentTarget.blur();
+});
+
 document.querySelectorAll('.swatch').forEach((btn) => {
     btn.addEventListener('click', () => {
         wallMat.color.set(btn.dataset.wall);
+        matchSwitchesToWall();
         document.querySelectorAll('.swatch').forEach((b) => b.classList.toggle('on', b === btn));
     });
 });
@@ -872,6 +998,7 @@ function frame(now) {
         clampPosition(camera.position);
     }
 
+    updateLights(dt);
     if (room) updateInfo(now);
     renderer.render(scene, camera);
     requestAnimationFrame(frame);

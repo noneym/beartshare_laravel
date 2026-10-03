@@ -35,10 +35,15 @@ Route::get('/', HomePage::class)->name('home');
 // Artists
 Route::get('/sanatcilar', ArtistList::class)->name('artists');
 Route::get('/sanatci/{slug}', ArtistDetail::class)->name('artist.detail');
+Route::get('/sanatci/{slug}/3d', [App\Http\Controllers\ArtworkGalleryController::class, 'showArtist'])->name('artist.3d');
 
 // Artworks
 Route::get('/eserler', ArtworkList::class)->name('artworks');
 Route::get('/eser/{slug}', ArtworkDetail::class)->name('artwork.detail');
+// Deneysel: 3D sanal galeri
+Route::get('/eser/{slug}/3d', [App\Http\Controllers\ArtworkGalleryController::class, 'show'])->name('artwork.3d');
+Route::get('/3d-gorsel/{artwork}', [App\Http\Controllers\ArtworkGalleryController::class, 'image'])->name('artwork.3d.image');
+Route::get('/3d-sanatci/{artist}', [App\Http\Controllers\ArtworkGalleryController::class, 'artistPhoto'])->name('artwork.3d.artist');
 
 // Cart
 Route::get('/sepet', Cart::class)->name('cart');

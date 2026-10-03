@@ -224,6 +224,13 @@
                     @endif
                 </div>
 
+                @if($artwork->image_urls && count($artwork->image_urls) > 0)
+                    <a href="{{ route('artwork.3d', $artwork->slug) }}" class="inline-flex items-center gap-2 text-sm text-brand-black100 border border-gray-200 hover:border-brand-black100 px-4 py-2 mb-4 transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 21V8l9-5 9 5v13M3 21h18M8 21v-8h8v8"/></svg>
+                        3D Galeride Gör
+                    </a>
+                @endif
+
                 @if($artwork->image_urls && count($artwork->image_urls) > 1)
                     <div class="flex space-x-2">
                         @foreach($artwork->image_urls as $index => $imageUrl)

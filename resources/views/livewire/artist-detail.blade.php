@@ -22,6 +22,13 @@
                     </nav>
                     <h1 class="text-3xl md:text-4xl font-light text-white">{{ $artist->name }}</h1>
                     <p class="text-white/40 text-sm mt-1">{{ $artist->life_span }}</p>
+                    @if($artist->artworks()->where('is_active', true)->whereNotNull('images')->where('images', '!=', '[]')->exists())
+                        <a href="{{ route('artist.3d', $artist->slug) }}"
+                           class="group inline-flex items-center gap-3 mt-5 pl-4 pr-5 py-2.5 border border-white/25 text-white text-sm hover:bg-white hover:text-brand-black100 transition">
+                            <svg class="w-5 h-5 transition group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 21V8l9-5 9 5v13M3 21h18M8 21v-8h8v8"/></svg>
+                            Sanal 3D Sergiyi Gez
+                        </a>
+                    @endif
                     @if($artist->biography)
                         <div x-data="{ expanded: false }">
                             <p class="text-white/60 text-sm mt-4 leading-relaxed max-w-2xl" x-show="!expanded">{{ Str::limit($artist->biography, 250) }}</p>

@@ -58,9 +58,26 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
+            // DB oturumu da uygulama ile aynı saat diliminde (CURRENT_TIMESTAMP varsayılanları için)
+            'timezone' => env('DB_TIMEZONE', '+03:00'),
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
+        ],
+
+        // Eski CodeIgniter sistemi — yalnızca `legacy:import` aktarımı için (salt okunur kullanılır)
+        'legacy' => [
+            'driver' => 'mysql',
+            'host' => env('OLD_DB_HOST'),
+            'port' => env('OLD_DB_PORT', '3306'),
+            'database' => env('OLD_DB_DATABASE'),
+            'username' => env('OLD_DB_USERNAME'),
+            'password' => env('OLD_DB_PASSWORD'),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => false,
+            'engine' => null,
         ],
 
         'pgsql' => [

@@ -287,6 +287,12 @@
                         <x-credit-card-badge :artwork="$artwork" class="text-xs px-2 py-1" />
                     </div>
 
+                    @if($artwork->sale_note && !$artwork->is_sold)
+                        <div class="text-xs text-gray-600 bg-gray-50 border border-gray-200 px-3 py-2 mb-4 [&_p]:m-0">
+                            {!! strip_tags($artwork->sale_note, '<p><br><strong><b><em><i><ul><ol><li>') !!}
+                        </div>
+                    @endif
+
                     @if(!$artwork->is_sold && $artpuanEarn > 0)
                         <div class="flex items-center gap-2 text-xs text-primary bg-primary/5 border border-primary/20 px-3 py-2 mb-4">
                             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

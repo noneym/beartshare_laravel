@@ -109,12 +109,12 @@ class MyAccount extends Component
 
         $user = Auth::user();
 
-        if (!Hash::check($this->current_password, $user->password)) {
+        if (!$user->checkPassword($this->current_password)) {
             $this->addError('current_password', 'Mevcut şifreniz yanlış.');
             return;
         }
 
-        $user->update(['password' => Hash::make($this->new_password)]);
+        $user->update(['password' => Hash::make($this->new_password), 'legacy_password' => false]);
 
         $this->showChangePassword = false;
         $this->reset(['current_password', 'new_password', 'new_password_confirmation']);

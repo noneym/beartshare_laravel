@@ -106,6 +106,8 @@
                         <option value="delivered" {{ $order->status === 'delivered' ? 'selected' : '' }}>Teslim Edildi</option>
                         <option value="cancelled" {{ $order->status === 'cancelled' ? 'selected' : '' }}>İptal Edildi</option>
                         <option value="payment_failed" {{ $order->status === 'payment_failed' ? 'selected' : '' }}>Ödeme Başarısız</option>
+                        <option value="returned" {{ $order->status === 'returned' ? 'selected' : '' }}>İade Edildi</option>
+                        <option value="refunded" {{ $order->status === 'refunded' ? 'selected' : '' }}>Ücret İadesi Yapıldı</option>
                     </select>
                     <button type="submit" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark">
                         Güncelle
@@ -334,6 +336,23 @@
             <div class="bg-white rounded-xl shadow-sm p-6">
                 <h2 class="text-lg font-semibold mb-4">Sipariş Notu</h2>
                 <p class="text-gray-600 text-sm">{{ $order->notes }}</p>
+            </div>
+            @endif
+
+            @if($order->shipping_company || $order->tracking_number)
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h2 class="text-lg font-semibold mb-4">Kargo</h2>
+                <p class="text-gray-600 text-sm">{{ $order->shipping_company }}</p>
+                @if($order->tracking_number)
+                    <p class="text-gray-600 text-sm mt-1">Takip No: <span class="font-medium">{{ $order->tracking_number }}</span></p>
+                @endif
+            </div>
+            @endif
+
+            @if($order->admin_notes)
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h2 class="text-lg font-semibold mb-4">İşlem Geçmişi</h2>
+                <p class="text-gray-600 text-sm whitespace-pre-line">{{ $order->admin_notes }}</p>
             </div>
             @endif
         </div>

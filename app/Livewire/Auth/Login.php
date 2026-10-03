@@ -3,6 +3,7 @@
 namespace App\Livewire\Auth;
 
 use App\Models\CartItem;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -36,10 +37,13 @@ class Login extends Component
         // Login öncesi session ID'yi kaydet (misafir sepeti için)
         $guestSessionId = session()->getId();
 
-        if (!Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
+        // Eski sistemden gelen hesaplar (SHA1) da checkPassword ile doğrulanıp yükseltilir
+        $user = User::where('email', trim($this->email))->first();
+        if (!$user || !$user->checkPassword($this->password)) {
             $this->addError('email', 'E-posta veya şifre hatalı.');
             return;
         }
+        Auth::login($user, $this->remember);
 
         // Misafir sepetindeki ürünleri kullanıcıya aktar
         $this->mergeGuestCartToUser($guestSessionId, Auth::id());

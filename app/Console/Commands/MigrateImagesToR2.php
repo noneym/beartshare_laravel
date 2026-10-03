@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Artist;
 use App\Models\Artwork;
 use App\Models\BlogPost;
+use App\Support\ImageUrlMap;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
@@ -151,6 +152,8 @@ class MigrateImagesToR2 extends Command
             }
         }
 
+        ImageUrlMap::save();
+
         if (!$dry && $this->backup) {
             $path = 'image-migration-backup-' . date('Ymd-His') . '.json';
             Storage::disk('local')->put($path, json_encode($this->backup, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
@@ -172,6 +175,22 @@ class MigrateImagesToR2 extends Command
      * Harici URL'i indirip diske yazar; başarılıysa uzantılı disk yolunu döner.
      */
     protected function transfer($disk, string $src, string $keyBase, bool $dry): ?string
+    {
+        // Daha önce taşınmış görsel: yeniden indirme
+        if ($known = ImageUrlMap::get($src)) {
+            $this->ok++;
+            $this->line("  <fg=cyan>eşleme</> {$known}");
+            return $dry ? null : $known;
+        }
+
+        $stored = $this->download($disk, $src, $keyBase, $dry);
+        if ($stored) {
+            ImageUrlMap::put($src, $stored);
+        }
+        return $stored;
+    }
+
+    protected function download($disk, string $src, string $keyBase, bool $dry): ?string
     {
         // Bazı kayıtlarda "host//path" gibi çift eğik çizgi var; şema sonrası fazlalıkları tekle
         $clean = preg_replace('#(?<!:)/{2,}#', '/', trim($src));
@@ -224,6 +243,19 @@ class MigrateImagesToR2 extends Command
      * data:image/...;base64,... URI'sini diske yazar.
      */
     protected function storeDataUri($disk, string $dataUri, string $keyBase, bool $dry): ?string
+    {
+        if ($known = ImageUrlMap::get($dataUri)) {
+            $this->ok++;
+            return $dry ? null : $known;
+        }
+        $stored = $this->writeDataUri($disk, $dataUri, $keyBase, $dry);
+        if ($stored) {
+            ImageUrlMap::put($dataUri, $stored);
+        }
+        return $stored;
+    }
+
+    protected function writeDataUri($disk, string $dataUri, string $keyBase, bool $dry): ?string
     {
         if (!preg_match('#^data:(image/[a-z0-9.+-]+);base64,(.+)$#is', $dataUri, $m)) {
             $this->fail++;

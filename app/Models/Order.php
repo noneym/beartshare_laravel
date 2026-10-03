@@ -27,6 +27,9 @@ class Order extends Model
         'city',
         'district',
         'notes',
+        'admin_notes',
+        'shipping_company',
+        'tracking_number',
         'confirmed_at',
         'paid_at',
         'artpuan_used',
@@ -77,6 +80,8 @@ class Order extends Model
             'shipped' => 'Kargoda',
             'delivered' => 'Teslim Edildi',
             'cancelled' => 'İptal Edildi',
+            'returned' => 'İade Edildi',
+            'refunded' => 'Ücret İadesi Yapıldı',
             'payment_failed' => 'Ödeme Başarısız',
             default => $this->status,
         };
@@ -91,6 +96,8 @@ class Order extends Model
             'shipped' => 'purple',
             'delivered' => 'green',
             'cancelled' => 'red',
+            'returned' => 'gray',
+            'refunded' => 'gray',
             'payment_failed' => 'red',
             default => 'gray',
         };

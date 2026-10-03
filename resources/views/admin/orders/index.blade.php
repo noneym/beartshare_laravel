@@ -22,6 +22,8 @@
                     <option value="delivered" {{ request('status') === 'delivered' ? 'selected' : '' }}>Teslim Edildi</option>
                     <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Iptal Edildi</option>
                     <option value="payment_failed" {{ request('status') === 'payment_failed' ? 'selected' : '' }}>Odeme Basarisiz</option>
+                    <option value="returned" {{ request('status') === 'returned' ? 'selected' : '' }}>Iade Edildi</option>
+                    <option value="refunded" {{ request('status') === 'refunded' ? 'selected' : '' }}>Ucret Iadesi</option>
                 </select>
             </div>
             <div class="flex items-center">

@@ -156,6 +156,12 @@
                     </label>
                 </div>
 
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Satış Notu</label>
+                    <textarea name="sale_note" rows="3" placeholder="Eser sayfasında fiyatın altında gösterilir (ör. komisyon faturası / KDV bilgisi)" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary">{{ old('sale_note', $artwork->sale_note) }}</textarea>
+                    @error('sale_note') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+                </div>
+
                 <div class="border-t border-gray-200 pt-6 space-y-4">
                     <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Yalnızca Admin Görür</p>
                     <div>

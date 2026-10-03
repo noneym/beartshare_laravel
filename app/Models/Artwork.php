@@ -16,6 +16,7 @@ class Artwork extends Model
         'title',
         'slug',
         'description',
+        'sale_note',
         'tags',
         'technique',
         'dimensions',

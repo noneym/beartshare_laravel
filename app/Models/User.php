@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -27,6 +28,8 @@ class User extends Authenticatable
         'referred_by',
         'art_puan',
         'is_admin',
+        'legacy_password',
+        'birth_date',
     ];
 
     /**
@@ -50,6 +53,8 @@ class User extends Authenticatable
         'password' => 'hashed',
         'art_puan' => 'decimal:2',
         'is_admin' => 'boolean',
+        'legacy_password' => 'boolean',
+        'birth_date' => 'date',
     ];
 
     public function favorites()
@@ -149,6 +154,25 @@ class User extends Authenticatable
     public function orders()
     {
         return $this->hasMany(Order::class);
+    }
+
+    // ── Şifre ──
+
+    /**
+     * Şifre doğrulama. Eski sistemden gelen hesaplarda şifre bcrypt(sha1(şifre)) olarak
+     * saklanır; doğru girildiğinde normal bcrypt'e yükseltilir.
+     */
+    public function checkPassword(string $plain): bool
+    {
+        if ($this->legacy_password) {
+            if (!Hash::check(sha1($plain), $this->password)) {
+                return false;
+            }
+            $this->forceFill(['password' => Hash::make($plain), 'legacy_password' => false])->save();
+            return true;
+        }
+
+        return Hash::check($plain, $this->password);
     }
 
     // ── ArtPuan ──

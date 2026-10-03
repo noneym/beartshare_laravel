@@ -24,16 +24,53 @@
                     </svg>
                 </div>
 
-                <!-- Artist Filter -->
-                <select
-                    wire:model.live="artistId"
-                    class="w-full border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-black100 bg-white transition"
-                >
-                    <option value="">Tüm Sanatçılar</option>
-                    @foreach($artists as $artist)
-                        <option value="{{ $artist->id }}">{{ $artist->name }}</option>
-                    @endforeach
-                </select>
+                <!-- Artist Filter (searchable; kept in sync with artistId, Turkish letters match their plain forms) -->
+                <div class="relative" wire:ignore
+                     x-data="{
+                        open: false,
+                        q: '',
+                        active: 0,
+                        selected: $wire.entangle('artistId').live,
+                        artists: @js($artists->map(fn ($a) => ['id' => (string) $a->id, 'name' => $a->name])->values()),
+                        norm(s) { return (s || '').toLocaleLowerCase('tr').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/ı/g, 'i'); },
+                        get label() { const a = this.artists.find((x) => x.id === String(this.selected ?? '')); return a ? a.name : 'Tüm Sanatçılar'; },
+                        get list() { const n = this.norm(this.q.trim()); return n ? this.artists.filter((a) => this.norm(a.name).includes(n)) : this.artists; },
+                        toggle() { this.open = !this.open; if (this.open) { this.q = ''; this.active = 0; this.$nextTick(() => this.$refs.q.focus()); } },
+                        pick(id) { this.open = false; if (String(this.selected ?? '') !== id) this.selected = id; },
+                        move(d) { this.active = Math.max(0, Math.min(this.list.length, this.active + d)); },
+                     }"
+                     @click.outside="open = false"
+                     @keydown.escape.prevent="open = false">
+                    <button type="button" @click="toggle()"
+                            class="w-full border border-gray-200 px-3 py-2.5 text-sm text-left bg-white flex items-center justify-between gap-2 focus:outline-none focus:border-brand-black100 transition">
+                        <span class="truncate" x-text="label">{{ $artists->firstWhere('id', $artistId)?->name ?? 'Tüm Sanatçılar' }}</span>
+                        <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div x-show="open" style="display: none"
+                         class="absolute z-30 mt-1 w-full min-w-[240px] bg-white border border-gray-200 shadow-lg">
+                        <input x-ref="q" x-model="q" type="text" placeholder="Sanatçı ara..." autocomplete="off"
+                               @input="active = list.length ? 1 : 0"
+                               @keydown.down.prevent="move(1)"
+                               @keydown.up.prevent="move(-1)"
+                               @keydown.enter.prevent="pick(active === 0 ? '' : list[active - 1].id)"
+                               class="w-full border-b border-gray-100 px-3 py-2.5 text-sm focus:outline-none">
+                        <ul class="max-h-64 overflow-y-auto py-1 text-sm">
+                            <li>
+                                <button type="button" @click="pick('')" @mouseenter="active = 0"
+                                        :class="active === 0 ? 'bg-gray-50' : ''"
+                                        class="w-full text-left px-3 py-2 text-gray-500">Tüm Sanatçılar</button>
+                            </li>
+                            <template x-for="(a, i) in list" :key="a.id">
+                                <li>
+                                    <button type="button" @click="pick(a.id)" @mouseenter="active = i + 1"
+                                            :class="{ 'bg-gray-50': active === i + 1, 'font-medium text-brand-black100': a.id === String(selected ?? '') }"
+                                            class="w-full text-left px-3 py-2" x-text="a.name"></button>
+                                </li>
+                            </template>
+                            <li x-show="q.trim() && !list.length" class="px-3 py-2.5 text-gray-400">Sonuç bulunamadı</li>
+                        </ul>
+                    </div>
+                </div>
 
                 <!-- Satılan Filtresi -->
                 <select

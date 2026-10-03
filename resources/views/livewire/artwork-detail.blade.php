@@ -280,7 +280,7 @@
 
                 @if($artwork->description)
                     <div class="border-t border-gray-100 py-4 mb-6">
-                        <p class="text-gray-500 text-sm leading-relaxed">{{ $artwork->description }}</p>
+                        <div class="text-gray-500 text-sm leading-relaxed space-y-3 [&_a]:underline [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_strong]:text-brand-black100 [&_b]:text-brand-black100">{!! \App\Support\SafeHtml::clean($artwork->description) !!}</div>
                     </div>
                 @endif
 
@@ -296,7 +296,7 @@
 
                     @if($artwork->sale_note && !$artwork->is_sold)
                         <div class="text-xs text-gray-600 bg-gray-50 border border-gray-200 px-3 py-2 mb-4 [&_p]:m-0">
-                            {!! strip_tags($artwork->sale_note, '<p><br><strong><b><em><i><ul><ol><li>') !!}
+                            {!! \App\Support\SafeHtml::clean($artwork->sale_note) !!}
                         </div>
                     @endif
 

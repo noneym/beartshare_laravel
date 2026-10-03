@@ -12,12 +12,7 @@
             <div class="space-y-6">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Sanatci *</label>
-                    <select name="artist_id" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary" required>
-                        <option value="">Sanatci secin</option>
-                        @foreach($artists as $artist)
-                            <option value="{{ $artist->id }}" {{ old('artist_id') == $artist->id ? 'selected' : '' }}>{{ $artist->name }}</option>
-                        @endforeach
-                    </select>
+                    <x-admin.artist-select :artists="$artists" :selected="old('artist_id')" />
                     @error('artist_id') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                 </div>
 

@@ -121,7 +121,8 @@ class ArtworkController extends Controller
 
     public function edit(Artwork $artwork)
     {
-        $artists = Artist::active()->orderBy('name')->get();
+        // Eserin sanatçısı pasif olsa da seçili görünsün
+        $artists = Artist::where(fn ($q) => $q->active()->orWhere('id', $artwork->artist_id))->orderBy('name')->get();
         $categories = Category::active()->orderBy('name')->get();
         $favoritedBy = $artwork->favoritedBy()->latest('favorites.created_at')->get();
 

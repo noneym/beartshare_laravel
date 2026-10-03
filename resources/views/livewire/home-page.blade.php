@@ -361,7 +361,7 @@
                 <a href="{{ route('artworks') }}" class="text-xs text-gray-400 hover:text-brand-black100 transition link-underline pb-1 hidden md:block">Tümünü Gör</a>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8">
                 @foreach($featuredArtworks as $artwork)
                     <div class="group" wire:key="featured-{{ $artwork->id }}">
                         <a href="{{ route('artwork.detail', $artwork->slug) }}" class="block">
@@ -383,15 +383,16 @@
                                 <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300"></div>
                             </div>
                         </a>
-                        <div class="flex items-start justify-between">
-                            <div class="flex-1 min-w-0 pr-4">
+                        {{-- phones show two per row: price under the name there, beside it from sm up --}}
+                        <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-0">
+                            <div class="flex-1 min-w-0 sm:pr-4">
                                 <h3 class="font-medium text-brand-black100 text-sm truncate">{{ $artwork->artist->name }}</h3>
                                 <p class="text-gray-500 text-xs mt-0.5">{{ $artwork->artist->life_span }}</p>
                                 <p class="text-gray-400 text-xs mt-1 truncate">{{ $artwork->title }}</p>
                                 <p class="text-gray-300 text-[10px] mt-0.5">{{ $artwork->technique }}, {{ $artwork->year }}</p>
                                 <p class="text-gray-300 text-[10px]">{{ $artwork->dimensions }}</p>
                             </div>
-                            <div class="text-right flex-shrink-0">
+                            <div class="sm:text-right flex-shrink-0">
                                 <p class="font-medium text-brand-black100 text-sm">{{ $artwork->formatted_price_tl }}</p>
                                 <p class="text-gray-400 text-[10px]">{{ $artwork->formatted_price_usd }}</p>
                                 <x-credit-card-badge :artwork="$artwork" />

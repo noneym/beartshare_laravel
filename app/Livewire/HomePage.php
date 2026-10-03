@@ -21,7 +21,7 @@ class HomePage extends Component
             ->available()
             ->featured()
             ->latest()
-            ->take(6)
+            ->take(8)
             ->get();
 
         $latestArtworks = Artwork::with('artist')

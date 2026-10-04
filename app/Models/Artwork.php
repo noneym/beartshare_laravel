@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class Artwork extends Model
@@ -24,6 +25,7 @@ class Artwork extends Model
         'price_tl',
         'price_usd',
         'is_sold',
+        'sold_at',
         'is_active',
         'is_featured',
         'is_reserved',
@@ -38,6 +40,7 @@ class Artwork extends Model
 
     protected $casts = [
         'is_sold' => 'boolean',
+        'sold_at' => 'datetime',
         'is_active' => 'boolean',
         'is_featured' => 'boolean',
         'is_reserved' => 'boolean',
@@ -56,6 +59,47 @@ class Artwork extends Model
                 $artwork->slug = Str::slug($artwork->title . '-' . uniqid());
             }
         });
+
+        // Satış tarihi: satıldı işaretlenince atanır, satıştan çıkınca temizlenir
+        static::saving(function ($artwork) {
+            if ($artwork->is_sold && !$artwork->sold_at) {
+                $artwork->sold_at = now();
+            } elseif (!$artwork->is_sold && $artwork->sold_at) {
+                $artwork->sold_at = null;
+            }
+        });
+    }
+
+    /**
+     * Satılmış eserlerin satış tarihini ve satış anındaki USD fiyatını siparişlerden doldurur
+     * (en son geçerli sipariş: ödeme / onay tarihi). Siparişi olmayanlar dokunulmadan kalır.
+     */
+    public static function backfillSaleData(): int
+    {
+        $rows = DB::table('order_items as oi')
+            ->join('orders as o', 'o.id', '=', 'oi.order_id')
+            ->whereNull('o.deleted_at')
+            ->whereIn('o.status', ['paid', 'confirmed', 'shipped', 'delivered'])
+            ->whereNotNull('oi.artwork_id')
+            ->orderBy('o.id')
+            ->get(['oi.artwork_id', 'oi.price_usd', DB::raw('COALESCE(o.paid_at, o.confirmed_at, o.created_at) as sold_at')])
+            ->keyBy('artwork_id'); // aynı eserin birden çok siparişi varsa en sonuncusu
+
+        $n = 0;
+        foreach ($rows as $artworkId => $r) {
+            $update = ['sold_at' => $r->sold_at];
+            if ((float) $r->price_usd > 0) {
+                $update['price_usd'] = $r->price_usd;
+            }
+            $n += DB::table('artworks')->where('id', $artworkId)->where('is_sold', true)->update($update);
+        }
+        return $n;
+    }
+
+    /** Satış fiyatı / tarihi yalnızca üyelere gösterilir */
+    public function getSalePriceVisibleAttribute(): bool
+    {
+        return !$this->is_sold || auth()->check();
     }
 
     public function artist()

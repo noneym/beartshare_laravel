@@ -103,6 +103,9 @@ class ArtworkController extends Controller
 
         $validated['slug'] = Str::slug($validated['title'] . '-' . uniqid());
         $validated['allow_credit_card'] = $request->boolean('allow_credit_card');
+        foreach (['is_active', 'is_featured', 'is_sold'] as $flag) {
+            $validated[$flag] = $request->boolean($flag);
+        }
         $validated['price_usd'] = $this->usdPrice($validated);
 
         if ($request->hasFile('images')) {
@@ -152,7 +155,13 @@ class ArtworkController extends Controller
         ]);
 
         $validated['allow_credit_card'] = $request->boolean('allow_credit_card');
-        $validated['price_usd'] = $this->usdPrice($validated);
+        // İşaretsiz kutular forma gelmez; yoksa kaldırılan işaret kaydedilmezdi
+        foreach (['is_active', 'is_featured', 'is_sold'] as $flag) {
+            $validated[$flag] = $request->boolean($flag);
+        }
+        // Satılmış eserin USD fiyatı satış anındaki kurla sabit kalır (TL değişmediyse)
+        $keepSaleUsd = $artwork->is_sold && $validated['is_sold'] && (float) $validated['price_tl'] === (float) $artwork->price_tl;
+        $validated['price_usd'] = $keepSaleUsd ? $artwork->price_usd : $this->usdPrice($validated);
 
         // Mevcut görsellerin sırası / silinenler (yalnızca bu eserde olan yollar kabul edilir)
         $images = $artwork->images ?? [];

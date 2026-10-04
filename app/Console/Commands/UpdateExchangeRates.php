@@ -18,7 +18,7 @@ class UpdateExchangeRates extends Command
         {--rate= : Kuru elle ver (TCMB\'ye gitmeden)}
         {--dry-run : Sadece kuru göster, kaydetme}';
 
-    protected $description = 'TCMB USD kurunu çeker, eserlerin USD fiyatlarını TL fiyatı üzerinden günceller';
+    protected $description = 'TCMB USD kurunu çeker, eserlerin USD fiyatlarını TL fiyatı üzerinden günceller (satılmışlar hariç)';
 
     protected const TCMB_URL = 'https://www.tcmb.gov.tr/kurlar/today.xml';
 
@@ -46,7 +46,8 @@ class UpdateExchangeRates extends Command
         }
 
         $updated = DB::transaction(function () use ($rate) {
-            return Artwork::query()->where('price_tl', '>', 0)->update([
+            // Satılmış eserlerin USD fiyatı satış anındaki kurla sabit kalır
+            return Artwork::query()->where('is_sold', false)->where('price_tl', '>', 0)->update([
                 'price_usd' => DB::raw('ROUND(price_tl / ' . (float) $rate . ', 2)'),
             ]);
         });

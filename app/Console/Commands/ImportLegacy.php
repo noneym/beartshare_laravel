@@ -101,6 +101,7 @@ class ImportLegacy extends Command
             $this->importArtworks();
             $this->importFavoritesAndCart();
             $voidOrders = $this->importOrders();
+            $this->line('  Satış tarihi doldurulan eser: ' . \App\Models\Artwork::backfillSaleData());
             $this->importBlog();
             $this->importArtPuan($voidOrders);
         } finally {

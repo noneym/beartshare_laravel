@@ -166,7 +166,7 @@ class ArtworkDetail extends Component
         $category = $artwork->category ? $artwork->category->name : '';
         $imageUrl = $artwork->image_url;
 
-        $jsonLd = json_encode([
+        $jsonLd = json_encode(array_filter([
             '@context' => 'https://schema.org',
             '@type' => 'Product',
             'name' => $artwork->title,
@@ -176,7 +176,8 @@ class ArtworkDetail extends Component
                 '@type' => 'Brand',
                 'name' => $artistName,
             ],
-            'offers' => [
+            // Satılmış eserin satış fiyatı yalnızca üyelere gösterilir; yapısal veride de yer almaz
+            'offers' => $artwork->is_sold ? null : [
                 '@type' => 'Offer',
                 'price' => $artwork->price_tl ?? 0,
                 'priceCurrency' => 'TRY',
@@ -190,7 +191,7 @@ class ArtworkDetail extends Component
             ],
             'category' => $category,
             'url' => url()->current(),
-        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        ], fn ($v) => $v !== null), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
         return view('livewire.artwork-detail', [
             'relatedArtworks' => $relatedArtworks,

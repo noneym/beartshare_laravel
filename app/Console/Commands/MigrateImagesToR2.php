@@ -195,16 +195,27 @@ class MigrateImagesToR2 extends Command
         // Bazı kayıtlarda "host//path" gibi çift eğik çizgi var; şema sonrası fazlalıkları tekle
         $clean = preg_replace('#(?<!:)/{2,}#', '/', trim($src));
 
-        // Cloudflare Images: /public gibi küçültülmüş varyant yerine /full (orijinal) dene
-        $candidates = [$clean];
-        if (str_contains($clean, 'imagedelivery.net/') && !str_ends_with($clean, '/full')) {
-            array_unshift($candidates, preg_replace('#/[^/]+$#', '/full', $clean));
+        // Cloudflare Images: varyantlar (/public, /full) küçültülmüş; yüklenen orijinal dosya
+        // yalnızca API'deki /blob ile alınır. API bilgisi yoksa /full'e düşülür.
+        $ua = ['User-Agent' => 'BeArtShare-ImageMigrator/1.0 (+https://www.beartshare.com; info@beartshare.com)'];
+        $candidates = [[$clean, $ua]];
+        if (preg_match('#imagedelivery\.net/[^/]+/([0-9a-f-]{36})#i', $clean, $m)) {
+            $cf = config('services.cloudflare_images');
+            if (!str_ends_with($clean, '/full')) {
+                array_unshift($candidates, [preg_replace('#/[^/]+$#', '/full', $clean), $ua]);
+            }
+            if (!empty($cf['account_id']) && !empty($cf['email']) && !empty($cf['key'])) {
+                array_unshift($candidates, [
+                    "https://api.cloudflare.com/client/v4/accounts/{$cf['account_id']}/images/v1/{$m[1]}/blob",
+                    $ua + ['X-Auth-Email' => $cf['email'], 'X-Auth-Key' => $cf['key']],
+                ]);
+            }
         }
 
-        foreach ($candidates as $url) {
+        foreach ($candidates as [$url, $headers]) {
             try {
-                $head = Http::timeout(30)->retry(2, 500)
-                    ->withHeaders(['User-Agent' => 'BeArtShare-ImageMigrator/1.0 (+https://www.beartshare.com; info@beartshare.com)'])
+                $head = Http::timeout(180)->retry(2, 500)
+                    ->withHeaders($headers)
                     ->get($url);
             } catch (\Throwable $e) {
                 $this->line("  <fg=yellow>indirilemedi</> {$url} ({$e->getMessage()})");
@@ -214,7 +225,16 @@ class MigrateImagesToR2 extends Command
                 continue;
             }
 
-            $ext = $this->extensionFor($head->header('Content-Type'), $url);
+            // /blob yanıtı image/* olmayabilir: içerik türü dosyanın kendisinden
+            $contentType = $head->header('Content-Type');
+            if (!str_starts_with(strtolower((string) $contentType), 'image/')) {
+                $contentType = (new \finfo(FILEINFO_MIME_TYPE))->buffer($head->body()) ?: $contentType;
+            }
+            if (!str_starts_with(strtolower((string) $contentType), 'image/')) {
+                continue; // görsel değil (ör. API hata gövdesi)
+            }
+
+            $ext = $this->extensionFor($contentType, $url);
             $key = "{$keyBase}.{$ext}";
 
             if ($dry) {
@@ -223,7 +243,7 @@ class MigrateImagesToR2 extends Command
                 return null;
             }
 
-            if ($disk->exists($key) || $disk->put($key, $head->body(), ['ContentType' => $head->header('Content-Type')])) {
+            if ($disk->exists($key) || $disk->put($key, $head->body(), ['ContentType' => $contentType])) {
                 $this->ok++;
                 $this->line("  <fg=green>ok</> {$key}");
                 return $key;

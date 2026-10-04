@@ -50,6 +50,42 @@ class ArtworkGalleryController extends Controller
         ]);
     }
 
+    /**
+     * Deneysel ve listelenmeyen sayfa: satıştaki tüm eserlerin tek salonda sergisi.
+     * Eserler sanatçıya göre gruplanır; dokular hafif boyutta yüklenir.
+     */
+    public function showAll()
+    {
+        $works = Artwork::with('artist')
+            ->available()
+            ->whereNotNull('images')
+            ->where('images', '!=', '[]')
+            ->get()
+            ->filter(fn ($a) => $a->first_image)
+            ->sortBy([
+                fn ($a, $b) => strcmp(mb_strtolower($a->artist->name ?? ''), mb_strtolower($b->artist->name ?? '')),
+                fn ($a, $b) => $b->is_featured <=> $a->is_featured,
+            ])
+            ->values();
+        abort_if($works->isEmpty(), 404);
+
+        return view('gallery3d', [
+            'page' => [
+                'title' => 'Satıştaki Tüm Eserler',
+                'backUrl' => route('artworks'),
+                'backLabel' => 'Eserlere dön',
+            ],
+            'payload' => [
+                'mode' => 'hall',
+                'main' => $this->present($works->first(), 'card'),
+                'others' => $works->slice(1)->map(fn ($a) => $this->present($a, 'card'))->values(),
+                'artist' => '',
+                'subtitle' => 'Satıştaki Tüm Eserler',
+                'artistPhoto' => null,
+            ],
+        ]);
+    }
+
     private function artistWorks(int $artistId)
     {
         return Artwork::with('artist')
@@ -97,7 +133,8 @@ class ArtworkGalleryController extends Controller
             return $disk->response($path, null, $headers);
         }
 
-        $response = Http::timeout(20)->get(ImageUrl::make($path, 'detail'));
+        $size = in_array($request->query('size'), ['thumb', 'card', 'detail'], true) ? $request->query('size') : 'detail';
+        $response = Http::timeout(20)->get(ImageUrl::make($path, $size));
         abort_unless($response->successful(), 404);
 
         return response($response->body(), 200, $headers + [
@@ -122,7 +159,7 @@ class ArtworkGalleryController extends Controller
         ]);
     }
 
-    private function present(Artwork $artwork): array
+    private function present(Artwork $artwork, string $size = 'detail'): array
     {
         return [
             'id' => $artwork->id,
@@ -135,7 +172,7 @@ class ArtworkGalleryController extends Controller
             'price' => $artwork->price_tl ? $artwork->formatted_price_tl : null,
             'sold' => (bool) $artwork->is_sold,
             'reserved' => (bool) $artwork->is_reserved,
-            'image' => route('artwork.3d.image', $artwork),
+            'image' => route('artwork.3d.image', $size === 'detail' ? [$artwork] : [$artwork, 'size' => $size]),
             'imageFull' => route('artwork.3d.image', [$artwork, 'full' => 1]),
             'url' => route('artwork.detail', $artwork->slug),
         ];

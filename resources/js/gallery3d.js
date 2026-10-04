@@ -3,11 +3,15 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 
 /*
- * Deneysel 3D galeri: ana eser arka duvarda, sanatçının diğer eserleri yan duvarlarda.
+ * Deneysel 3D galeri. İki düzen var:
+ *  - oda: ana eser arka duvarda, sanatçının diğer eserleri yan duvarlarda, her esere bir spot.
+ *  - salon (data.mode === 'hall'): satıştaki tüm eserler, ara duvarlı uzun salon; gerçek spot
+ *    yalnızca ziyaretçiye en yakın eserlere verilir, diğerlerinde ışık hüzmesi taklit edilir.
  * Ölçüler cm cinsinden gelir, sahne birimi metredir.
  */
 
 const data = window.GALLERY;
+const HALL = data.mode === 'hall';
 const EYE = 1.6;
 const isMobile = matchMedia('(pointer: coarse)').matches;
 
@@ -96,8 +100,10 @@ function wrapText(g, text, maxWidth, maxLines) {
     return lines;
 }
 
-function labelTexture(art) {
-    return canvasTexture(1500, 1000, (g, w, h) => {
+function labelTexture(art, scale = 1) {
+    return canvasTexture(Math.round(1500 * scale), Math.round(1000 * scale), (g) => {
+        g.scale(scale, scale);
+        const w = 1500, h = 1000;
         const pad = 90, max = w - pad * 2;
         g.fillStyle = '#ffffff';
         g.fillRect(0, 0, w, h);
@@ -178,8 +184,10 @@ function matchSwitchesToWall() {
 const lighting = { level: 1, target: 1, hemi: null, basics: [] };
 const arts = [];      // { art, mesh, label, center, normal, size }
 const clickables = [];
-let floor, room, bench;
+const occluders = []; // duvarlar: arkalarındaki eserlere tıklanmasın
+let floor, room;
 const obstacles = []; // { x, z, r } yürürken içinden geçilmeyen eşyalar
+const rects = [];     // { x, z, hx, hz } dikdörtgen engeller (bank, ara duvar)
 
 // ---------------------------------------------------------------- yükleme ekranı
 
@@ -189,11 +197,11 @@ const progress = (() => {
     const stepEl = document.getElementById('ld-step');
     const log = document.getElementById('ld-log');
     const wall = document.getElementById('ld-wall');
-    let total = 1, done = 0, pending = 0, shown = 0, running = true;
+    let total = 1, done = 0, pending = 0, credit = 0, shown = 0, running = true;
 
     (function tick() {
         // beklenen iş varken çubuk bir sonraki adıma doğru yavaşça ilerler, takılmış görünmez
-        const target = Math.min(1, (done + pending * 0.85) / total);
+        const target = Math.min(1, (done + credit) / total);
         shown += (target - shown) * (target > shown ? 0.06 : 0);
         bar.style.width = `${(shown * 100).toFixed(1)}%`;
         pct.textContent = `${Math.round(shown * 100)}%`;
@@ -209,9 +217,13 @@ const progress = (() => {
             void stepEl.offsetWidth;
             stepEl.style.animation = '';
         },
-        start(w = 1) { pending += w; },
-        finish(w = 1, label) {
+        start(w = 1, share = 0.85) {
+            pending += w;
+            credit += w * share;
+        },
+        finish(w = 1, label, share = 0.85) {
             pending = Math.max(0, pending - w);
+            credit = Math.max(0, credit - w * share);
             done += w;
             if (label) {
                 const li = document.createElement('li');
@@ -221,17 +233,23 @@ const progress = (() => {
             }
         },
         frames(count) {
-            const max = Math.min(52, (Math.min(440, window.innerWidth - 48) - 10 * (count - 1)) / count);
+            const width = Math.min(440, window.innerWidth - 48);
+            // çok eserde tek sıra yerine mozaik
+            const many = count > 12;
+            if (many) wall.classList.add('many');
+            const max = many
+                ? Math.max(14, Math.min(40, Math.floor(Math.sqrt((width * 150) / count)) - 8))
+                : Math.min(52, (width - 10 * (count - 1)) / count);
             return Array.from({ length: count }, (_, i) => {
                 const f = document.createElement('div');
-                f.className = 'ld-frame' + (i === 0 ? ' main' : '');
+                f.className = 'ld-frame' + (i === 0 && !many ? ' main' : '');
                 f.style.width = `${max}px`;
-                f.style.height = `${max * 1.25}px`;
-                f.style.animationDelay = `${i * 0.15}s`;
+                f.style.height = `${many ? max : max * 1.25}px`;
+                f.style.animationDelay = `${(i % 12) * 0.15}s`;
                 wall.appendChild(f);
                 return {
                     fill(src, aspect) {
-                        const box = i === 0 ? max * 1.6 : max * 1.25;
+                        const box = many ? max : i === 0 ? max * 1.6 : max * 1.25;
                         const w = aspect >= 1 ? box : box * aspect;
                         f.style.width = `${w}px`;
                         f.style.height = `${aspect >= 1 ? box / aspect : box}px`;
@@ -246,6 +264,7 @@ const progress = (() => {
         async finishAll() {
             done = total;
             pending = 0;
+            credit = 0;
             this.step('Hazır, iyi gezintiler');
             await new Promise((r) => setTimeout(r, 650));
             running = false;
@@ -270,10 +289,10 @@ async function build() {
     let loaded = 0;
     progress.step(`Eserler yükleniyor (0/${works.length})`);
     const loadWork = (art, i) => {
-        progress.start(3);
+        progress.start(3, 0.15);
         return loadTexture(art.image).then((tex) => {
             loaded++;
-            progress.finish(3, tex ? art.title : `${art.title} (yüklenemedi)`);
+            progress.finish(3, tex ? art.title : `${art.title} (yüklenemedi)`, 0.15);
             progress.step(`Eserler yükleniyor (${loaded}/${works.length})`);
             if (tex) frames[i].fill(art.image, tex.image.width / tex.image.height);
             return tex;
@@ -294,6 +313,11 @@ async function build() {
     for (const it of items) {
         const img = it.tex?.image;
         it.size = sizeFor(it.art, img ? img.width / img.height : 1);
+    }
+
+    if (HALL) {
+        await buildHallScene(items);
+        return;
     }
 
     const main = items[0];
@@ -327,7 +351,7 @@ async function build() {
     progress.step('Son dokunuşlar…');
     progress.start();
     await nextFrame();
-    buildBench(D);
+    buildBench(0, D / 2 - 3.6, 0);
     buildLounge(W, D);
     buildEntranceSign(W, D, H, photoTex);
 
@@ -341,7 +365,201 @@ async function build() {
     focusOn(arts[0], 2400);
 }
 
-function buildRoom(W, D, H) {
+async function buildHallScene(items) {
+    const plan = planHall(items);
+    const { W, D, H } = plan;
+    room = { W, D, H };
+
+    progress.step('Sergi salonu kuruluyor…');
+    progress.start();
+    await nextFrame();
+    const laneX = plan.PT / 2 + 1.3;
+    buildRoom(W, D, H, [-W / 2 + 1.3, -laneX, laneX, W / 2 - 1.3]);
+    for (const z of plan.partitions) buildPartition(z, plan);
+    progress.finish(1, `Salon (${plan.partitions.length} ara duvar)`);
+
+    progress.step(`${items.length} eser duvarlara asılıyor…`);
+    progress.start();
+    await nextFrame();
+    for (const p of plan.placements) placeOnWall(p.it, p.point, p.normal, H, false, false);
+    createSpotPool(isMobile ? 6 : 8, isMobile ? 0 : 3);
+    progress.finish(1, 'Eserler ve aydınlatma');
+
+    progress.step('Son dokunuşlar…');
+    progress.start();
+    await nextFrame();
+    for (const x of [-1, 1]) buildBench(x * (W / 4 + plan.PT / 4), 0, Math.PI / 2);
+    buildLounge(W, D);
+    buildEntranceSign(W, D, H, null);
+
+    const laneMid = -(W / 4 + plan.PT / 4);
+    camera.position.set(laneMid + 1.2, EYE, D / 2 - 1.0);
+    lookAtPoint(new THREE.Vector3(laneMid, EYE, -D / 2));
+    updatePool(performance.now(), true);
+    renderer.compile(scene, camera);
+    progress.finish(1, 'Mobilya ve son dokunuşlar');
+    await progress.finishAll();
+    moveTo(new THREE.Vector3(laneMid + 0.6, EYE, D / 2 - 3.0), new THREE.Vector3(laneMid - 0.4, EYE - 0.05, 0), 2400);
+}
+
+/**
+ * Salon planı: dış duvarlar + ortada iki yüzlü ara duvarlar. Eserler sırayla (sanatçıya göre)
+ * yüzlere dizilir; sığmazsa salon uzatılıp yeniden denenir.
+ */
+function planHall(items) {
+    const W = 14, PL = 6, PG = 3.2, PT = 0.2;
+    const tallest = Math.max(...items.map((it) => it.size.h));
+    const H = Math.max(3.6, tallest + 1.4);
+    const PH = H - 0.6;
+    const cyOf = (it) => Math.max(1.5, it.size.h / 2 + 0.35);
+    // anahtar solda, etiket sağda
+    const need = (it) => 0.45 + it.size.w + 0.65 + 0.6;
+
+    for (let D = 14; D < 400; D += 2) {
+        const partitions = [];
+        for (let z = D / 2 - 4.5 - PL / 2; z - PL / 2 >= -D / 2 + 3; z -= PL + PG) partitions.push(z);
+
+        const face = (cx, cz, nx, nz, length, maxH) => ({
+            center: new THREE.Vector3(cx, 0, cz),
+            normal: new THREE.Vector3(nx, 0, nz),
+            length, maxH, used: 0, items: [],
+        });
+        const wallFrom = D / 2 - 2.2, wallTo = -D / 2 + 0.6;
+        const faces = [
+            face(-W / 2, (wallFrom + wallTo) / 2, 1, 0, wallFrom - wallTo, H - 0.3),
+            face(0, -D / 2, 0, 1, W - 1.2, H - 0.3),
+            face(W / 2, (wallFrom + wallTo) / 2, -1, 0, wallFrom - wallTo, H - 0.3),
+            ...partitions.map((z) => face(PT / 2, z, 1, 0, PL - 0.3, PH - 0.15)),
+            ...[...partitions].reverse().map((z) => face(-PT / 2, z, -1, 0, PL - 0.3, PH - 0.15)),
+        ];
+
+        let k = 0, ok = true;
+        for (const it of items) {
+            while (k < faces.length && (faces[k].used + need(it) > faces[k].length
+                || cyOf(it) + it.size.h / 2 > faces[k].maxH)) k++;
+            if (k === faces.length) { ok = false; break; }
+            faces[k].items.push({ it, s: faces[k].used });
+            faces[k].used += need(it);
+        }
+        if (!ok) continue;
+
+        const placements = [];
+        for (const f of faces) {
+            const rightDir = new THREE.Vector3(0, 1, 0).cross(f.normal);
+            // yüzdeki eserleri ortala
+            const start = -f.length / 2 + (f.length - f.used) / 2;
+            for (const { it, s: off } of f.items) {
+                const point = f.center.clone().addScaledVector(rightDir, start + off + 0.45 + it.size.w / 2);
+                placements.push({ it, point, normal: f.normal });
+            }
+        }
+        return { W, D, H, PH, PL, PT, partitions, placements };
+    }
+    throw new Error('Salon planlanamadı');
+}
+
+function buildPartition(z, { PH, PL, PT }) {
+    const wall = new THREE.Mesh(new THREE.BoxGeometry(PT, PH, PL), wallMat);
+    wall.position.set(0, PH / 2, z);
+    wall.castShadow = wall.receiveShadow = true;
+    wall.userData.occluder = true;
+    scene.add(wall);
+    occluders.push(wall);
+
+    const base = new THREE.Mesh(
+        new THREE.BoxGeometry(PT + 0.03, 0.09, PL + 0.03),
+        new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.6 }),
+    );
+    base.position.set(0, 0.045, z);
+    scene.add(base);
+    rects.push({ x: 0, z, hx: PT / 2 + 0.4, hz: PL / 2 + 0.4 });
+}
+
+// ---------------------------------------------------------------- salon: ışık havuzu
+
+const spotPool = [];
+let haloTexture = null;
+
+function getHaloTexture() {
+    // tavandan vuran spotun duvarda bıraktığı, üstü daha parlak ışık lekesi
+    haloTexture ??= canvasTexture(256, 256, (g, w, h) => {
+        const grad = g.createRadialGradient(w / 2, h * 0.42, 0, w / 2, h * 0.5, w / 2);
+        grad.addColorStop(0, 'rgba(255,244,226,0.9)');
+        grad.addColorStop(0.55, 'rgba(255,240,220,0.45)');
+        grad.addColorStop(1, 'rgba(255,240,220,0)');
+        g.fillStyle = grad;
+        g.fillRect(0, 0, w, h);
+    });
+    return haloTexture;
+}
+
+function createSpotPool(count, shadowCount) {
+    for (let i = 0; i < count; i++) {
+        const light = new THREE.SpotLight('#fff4e5', 0, 0, 0.5, 0.65, 1.6);
+        if (i < shadowCount) {
+            light.castShadow = true;
+            light.shadow.mapSize.set(1024, 1024);
+            light.shadow.bias = -0.0004;
+            light.shadow.radius = 4;
+        }
+        scene.add(light, light.target);
+        spotPool.push({ light, entry: null, fade: 0 });
+    }
+}
+
+let poolTick = 0;
+const liveLabels = [];
+
+/** En yakın eserlere gerçek spot ver, yakındaki etiketleri oluştur. */
+function updatePool(now, force = false) {
+    if (!spotPool.length || (!force && now - poolTick < 200)) return;
+    poolTick = now;
+    const cam = camera.position;
+    const dist = (e) => Math.hypot(e.center.x - cam.x, e.center.z - cam.z);
+
+    const wanted = arts.filter((e) => e.on).sort((a, b) => dist(a) - dist(b)).slice(0, spotPool.length);
+    const wantedSet = new Set(wanted);
+    for (const slot of spotPool) {
+        if (slot.entry && !wantedSet.has(slot.entry)) {
+            slot.entry.poolSlot = null;
+            slot.entry = null;
+        }
+    }
+    for (const e of wanted) {
+        if (e.poolSlot) continue;
+        const slot = spotPool.find((p) => !p.entry);
+        if (!slot) break;
+        slot.entry = e;
+        slot.fade = 0;
+        e.poolSlot = slot;
+        slot.light.position.copy(e.spotPos);
+        slot.light.angle = e.spotAngle;
+        slot.light.target.position.copy(e.center);
+        slot.light.target.updateMatrixWorld();
+    }
+
+    // etiketler yalnızca yakınken oluşturulur, uzaklaşınca bellekten atılır
+    for (const e of arts) {
+        if (!e.labelReady && dist(e) < 7) {
+            e.labelMat.map = labelTexture(e.art, 0.6);
+            e.labelMat.color.setScalar(1);
+            e.labelMat.needsUpdate = true;
+            e.labelReady = true;
+            liveLabels.push(e);
+        }
+    }
+    if (liveLabels.length > 16) {
+        liveLabels.sort((a, b) => dist(a) - dist(b));
+        for (const e of liveLabels.splice(16)) {
+            e.labelMat.map.dispose();
+            e.labelMat.map = null;
+            e.labelMat.needsUpdate = true;
+            e.labelReady = false;
+        }
+    }
+}
+
+function buildRoom(W, D, H, railXs = null) {
     const wood = woodTexture();
     wood.repeat.set(W / 2.4, D / 4.8);
     floor = new THREE.Mesh(
@@ -372,7 +590,9 @@ function buildRoom(W, D, H) {
         wall.position.set(...def.pos);
         wall.rotation.y = def.rot;
         wall.receiveShadow = true;
+        wall.userData.occluder = true;
         scene.add(wall);
+        occluders.push(wall);
 
         const base = new THREE.Mesh(new THREE.BoxGeometry(def.w, 0.09, 0.015), baseMat);
         base.position.set(def.pos[0], 0.045, def.pos[2]);
@@ -386,7 +606,7 @@ function buildRoom(W, D, H) {
 
     // tavan rayları
     const railMat = new THREE.MeshStandardMaterial({ color: '#222', roughness: 0.4, metalness: 0.6 });
-    for (const x of [-W / 2 + 1.3, W / 2 - 1.3]) {
+    for (const x of railXs ?? [-W / 2 + 1.3, W / 2 - 1.3]) {
         const rail = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.03, D - 0.6), railMat);
         rail.position.set(x, H - 0.015, 0);
         scene.add(rail);
@@ -417,7 +637,7 @@ function layoutWall(list, wallCenter, normal, H, gap, labelSpace) {
     }
 }
 
-function placeOnWall(it, wallPoint, normal, H, shadows) {
+function placeOnWall(it, wallPoint, normal, H, shadows, realSpot = true) {
     const { w, h, d } = it.size;
     // müze standardı: merkez ~150 cm, büyük eserlerde alt kenar yerden en az 35 cm
     const cy = Math.max(1.5, h / 2 + 0.35);
@@ -434,11 +654,13 @@ function placeOnWall(it, wallPoint, normal, H, shadows) {
     mesh.castShadow = true;
     group.add(mesh);
 
-    // etiket ışıklandırmadan bağımsız, her zaman net okunur
+    // etiket ışıklandırmadan bağımsız, her zaman net okunur (salonda yaklaşınca yazılır)
     const label = new THREE.Mesh(
         new THREE.BoxGeometry(LABEL.w, LABEL.h, 0.006),
         [0, 1, 2, 3, 4, 5].map((i) => new THREE.MeshBasicMaterial(
-            i === 4 ? { map: labelTexture(it.art), toneMapped: false } : { color: '#d0d0d0' },
+            i === 4
+                ? { map: realSpot ? labelTexture(it.art) : null, toneMapped: false, color: '#ffffff' }
+                : { color: '#d0d0d0' },
         )),
     );
     label.position.set(w / 2 + 0.22 + LABEL.w / 2, 1.45 - cy, 0.003);
@@ -447,27 +669,42 @@ function placeOnWall(it, wallPoint, normal, H, shadows) {
 
     const center = new THREE.Vector3(wallPoint.x, cy, wallPoint.z).addScaledVector(normal, d);
 
-    // eseri tavandan aydınlatan spot
-    const spot = new THREE.SpotLight('#fff4e5', 38, 0, 0.5, 0.65, 1.6);
-    spot.position.copy(center).addScaledVector(normal, 1.3).setY(H - 0.06);
-    const dist = spot.position.distanceTo(center);
-    spot.angle = Math.min(1.1, Math.atan((Math.max(w, h) * 0.62 + 0.15) / dist));
+    // eseri tavandan aydınlatan spot (salonda havuzdan atanır)
+    const spotPos = center.clone().addScaledVector(normal, 1.3).setY(H - 0.06);
+    const dist = spotPos.distanceTo(center);
+    const spotAngle = Math.min(1.1, Math.atan((Math.max(w, h) * 0.62 + 0.15) / dist));
     const spotMax = 10 + dist * dist * 4;
-    spot.intensity = spotMax;
-    spot.target.position.copy(center);
-    if (shadows) {
-        spot.castShadow = true;
-        spot.shadow.mapSize.set(1024, 1024);
-        spot.shadow.bias = -0.0004;
-        spot.shadow.radius = 4;
+    let spot = null, halo = null;
+    if (realSpot) {
+        spot = new THREE.SpotLight('#fff4e5', spotMax, 0, spotAngle, 0.65, 1.6);
+        spot.position.copy(spotPos);
+        spot.target.position.copy(center);
+        if (shadows) {
+            spot.castShadow = true;
+            spot.shadow.mapSize.set(1024, 1024);
+            spot.shadow.bias = -0.0004;
+            spot.shadow.radius = 4;
+        }
+        scene.add(spot, spot.target);
+    } else {
+        halo = new THREE.Mesh(
+            new THREE.PlaneGeometry(Math.max(w, h) * 1.1 + 1.0, h * 1.3 + 1.3),
+            new THREE.MeshBasicMaterial({
+                map: getHaloTexture(), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0,
+            }),
+        );
+        halo.position.set(0, 0.15, 0.002);
+        group.add(halo);
+        front.emissive = new THREE.Color('#ffffff');
+        front.emissiveMap = it.tex;
+        front.emissiveIntensity = 0;
     }
-    scene.add(spot, spot.target);
 
     const fixture = new THREE.Mesh(
         new THREE.CylinderGeometry(0.045, 0.06, 0.16, 20),
         new THREE.MeshStandardMaterial({ color: '#1d1d1d', roughness: 0.4, metalness: 0.5 }),
     );
-    fixture.position.copy(spot.position).setY(H - 0.1);
+    fixture.position.copy(spotPos).setY(H - 0.1);
     fixture.lookAt(center);
     fixture.rotateX(Math.PI / 2);
     scene.add(fixture);
@@ -483,7 +720,8 @@ function placeOnWall(it, wallPoint, normal, H, shadows) {
 
     const entry = {
         art: it.art, mesh, label, front, center, normal: normal.clone(), size: it.size, full: false,
-        spot, spotMax, lens, on: true, level: 1,
+        spot, spotMax, spotPos, spotAngle, lens, halo, on: true, level: 1,
+        poolSlot: null, poolLevel: 0, labelMat: label.material[4], labelReady: realSpot,
     };
     entry.switch = buildSwitch(entry, group, -(w / 2 + 0.28), 1.1 - cy);
     mesh.userData.entry = label.userData.entry = entry;
@@ -570,9 +808,22 @@ function updateLights(dt) {
     scene.environmentIntensity = 0.03 + 0.32 * a;
     for (const m of lighting.basics) m.color.setScalar(0.3 + 0.7 * a);
 
+    for (const slot of spotPool) {
+        slot.fade = slot.entry ? Math.min(1, slot.fade + dt * 4) : 0;
+        slot.light.intensity = slot.entry ? slot.entry.spotMax * slot.entry.level * slot.fade : 0;
+    }
+
     for (const e of arts) {
         e.level += ((e.on ? 1 : 0) - e.level) * Math.min(1, dt * 10);
-        e.spot.intensity = e.spotMax * e.level;
+        if (e.spot) {
+            e.spot.intensity = e.spotMax * e.level;
+        } else {
+            // gerçek spot gelene kadar duvardaki hüzme ve hafif parlama ışığı taklit eder
+            e.poolLevel += ((e.poolSlot ? e.poolSlot.fade : 0) - e.poolLevel) * Math.min(1, dt * 8);
+            const fake = e.level * (1 - e.poolLevel);
+            e.halo.material.opacity = fake * (0.35 + 0.5 * (1 - lighting.level));
+            e.front.emissiveIntensity = fake * 0.22;
+        }
         e.lens.material.color.setRGB(1, 0.95, 0.86).multiplyScalar(0.12 + 0.88 * e.level);
         const sw = e.switch;
         sw.pivot.rotation.x += ((e.on ? -0.13 : 0.13) - sw.pivot.rotation.x) * Math.min(1, dt * 30);
@@ -581,8 +832,8 @@ function updateLights(dt) {
     }
 }
 
-function buildBench(D) {
-    bench = new THREE.Group();
+function buildBench(x, z, rotY) {
+    const bench = new THREE.Group();
     const top = new THREE.Mesh(
         new THREE.BoxGeometry(1.6, 0.06, 0.45),
         new THREE.MeshStandardMaterial({ color: '#7a5634', roughness: 0.55 }),
@@ -596,9 +847,12 @@ function buildBench(D) {
         leg.position.set(x, 0.2, 0);
         bench.add(leg);
     }
-    bench.position.set(0, 0, D / 2 - 3.6);
+    bench.position.set(x, 0, z);
+    bench.rotation.y = rotY;
     bench.add(contactShadow(1.9, 0.75));
     scene.add(bench);
+    const along = Math.abs(Math.sin(rotY)) > 0.5;
+    rects.push({ x, z, hx: along ? 0.525 : 1.1, hz: along ? 1.1 : 0.525 });
 }
 
 function contactShadow(w, d, opacity = 0.35) {
@@ -691,7 +945,7 @@ function buildEntranceSign(W, D, H, photoTex) {
         g.fillText('BeArtShare', w / 2, 230);
         g.font = '400 84px Prompt, sans-serif';
         g.fillStyle = '#555';
-        g.fillText(data.artist, w / 2, 400);
+        g.fillText(data.subtitle || data.artist, w / 2, 400);
     });
     const sign = new THREE.Mesh(
         new THREE.PlaneGeometry(3.2, 0.8),
@@ -759,12 +1013,13 @@ function clampPosition(p) {
     const m = 0.45;
     p.x = THREE.MathUtils.clamp(p.x, -room.W / 2 + m, room.W / 2 - m);
     p.z = THREE.MathUtils.clamp(p.z, -room.D / 2 + m, room.D / 2 - m);
-    // bankın içinden geçme
-    const bx = 0.8 + 0.3, bz = 0.225 + 0.3;
-    const lx = p.x - bench.position.x, lz = p.z - bench.position.z;
-    if (Math.abs(lx) < bx && Math.abs(lz) < bz) {
-        if (bx - Math.abs(lx) < bz - Math.abs(lz)) p.x = bench.position.x + Math.sign(lx || 1) * bx;
-        else p.z = bench.position.z + Math.sign(lz || 1) * bz;
+    // bank ve ara duvarların içinden geçme
+    for (const r of rects) {
+        const lx = p.x - r.x, lz = p.z - r.z;
+        if (Math.abs(lx) < r.hx && Math.abs(lz) < r.hz) {
+            if (r.hx - Math.abs(lx) < r.hz - Math.abs(lz)) p.x = r.x + Math.sign(lx || 1) * r.hx;
+            else p.z = r.z + Math.sign(lz || 1) * r.hz;
+        }
     }
     for (const o of obstacles) {
         const dx = p.x - o.x, dz = p.z - o.z, dist = Math.hypot(dx, dz);
@@ -831,8 +1086,8 @@ function focusOn(entry, duration = 1300) {
 function pick(clientX, clientY) {
     ndc.set((clientX / window.innerWidth) * 2 - 1, -(clientY / window.innerHeight) * 2 + 1);
     raycaster.setFromCamera(ndc, camera);
-    const hits = raycaster.intersectObjects([...clickables, floor], false);
-    return hits[0] || null;
+    const hit = raycaster.intersectObjects([...clickables, floor, ...occluders], false)[0];
+    return hit && !hit.object.userData.occluder ? hit : null;
 }
 
 const dom = renderer.domElement;
@@ -905,7 +1160,13 @@ window.addEventListener('resize', () => {
 
 // ---------------------------------------------------------------- arayüz
 
-document.getElementById('btn-focus').addEventListener('click', () => arts[0] && focusOn(arts[0]));
+document.getElementById('btn-focus').addEventListener('click', () => {
+    if (!arts.length) return;
+    if (!HALL) return focusOn(arts[0]);
+    const cam = camera.position;
+    const near = [...arts].sort((a, b) => a.center.distanceToSquared(cam) - b.center.distanceToSquared(cam))[0];
+    focusOn(near);
+});
 document.getElementById('btn-lights').addEventListener('click', (e) => {
     setRoomLights(lighting.target < 0.5);
     e.currentTarget.blur();
@@ -961,7 +1222,7 @@ function updateInfo(now) {
     if (now - infoTick < 150) return;
     infoTick = now;
     raycaster.setFromCamera(center, camera);
-    const hit = raycaster.intersectObjects(clickables, false)[0];
+    const hit = raycaster.intersectObjects([...clickables, ...occluders], false)[0];
     showInfo(hit && hit.distance < 5 ? hit.object.userData.entry : null);
 }
 
@@ -998,6 +1259,7 @@ function frame(now) {
         clampPosition(camera.position);
     }
 
+    if (room) updatePool(now);
     updateLights(dt);
     if (room) updateInfo(now);
     renderer.render(scene, camera);

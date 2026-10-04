@@ -48,6 +48,7 @@
         .ld-mark { font-weight: 300; font-size: 30px; letter-spacing: .02em; color: #1a1a1a; }
         .ld-sub { font-size: 13px; color: #8a847c; margin-top: 2px; letter-spacing: .08em; text-transform: uppercase; }
         .ld-wall { display: flex; justify-content: center; align-items: flex-end; gap: 10px; height: 92px; margin: 34px 0 30px; }
+        .ld-wall.many { flex-wrap: wrap; height: auto; min-height: 92px; align-content: center; align-items: center; gap: 6px; }
         .ld-frame { position: relative; width: 52px; height: 64px; background: #fff; box-shadow: 0 6px 18px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.08);
             overflow: hidden; transition: width .6s cubic-bezier(.2,.8,.2,1), height .6s cubic-bezier(.2,.8,.2,1), transform .6s; animation: ld-float 3s ease-in-out infinite; }
         .ld-frame::before { content: ''; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 20%, rgba(0,0,0,.06) 50%, transparent 80%);
@@ -116,7 +117,7 @@
     <div id="loading">
         <div class="ld">
             <div class="ld-mark">BeArtShare</div>
-            <div class="ld-sub">{{ $payload['artist'] }} · Sanal Galeri</div>
+            <div class="ld-sub">{{ $payload['subtitle'] ?? $payload['artist'] }} · Sanal Galeri</div>
             <div class="ld-wall" id="ld-wall"></div>
             <div class="ld-bar"><span id="ld-bar"></span></div>
             <div class="ld-row"><span id="ld-step">Galeri açılıyor…</span><span id="ld-pct">0%</span></div>

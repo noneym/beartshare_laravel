@@ -60,6 +60,58 @@
         </div>
     </div>
 
+    <!-- Aylık satış -->
+    <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+        <div class="flex flex-wrap items-start justify-between gap-4 mb-4">
+            <div>
+                <h2 class="text-lg font-semibold text-gray-900">Aylık Satış</h2>
+                <p class="text-sm text-gray-500 mt-1">
+                    {{ number_format($monthly['total'], 0, ',', '.') }} TL · {{ $monthly['orders'] }} sipariş
+                    <span class="text-gray-400">(ödemesi alınmış siparişler, ödeme tarihine göre)</span>
+                </p>
+            </div>
+            <div class="inline-flex rounded-lg border border-gray-200 overflow-hidden text-sm">
+                @foreach(['12' => 'Son 12 ay', '24' => 'Son 24 ay', 'tumu' => 'Tümü'] as $key => $label)
+                    <a href="{{ route('admin.dashboard', ['ay' => $key]) }}"
+                       class="px-3 py-1.5 {{ $range === $key ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-50' }} {{ !$loop->first ? 'border-l border-gray-200' : '' }}">{{ $label }}</a>
+                @endforeach
+            </div>
+        </div>
+        <div class="relative h-72">
+            <canvas id="monthlySalesChart"></canvas>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script>
+        (function () {
+            const data = @js($monthly);
+            const tl = (v) => new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 0 }).format(v) + ' TL';
+            new Chart(document.getElementById('monthlySalesChart'), {
+                data: {
+                    labels: data.labels,
+                    datasets: [
+                        { type: 'bar', label: 'Ciro (TL)', data: data.revenue, backgroundColor: 'rgba(212, 160, 23, 0.75)', borderRadius: 4, yAxisID: 'y' },
+                        { type: 'line', label: 'Sipariş', data: data.count, borderColor: '#111827', backgroundColor: '#111827', tension: 0.3, cubicInterpolationMode: 'monotone', pointRadius: 3, yAxisID: 'y1' },
+                    ],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: { callbacks: { label: (c) => c.dataset.yAxisID === 'y' ? ' Ciro: ' + tl(c.parsed.y) : ' Sipariş: ' + c.parsed.y } },
+                    },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { callback: (v) => v >= 1e6 ? (v / 1e6).toLocaleString('tr-TR') + ' M' : (v >= 1e3 ? (v / 1e3).toLocaleString('tr-TR') + ' B' : v) } },
+                        y1: { beginAtZero: true, position: 'right', grid: { drawOnChartArea: false }, ticks: { precision: 0 } },
+                    },
+                },
+            });
+        })();
+    </script>
+
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Recent Artworks -->
         <div class="bg-white rounded-xl shadow-sm">

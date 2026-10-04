@@ -157,7 +157,8 @@
                                 <div class="lg:col-span-5">
                                     <div class="slide-title">
                                         <span class="inline-block text-white/40 text-xs font-medium tracking-[0.25em] uppercase mb-4">Eser Kabulü</span>
-                                        <h2 class="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[0.95] tracking-tight" style="text-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                                        {{-- "Koleksiyonerden" uzun tek kelime: dar ekranda taşmasın diye mobilde bir boy küçük --}}
+                                        <h2 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[0.95] tracking-tight" style="text-shadow: 0 4px 20px rgba(0,0,0,0.08);">
                                             Koleksiyonerden<br>Koleksiyonere
                                         </h2>
                                     </div>
@@ -171,7 +172,7 @@
                                 <!-- Right: Description -->
                                 <div class="lg:col-span-6 lg:col-start-7">
                                     <p class="slide-desc text-white/85 text-sm md:text-[15px] leading-[1.8] max-w-md">
-                                        Elinizdeki eserleri BeArtShare aracılığıyla, çok düşük komisyon oranlarıyla şeffaf ve güvenli bir şekilde koleksiyonerlere ulaştırın. Profesyonel fotoğraflama ve kataloglama hizmeti ile eserlerinizi en iyi şekilde tanıtıyoruz.
+                                        Eserlerinizi çok düşük komisyonla, şeffaf ve güvenli şekilde koleksiyonerlere ulaştırın. Fotoğraflama ve kataloglama bizden.
                                     </p>
                                 </div>
                             </div>

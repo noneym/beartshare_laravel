@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\ArtworkSubmission;
 use App\Models\User;
+use App\Services\NotificationService;
+use App\Support\ImageUrl;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -77,13 +79,16 @@ class ArtworkSubmissionController extends Controller
         try {
             $data = $validated;
             $data['images'] = $imagePaths;
+            $data['id'] = $submission->id;
 
-            Mail::html($this->buildSubmissionEmail($data), function ($message) use ($data) {
-                $message->to('info@beartshare.com')
-                    ->subject('Yeni Eser Basvurusu - ' . $data['artwork_title'])
-                    ->from(config('mail.from.address', 'info@beartshare.com'), 'BeArtShare')
-                    ->replyTo($data['email'], $data['name']);
-            });
+            (new NotificationService())->sendAdminNotification(
+                'Yeni Eser Başvurusu - ' . $data['artwork_title'],
+                $this->buildSubmissionEmail($data),
+                'artwork_submission',
+                $data['email'],
+                $data['name'],
+                $user?->id
+            );
         } catch (\Exception $e) {
             Log::error('Eser kabul email hatasi: ' . $e->getMessage());
         }
@@ -190,39 +195,46 @@ class ArtworkSubmissionController extends Controller
      */
     protected function buildSubmissionEmail(array $data): string
     {
-        $technique = $data['technique'] ?? '-';
-        $dimensions = $data['dimensions'] ?? '-';
-        $year = $data['year'] ?? '-';
-        $price = $data['expected_price'] ?? '-';
-        $notes = $data['notes'] ?? '-';
-        $imageCount = count($data['images'] ?? []);
+        // Form girdileri HTML'e kaçışlanarak basılır
+        $v = fn ($key) => e(trim((string) ($data[$key] ?? '')) ?: '-');
+        $images = $data['images'] ?? [];
+        $adminUrl = isset($data['id']) ? route('admin.artwork-submissions.show', $data['id']) : null;
+
+        $thumbs = '';
+        foreach ($images as $path) {
+            $thumbs .= "<a href='" . e(ImageUrl::make($path, 'detail')) . "' style='display:inline-block;margin:0 8px 8px 0;'>"
+                . "<img src='" . e(ImageUrl::make($path, 'thumb')) . "' alt='' width='160' style='width:160px;height:auto;border:1px solid #eee;'></a>";
+        }
+
+        $row = fn ($label, $value) => "<tr><td style='padding: 4px 0; font-weight: bold; width: 140px; vertical-align: top;'>{$label}:</td><td>{$value}</td></tr>";
 
         return "
         <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
-            <div style='background: #5C4290; padding: 24px; text-align: center;'>
-                <h1 style='color: #fff; font-size: 20px; margin: 0;'>Yeni Eser Basvurusu</h1>
+            <div style='background: #14171c; padding: 24px; text-align: center;'>
+                <h1 style='color: #fff; font-size: 20px; margin: 0;'>Yeni Eser Başvurusu</h1>
             </div>
             <div style='padding: 32px 24px; background: #fff;'>
-                <h2 style='color: #333; font-size: 16px; margin: 0 0 16px; border-bottom: 1px solid #eee; padding-bottom: 8px;'>Kisisel Bilgiler</h2>
+                <h2 style='color: #333; font-size: 16px; margin: 0 0 16px; border-bottom: 1px solid #eee; padding-bottom: 8px;'>Kişisel Bilgiler</h2>
                 <table style='width: 100%; font-size: 14px; color: #555;'>
-                    <tr><td style='padding: 4px 0; font-weight: bold; width: 140px;'>Ad Soyad:</td><td>{$data['name']}</td></tr>
-                    <tr><td style='padding: 4px 0; font-weight: bold;'>Telefon:</td><td>{$data['phone']}</td></tr>
-                    <tr><td style='padding: 4px 0; font-weight: bold;'>E-posta:</td><td><a href='mailto:{$data['email']}'>{$data['email']}</a></td></tr>
+                    " . $row('Ad Soyad', $v('name')) . "
+                    " . $row('Telefon', $v('phone')) . "
+                    " . $row('E-posta', "<a href='mailto:" . $v('email') . "'>" . $v('email') . "</a>") . "
                 </table>
 
                 <h2 style='color: #333; font-size: 16px; margin: 24px 0 16px; border-bottom: 1px solid #eee; padding-bottom: 8px;'>Eser Bilgileri</h2>
                 <table style='width: 100%; font-size: 14px; color: #555;'>
-                    <tr><td style='padding: 4px 0; font-weight: bold; width: 140px;'>Sanatci:</td><td>{$data['artist_name']}</td></tr>
-                    <tr><td style='padding: 4px 0; font-weight: bold;'>Eser Adi:</td><td>{$data['artwork_title']}</td></tr>
-                    <tr><td style='padding: 4px 0; font-weight: bold;'>Teknik:</td><td>{$technique}</td></tr>
-                    <tr><td style='padding: 4px 0; font-weight: bold;'>Boyutlar:</td><td>{$dimensions}</td></tr>
-                    <tr><td style='padding: 4px 0; font-weight: bold;'>Yapim Yili:</td><td>{$year}</td></tr>
-                    <tr><td style='padding: 4px 0; font-weight: bold;'>Beklenen Fiyat:</td><td>{$price}</td></tr>
-                    <tr><td style='padding: 4px 0; font-weight: bold;'>Fotograf Sayisi:</td><td>{$imageCount} adet</td></tr>
+                    " . $row('Sanatçı', $v('artist_name')) . "
+                    " . $row('Eser Adı', $v('artwork_title')) . "
+                    " . $row('Teknik', $v('technique')) . "
+                    " . $row('Boyutlar', $v('dimensions')) . "
+                    " . $row('Yapım Yılı', $v('year')) . "
+                    " . $row('Beklenen Fiyat', $v('expected_price')) . "
                 </table>
 
                 <h2 style='color: #333; font-size: 16px; margin: 24px 0 16px; border-bottom: 1px solid #eee; padding-bottom: 8px;'>Notlar</h2>
-                <p style='color: #555; font-size: 14px; line-height: 1.6;'>{$notes}</p>
+                <p style='color: #555; font-size: 14px; line-height: 1.6; white-space: pre-wrap;'>" . $v('notes') . "</p>
+                " . ($thumbs ? "<h2 style='color: #333; font-size: 16px; margin: 24px 0 16px; border-bottom: 1px solid #eee; padding-bottom: 8px;'>Fotoğraflar (" . count($images) . ")</h2><div>{$thumbs}</div>" : '') . "
+                " . ($adminUrl ? "<p style='margin: 24px 0 0;'><a href='" . e($adminUrl) . "' style='display:inline-block;background:#D4A017;color:#fff;padding:10px 18px;text-decoration:none;'>Admin panelde görüntüle</a></p>" : '') . "
             </div>
             <div style='padding: 16px 24px; background: #f8f8f8; text-align: center;'>
                 <p style='color: #999; font-size: 11px; margin: 0;'>BeArtShare Eser Kabul Sistemi &copy; " . date('Y') . "</p>

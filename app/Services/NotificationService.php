@@ -271,6 +271,45 @@ class NotificationService
     }
 
     /**
+     * Site formlarından gelen bildirimi yöneticiye (config mail.admin_address) gönderir.
+     * Yanıtla → formu dolduran kişiye gider. Sonuç Bildirim Log'a yazılır.
+     */
+    public function sendAdminNotification(string $subject, string $htmlBody, string $type, ?string $replyTo = null, ?string $replyName = null, ?int $userId = null): bool
+    {
+        $to = config('mail.admin_address', 'info@beartshare.com');
+
+        try {
+            Mail::html($htmlBody, function ($message) use ($to, $subject, $replyTo, $replyName) {
+                $message->to($to)
+                    ->subject($subject)
+                    ->from(config('mail.from.address', 'info@beartshare.com'), 'BeArtShare');
+                if ($replyTo) {
+                    $message->replyTo($replyTo, $replyName);
+                }
+            });
+            $status = 'success';
+            $error = null;
+        } catch (\Throwable $e) {
+            Log::error("Yonetici bildirimi gonderilemedi ({$type}): " . $e->getMessage());
+            $status = 'failed';
+            $error = $e->getMessage();
+        }
+
+        $this->logNotification([
+            'channel' => 'email',
+            'type' => $type,
+            'recipient' => $to,
+            'subject' => $subject,
+            'message' => mb_substr(trim(preg_replace('/\s+/', ' ', strip_tags($htmlBody))), 0, 500),
+            'status' => $status,
+            'error' => $error,
+            'user_id' => $userId,
+        ]);
+
+        return $status === 'success';
+    }
+
+    /**
      * Basit HTML e-posta gönder
      */
     protected function sendEmail(string $to, string $subject, string $htmlBody): void

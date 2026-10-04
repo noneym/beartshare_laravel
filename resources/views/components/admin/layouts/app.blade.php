@@ -18,12 +18,37 @@
     </script>
     <!-- Alpine.js (modal, dropdown vb. için) -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <style>[x-cloak] { display: none !important; }</style>
+    <style>
+        [x-cloak] { display: none !important; }
+        /* Masaüstünde menü gizlenebilir (tercih localStorage'da) */
+        @media (min-width: 1024px) { html.sidebar-collapsed #admin-sidebar { display: none; } }
+    </style>
+    <script>
+        try { if (localStorage.getItem('admin-sidebar') === 'collapsed') document.documentElement.classList.add('sidebar-collapsed'); } catch (e) {}
+    </script>
 </head>
 <body class="bg-gray-100">
-    <div class="min-h-screen flex">
-        <!-- Sidebar -->
-        <aside class="w-64 bg-gray-900 text-white">
+    <div class="min-h-screen flex"
+         x-data="{
+            mobileOpen: false,
+            toggleMenu() {
+                if (window.innerWidth < 1024) { this.mobileOpen = !this.mobileOpen; return; }
+                const collapsed = document.documentElement.classList.toggle('sidebar-collapsed');
+                try { localStorage.setItem('admin-sidebar', collapsed ? 'collapsed' : 'open'); } catch (e) {}
+            },
+         }"
+         @keydown.escape.window="mobileOpen = false">
+        <!-- Mobil: menü açıkken arka plan -->
+        <div x-show="mobileOpen" x-cloak x-transition.opacity @click="mobileOpen = false"
+             class="fixed inset-0 bg-black/50 z-40 lg:hidden"></div>
+
+        <!-- Sidebar: mobilde soldan açılan çekmece, masaüstünde sabit sütun -->
+        <aside id="admin-sidebar"
+               class="fixed inset-y-0 left-0 z-50 w-64 shrink-0 bg-gray-900 text-white overflow-y-auto transform transition-transform duration-200 -translate-x-full lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen"
+               :class="mobileOpen && '!translate-x-0'">
+            <button type="button" @click="mobileOpen = false" class="lg:hidden absolute top-4 right-3 p-1.5 text-gray-400 hover:text-white" aria-label="Menüyü kapat">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
             <div class="p-4 border-b border-gray-800">
                 <a href="{{ route('admin.dashboard') }}" class="block">
                     <img src="{{ asset('images/logo.svg') }}" alt="BeArtShare" class="h-10 brightness-0 invert">
@@ -198,27 +223,30 @@
         </aside>
 
         <!-- Main Content -->
-        <main class="flex-1 flex flex-col">
+        <main class="flex-1 min-w-0 flex flex-col">
             <!-- Top Bar -->
-            <header class="bg-white border-b border-gray-200 px-8 py-3 flex items-center justify-between sticky top-0 z-30">
-                <div class="flex items-center gap-3 text-sm text-gray-500">
+            <header class="bg-white border-b border-gray-200 px-4 lg:px-8 py-3 flex items-center justify-between gap-3 sticky top-0 z-30">
+                <div class="flex items-center gap-3 text-sm text-gray-500 min-w-0">
+                    <button type="button" @click="toggleMenu()" class="inline-flex items-center justify-center p-1.5 border border-gray-200 rounded-md hover:bg-gray-50 hover:text-gray-800 transition" aria-label="Menüyü aç/kapat" title="Menü">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    </button>
                     <a href="javascript:history.back()" class="inline-flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-md hover:bg-gray-50 hover:text-gray-800 transition">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                         </svg>
                         <span>Geri</span>
                     </a>
-                    <a href="{{ route('admin.dashboard') }}" class="hover:text-gray-800">Admin Panel</a>
+                    <a href="{{ route('admin.dashboard') }}" class="hover:text-gray-800 hidden sm:inline">Admin Panel</a>
                 </div>
                 <a href="{{ route('home') }}" target="_blank" class="inline-flex items-center gap-1.5 bg-gray-800 hover:bg-black text-white px-4 py-1.5 rounded-md text-sm transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
                     </svg>
-                    <span>Siteye Dön</span>
+                    <span class="hidden sm:inline">Siteye Dön</span>
                 </a>
             </header>
 
-            <div class="flex-1 p-8">
+            <div class="flex-1 p-4 lg:p-8">
                 @if(session('success'))
                     <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">
                         {{ session('success') }}

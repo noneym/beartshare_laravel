@@ -79,8 +79,9 @@
                     <h2 class="text-sm font-semibold text-gray-500 uppercase mb-4">Görseller ({{ count($submission->images) }})</h2>
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                         @foreach($submission->images as $img)
-                            <a href="{{ asset('storage/' . $img) }}" target="_blank" class="block aspect-square bg-gray-100 overflow-hidden rounded hover:opacity-90 transition">
-                                <img src="{{ asset('storage/' . $img) }}" alt="Eser görseli" class="w-full h-full object-cover">
+                            {{-- Görseller yükleme diskinde (R2); Thumbor ile gösterilir --}}
+                            <a href="{{ \App\Support\ImageUrl::make($img, 'detail') }}" target="_blank" class="block aspect-square bg-gray-100 overflow-hidden rounded hover:opacity-90 transition">
+                                <img src="{{ \App\Support\ImageUrl::make($img, 'thumb') }}" alt="Eser görseli" class="w-full h-full object-cover">
                             </a>
                         @endforeach
                     </div>

@@ -107,6 +107,9 @@ return [
     |
     */
 
+    // Site formlarından (iletişim, eser başvurusu) gelen bildirimlerin gittiği adres
+    'admin_address' => env('MAIL_ADMIN_ADDRESS', 'info@beartshare.com'),
+
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
         'name' => env('MAIL_FROM_NAME', 'Example'),

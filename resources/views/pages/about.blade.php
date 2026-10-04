@@ -21,6 +21,40 @@
                 Online sanat galerimiz tecrübesi ile seçilen eserleri sanatseverlerin beğenisine sunuyoruz. Her bir eser, uzman ekibimiz tarafından titizlikle değerlendirilmekte ve orijinalliği garanti altına alınmaktadır.
             </p>
 
+        </div>
+
+        {{-- Biz Kimiz: ekip (görseller R2'de about/team/, Thumbor 'team' boyutu) --}}
+        @php
+            $team = [
+                ['name' => 'Sinan Aydın', 'role' => 'Co-Founder', 'image' => 'about/team/sinan-aydin.jpg'],
+                ['name' => 'Osman Nuri İyem', 'role' => 'Co-Founder', 'image' => 'about/team/osman-nuri-iyem.jpg'],
+                ['name' => 'Gizem Kahya İyem', 'role' => 'Sanat Danışmanı', 'image' => 'about/team/gizem-kahya-iyem.jpg'],
+                ['name' => 'Doğa Atçı', 'role' => 'Sanat Danışmanı', 'image' => 'about/team/doga-atci-2.jpg'],
+                ['name' => 'Berk Say', 'role' => 'Yazılım Danışmanı', 'image' => 'about/team/berk-say.jpg'],
+            ];
+        @endphp
+        <section class="max-w-5xl mx-auto my-12">
+            <div class="max-w-3xl mx-auto">
+                <h2 class="text-2xl font-semibold text-brand-black100 mb-4">Biz Kimiz</h2>
+                <p class="text-gray-500 text-sm leading-relaxed mb-10">
+                    BeArtShare A.Ş. Sinan Aydın ve Osman Nuri İyem tarafından kurulmuştur. Av. Sinan Aydın müzayede evleri ve sanat galerilerine danışmanlık vermiş, sanat koleksiyoneri bir avukat olup, Osman Nuri İyem Evin Sanat Galerisi'nin sahibi, aynı zamanda fotoğraf sanatçısı ve küratördür. Her ikisi de yıllardır sanat piyasasında güvenilirlikleri ile önemli bir yer edinmişlerdir. Ekibimizde ayrıca Gizem Kahya İyem ve Doğa Atçı sanat danışmanlarımız, Berk Say ise start-up yazılım danışmanımız olarak yer almaktadır.
+                </p>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-4 gap-y-8">
+                @foreach($team as $member)
+                    <div class="text-center">
+                        <div class="aspect-[3/4] bg-gray-100 overflow-hidden mb-3">
+                            <img src="{{ \App\Support\ImageUrl::make($member['image'], 'team') }}" alt="{{ $member['name'] }}"
+                                 loading="lazy" class="w-full h-full object-cover">
+                        </div>
+                        <p class="text-sm font-medium text-brand-black100">{{ $member['name'] }}</p>
+                        <p class="text-xs text-gray-400 mt-0.5">{{ $member['role'] }}</p>
+                    </div>
+                @endforeach
+            </div>
+        </section>
+
+        <div class="max-w-3xl mx-auto">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 my-12">
                 <div class="border border-gray-100 p-8">
                     <h2 class="text-lg font-semibold text-brand-black100 mb-4">Misyonumuz</h2>

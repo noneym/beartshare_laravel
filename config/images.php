@@ -24,5 +24,6 @@ return [
         'avatar' => [320, 320],
         'blog'   => [1200, 0],
         'email'  => [1200, 0], // 600px e-posta gövdesi, retina için 2x
+        'team'   => [600, 800], // Hakkımızda ekip kartı (3:4, yüz odaklı kırpma)
     ],
 ];

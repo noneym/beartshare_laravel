@@ -65,11 +65,13 @@
                        class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary">
             </div>
             <label class="flex items-center gap-2 text-sm text-gray-700 py-2">
-                <input type="checkbox" name="group" value="1" {{ request()->boolean('group') ? 'checked' : '' }} class="rounded border-gray-300 text-primary focus:ring-primary">
+                <input type="hidden" name="group" value="0">
+                <input type="checkbox" name="group" value="1" {{ $grouped ? 'checked' : '' }} class="rounded border-gray-300 text-primary focus:ring-primary">
                 Esere göre grupla
             </label>
             <label class="flex items-center gap-2 text-sm text-gray-700 py-2">
-                <input type="checkbox" name="hide_sold" value="1" {{ request()->boolean('hide_sold') ? 'checked' : '' }} class="rounded border-gray-300 text-primary focus:ring-primary">
+                <input type="hidden" name="hide_sold" value="0">
+                <input type="checkbox" name="hide_sold" value="1" {{ $hideSold ? 'checked' : '' }} class="rounded border-gray-300 text-primary focus:ring-primary">
                 Satılmış eserleri gizle
             </label>
             <div class="min-w-[180px]">

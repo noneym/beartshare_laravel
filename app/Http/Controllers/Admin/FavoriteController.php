@@ -21,7 +21,10 @@ class FavoriteController extends Controller
 
         // Siralama
         $sort = $request->get('sort', 'latest');
-        $grouped = $request->boolean('group');
+        // "Esere göre grupla" ve "Satılmış eserleri gizle" varsayılan açık; formda işaret
+        // kaldırılınca gizli alan 0 gönderir (bkz. index.blade.php)
+        $grouped = $request->has('group') ? $request->boolean('group') : true;
+        $hideSold = $request->has('hide_sold') ? $request->boolean('hide_sold') : true;
 
         // Başlık sıralaması (?sort=<anahtar>&dir=asc|desc); açılır menü değerleriyle çakışmayan anahtarlar
         $artworkCol = fn (string $col) => fn (Builder $q, string $dir) => $q->orderBy(
@@ -109,7 +112,7 @@ class FavoriteController extends Controller
         }
 
         // Satılmış eserleri gizle
-        if ($request->boolean('hide_sold')) {
+        if ($hideSold) {
             $query->whereHas('artwork', fn ($q) => $q->where('is_sold', false));
         }
 
@@ -154,7 +157,7 @@ class FavoriteController extends Controller
                 ->selectRaw('artwork_id, COUNT(*) as c')->groupBy('artwork_id')->pluck('c', 'artwork_id')
             : collect();
 
-        return view('admin.favorites.index', compact('favorites', 'stats', 'topArtworks', 'grouped', 'groupCounts'));
+        return view('admin.favorites.index', compact('favorites', 'stats', 'topArtworks', 'grouped', 'hideSold', 'groupCounts'));
     }
 
     public function updateNote(Request $request, Favorite $favorite)

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\SortsIndex;
 use App\Http\Controllers\Controller;
 use App\Models\BlogCategory;
 use Illuminate\Http\Request;
@@ -9,9 +10,11 @@ use Illuminate\Support\Str;
 
 class BlogCategoryController extends Controller
 {
+    use SortsIndex;
+
     public function index(Request $request)
     {
-        $categories = BlogCategory::withCount('posts')
+        $query = BlogCategory::withCount('posts')
             ->when($request->filled('search'), function ($query) use ($request) {
                 $query->where('title', 'like', '%' . $request->input('search') . '%');
             })
@@ -21,10 +24,17 @@ class BlogCategoryController extends Controller
                     'passive' => $query->where('is_active', false),
                     default => $query,
                 };
-            })
-            ->latest()
-            ->paginate(20)
-            ->withQueryString();
+            });
+
+        $this->applySort($query, $request, [
+            'id' => 'id',
+            'title' => 'title',
+            'slug' => 'slug',
+            'posts' => 'posts_count',
+            'status' => 'is_active',
+        ]) || $query->latest();
+
+        $categories = $query->paginate(20)->withQueryString();
 
         return view('admin.blog-categories.index', compact('categories'));
     }

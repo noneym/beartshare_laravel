@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\SortsIndex;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -9,6 +10,8 @@ use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
+    use SortsIndex;
+
     public function index(Request $request)
     {
         $query = Category::withCount('artworks');
@@ -27,7 +30,16 @@ class CategoryController extends Controller
             $query->where('is_active', $request->status === 'active');
         }
 
-        $categories = $query->orderBy('name')->paginate(20)->withQueryString();
+        // Sıralama (başlık tıklaması yoksa ada göre)
+        $this->applySort($query, $request, [
+            'name' => 'name',
+            'slug' => 'slug',
+            'description' => 'description',
+            'artworks' => 'artworks_count',
+            'status' => 'is_active',
+        ]) || $query->orderBy('name');
+
+        $categories = $query->paginate(20)->withQueryString();
 
         // Istatistikler
         $stats = [

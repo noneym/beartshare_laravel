@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\SortsIndex;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\User;
@@ -12,10 +13,11 @@ use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
+    use SortsIndex;
+
     public function index(Request $request)
     {
-        $query = Order::with('user', 'items.artwork')
-            ->latest();
+        $query = Order::with('user', 'items.artwork');
 
         // Silinmişleri göster
         if ($request->has('with_trashed')) {
@@ -38,6 +40,15 @@ class OrderController extends Controller
                   });
             });
         }
+
+        // Başlık sıralaması (?sort=..&dir=..); yoksa en yeniler
+        $this->applySort($query, $request, [
+            'order_number' => 'orders.order_number',
+            'customer' => 'orders.customer_name',
+            'total' => 'orders.total_tl',
+            'status' => 'orders.status',
+            'date' => 'orders.created_at',
+        ]) || $query->latest();
 
         $orders = $query->paginate(20)->withQueryString();
 

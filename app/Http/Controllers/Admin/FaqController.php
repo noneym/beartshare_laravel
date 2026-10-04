@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\SortsIndex;
 use App\Http\Controllers\Controller;
 use App\Models\Faq;
 use Illuminate\Http\Request;
 
 class FaqController extends Controller
 {
+    use SortsIndex;
+
     public function index(Request $request)
     {
         $query = Faq::query();
@@ -24,7 +27,15 @@ class FaqController extends Controller
             });
         }
 
-        $faqs = $query->ordered()->paginate(20);
+        // Sıralama (başlık tıklaması yoksa sort_order'a göre)
+        $this->applySort($query, $request, [
+            'order' => 'sort_order',
+            'question' => 'question',
+            'category' => 'category',
+            'status' => 'is_active',
+        ]) || $query->ordered();
+
+        $faqs = $query->paginate(20)->withQueryString();
 
         return view('admin.faqs.index', compact('faqs'));
     }

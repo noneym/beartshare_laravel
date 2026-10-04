@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\SortsIndex;
 use App\Http\Controllers\Controller;
 use App\Models\ContactMessage;
 use Illuminate\Http\Request;
 
 class ContactMessageController extends Controller
 {
+    use SortsIndex;
+
     public function index(Request $request)
     {
         $query = ContactMessage::query();
@@ -25,7 +28,15 @@ class ContactMessageController extends Controller
             });
         }
 
-        $messages = $query->orderByDesc('created_at')->paginate(20)->withQueryString();
+        // Başlık sıralaması (yoksa en yeni üstte)
+        $this->applySort($query, $request, [
+            'created' => 'created_at',
+            'name' => 'name',
+            'subject' => 'subject',
+            'status' => 'status',
+        ]) || $query->orderByDesc('created_at');
+
+        $messages = $query->paginate(20)->withQueryString();
 
         $stats = [
             'total'    => ContactMessage::count(),

@@ -95,163 +95,165 @@
 
     {{-- Tablo --}}
     <div class="bg-white rounded-lg shadow overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Eser</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sanatci</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kullanici</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fiyat</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Durum</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Eklenme Tarihi</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[280px]">Admin Notu</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                @php $prevArtworkId = null; @endphp
-                @forelse($favorites as $favorite)
-                    @if($grouped && $favorite->artwork_id !== $prevArtworkId)
-                        @php $prevArtworkId = $favorite->artwork_id; @endphp
-                        <tr class="bg-gray-100">
-                            <td colspan="7" class="px-4 py-2 text-sm">
-                                <span class="font-semibold text-gray-800">#{{ $favorite->artwork_id }} {{ $favorite->artwork?->title ?? 'Silinmiş eser' }}</span>
-                                @if($favorite->artwork?->artist)
-                                    <span class="text-gray-500">, {{ $favorite->artwork->artist->name }}</span>
-                                @endif
-                                <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary/15 text-gray-800">
-                                    {{ $groupCounts[$favorite->artwork_id] ?? 1 }} favori
-                                </span>
-                                <a href="{{ route('admin.favorites.index', ['artwork_id' => $favorite->artwork_id]) }}" class="ml-2 text-xs text-primary hover:underline">Sadece bu eser</a>
-                            </td>
-                        </tr>
-                    @endif
-                    <tr class="hover:bg-gray-50">
-                        {{-- Eser --}}
-                        <td class="px-4 py-3">
-                            @if($favorite->artwork)
-                                <div class="flex items-center gap-3">
-                                    @if($favorite->artwork->first_image_url)
-                                        <img src="{{ $favorite->artwork->first_image_url }}"
-                                             alt="{{ $favorite->artwork->title }}"
-                                             class="w-12 h-12 object-cover rounded">
-                                    @else
-                                        <div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
-                                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                            </svg>
-                                        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <x-admin.th sort="artwork_title" first="asc" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Eser</x-admin.th>
+                        <x-admin.th sort="artist" first="asc" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sanatci</x-admin.th>
+                        <x-admin.th sort="user_name" first="asc" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kullanici</x-admin.th>
+                        <x-admin.th sort="price" first="desc" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fiyat</x-admin.th>
+                        <x-admin.th sort="status" first="asc" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Durum</x-admin.th>
+                        <x-admin.th sort="created" first="desc" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Eklenme Tarihi</x-admin.th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[280px]">Admin Notu</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @php $prevArtworkId = null; @endphp
+                    @forelse($favorites as $favorite)
+                        @if($grouped && $favorite->artwork_id !== $prevArtworkId)
+                            @php $prevArtworkId = $favorite->artwork_id; @endphp
+                            <tr class="bg-gray-100">
+                                <td colspan="7" class="px-4 py-2 text-sm">
+                                    <span class="font-semibold text-gray-800">#{{ $favorite->artwork_id }} {{ $favorite->artwork?->title ?? 'Silinmiş eser' }}</span>
+                                    @if($favorite->artwork?->artist)
+                                        <span class="text-gray-500">, {{ $favorite->artwork->artist->name }}</span>
                                     @endif
-                                    <div>
-                                        <a href="{{ route('admin.artworks.edit', $favorite->artwork) }}"
-                                           class="text-sm font-medium text-gray-900 hover:text-primary">
-                                            {{ Str::limit($favorite->artwork->title, 30) }}
-                                        </a>
-                                        <p class="text-xs text-gray-400">ID: {{ $favorite->artwork->id }}</p>
-                                    </div>
-                                </div>
-                            @else
-                                <span class="text-gray-400 text-sm">Silinmis Eser</span>
-                            @endif
-                        </td>
-
-                        {{-- Sanatci --}}
-                        <td class="px-4 py-3 whitespace-nowrap">
-                            @if($favorite->artwork?->artist)
-                                <a href="{{ route('admin.artists.edit', $favorite->artwork->artist) }}"
-                                   class="text-sm text-gray-700 hover:text-primary">
-                                    {{ $favorite->artwork->artist->name }}
-                                </a>
-                            @else
-                                <span class="text-gray-400 text-sm">-</span>
-                            @endif
-                        </td>
-
-                        {{-- Kullanici --}}
-                        <td class="px-4 py-3">
-                            @if($favorite->user)
-                                <div>
-                                    <a href="{{ route('admin.users.show', $favorite->user) }}"
-                                       class="text-sm font-medium text-gray-900 hover:text-primary">
-                                        {{ $favorite->user->name }}
-                                    </a>
-                                    <p class="text-xs text-gray-400">{{ $favorite->user->email }}</p>
-                                </div>
-                            @else
-                                <span class="text-gray-400 text-sm">Silinmis Kullanici</span>
-                            @endif
-                        </td>
-
-                        {{-- Fiyat --}}
-                        <td class="px-4 py-3 whitespace-nowrap">
-                            @if($favorite->artwork)
-                                <span class="text-sm font-medium text-gray-900">
-                                    {{ $favorite->artwork->formatted_price_tl }}
-                                </span>
-                            @else
-                                <span class="text-gray-400">-</span>
-                            @endif
-                        </td>
-
-                        {{-- Durum --}}
-                        <td class="px-4 py-3 whitespace-nowrap">
-                            @if($favorite->artwork)
-                                @if($favorite->artwork->is_sold)
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
-                                        Satildi
+                                    <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary/15 text-gray-800">
+                                        {{ $groupCounts[$favorite->artwork_id] ?? 1 }} favori
                                     </span>
-                                @elseif($favorite->artwork->is_reserved)
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
-                                        Rezerve
+                                    <a href="{{ route('admin.favorites.index', ['artwork_id' => $favorite->artwork_id]) }}" class="ml-2 text-xs text-primary hover:underline">Sadece bu eser</a>
+                                </td>
+                            </tr>
+                        @endif
+                        <tr class="hover:bg-gray-50">
+                            {{-- Eser --}}
+                            <td class="px-4 py-3">
+                                @if($favorite->artwork)
+                                    <div class="flex items-center gap-3">
+                                        @if($favorite->artwork->first_image_url)
+                                            <img src="{{ $favorite->artwork->first_image_url }}"
+                                                 alt="{{ $favorite->artwork->title }}"
+                                                 class="w-12 h-12 object-cover rounded">
+                                        @else
+                                            <div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
+                                                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                                </svg>
+                                            </div>
+                                        @endif
+                                        <div>
+                                            <a href="{{ route('admin.artworks.edit', $favorite->artwork) }}"
+                                               class="text-sm font-medium text-gray-900 hover:text-primary">
+                                                {{ Str::limit($favorite->artwork->title, 30) }}
+                                            </a>
+                                            <p class="text-xs text-gray-400">ID: {{ $favorite->artwork->id }}</p>
+                                        </div>
+                                    </div>
+                                @else
+                                    <span class="text-gray-400 text-sm">Silinmis Eser</span>
+                                @endif
+                            </td>
+
+                            {{-- Sanatci --}}
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                @if($favorite->artwork?->artist)
+                                    <a href="{{ route('admin.artists.edit', $favorite->artwork->artist) }}"
+                                       class="text-sm text-gray-700 hover:text-primary">
+                                        {{ $favorite->artwork->artist->name }}
+                                    </a>
+                                @else
+                                    <span class="text-gray-400 text-sm">-</span>
+                                @endif
+                            </td>
+
+                            {{-- Kullanici --}}
+                            <td class="px-4 py-3">
+                                @if($favorite->user)
+                                    <div>
+                                        <a href="{{ route('admin.users.show', $favorite->user) }}"
+                                           class="text-sm font-medium text-gray-900 hover:text-primary">
+                                            {{ $favorite->user->name }}
+                                        </a>
+                                        <p class="text-xs text-gray-400">{{ $favorite->user->email }}</p>
+                                    </div>
+                                @else
+                                    <span class="text-gray-400 text-sm">Silinmis Kullanici</span>
+                                @endif
+                            </td>
+
+                            {{-- Fiyat --}}
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                @if($favorite->artwork)
+                                    <span class="text-sm font-medium text-gray-900">
+                                        {{ $favorite->artwork->formatted_price_tl }}
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                                        Satilikta
+                                    <span class="text-gray-400">-</span>
+                                @endif
+                            </td>
+
+                            {{-- Durum --}}
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                @if($favorite->artwork)
+                                    @if($favorite->artwork->is_sold)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                                            Satildi
+                                        </span>
+                                    @elseif($favorite->artwork->is_reserved)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+                                            Rezerve
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                                            Satilikta
+                                        </span>
+                                    @endif
+                                @else
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
+                                        Silinmis
                                     </span>
                                 @endif
-                            @else
-                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
-                                    Silinmis
-                                </span>
-                            @endif
-                        </td>
+                            </td>
 
-                        {{-- Eklenme Tarihi --}}
-                        <td class="px-4 py-3 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">{{ $favorite->created_at->format('d.m.Y') }}</div>
-                            <div class="text-xs text-gray-400">{{ $favorite->created_at->format('H:i') }}</div>
-                        </td>
+                            {{-- Eklenme Tarihi --}}
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">{{ $favorite->created_at->format('d.m.Y') }}</div>
+                                <div class="text-xs text-gray-400">{{ $favorite->created_at->format('H:i') }}</div>
+                            </td>
 
-                        {{-- Admin Notu (satır içi kaydetme) --}}
-                        <td class="px-4 py-3 align-top"
-                            x-data="{ note: @js($favorite->admin_note ?? ''), saved: @js($favorite->admin_note ?? ''), state: '' }">
-                            <textarea x-model="note" rows="2" placeholder="Not ekle..."
-                                      class="w-full border border-gray-200 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary resize-y"></textarea>
-                            <div class="flex items-center justify-between mt-1" x-show="note !== saved || state">
-                                <span class="text-[11px]"
-                                      :class="state === 'error' ? 'text-red-600' : 'text-green-600'"
-                                      x-text="state === 'ok' ? 'Kaydedildi' : (state === 'error' ? 'Kaydedilemedi' : '')"></span>
-                                <button type="button" x-show="note !== saved"
-                                        @click="state = 'saving';
-                                                fetch('{{ route('admin.favorites.note', $favorite) }}', {
-                                                    method: 'PATCH',
-                                                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-                                                    body: JSON.stringify({ admin_note: note })
-                                                }).then(r => { if (!r.ok) throw r; saved = note; state = 'ok'; setTimeout(() => state = '', 2000); })
-                                                  .catch(() => state = 'error')"
-                                        class="text-xs bg-gray-800 text-white px-3 py-1 rounded hover:bg-gray-700 transition"
-                                        x-text="state === 'saving' ? 'Kaydediliyor...' : 'Kaydet'"></button>
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="7" class="px-4 py-12 text-center text-sm text-gray-400">
-                            Henuz favori eklenmemis.
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+                            {{-- Admin Notu (satır içi kaydetme) --}}
+                            <td class="px-4 py-3 align-top"
+                                x-data="{ note: @js($favorite->admin_note ?? ''), saved: @js($favorite->admin_note ?? ''), state: '' }">
+                                <textarea x-model="note" rows="2" placeholder="Not ekle..."
+                                          class="w-full border border-gray-200 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary resize-y"></textarea>
+                                <div class="flex items-center justify-between mt-1" x-show="note !== saved || state">
+                                    <span class="text-[11px]"
+                                          :class="state === 'error' ? 'text-red-600' : 'text-green-600'"
+                                          x-text="state === 'ok' ? 'Kaydedildi' : (state === 'error' ? 'Kaydedilemedi' : '')"></span>
+                                    <button type="button" x-show="note !== saved"
+                                            @click="state = 'saving';
+                                                    fetch('{{ route('admin.favorites.note', $favorite) }}', {
+                                                        method: 'PATCH',
+                                                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                                                        body: JSON.stringify({ admin_note: note })
+                                                    }).then(r => { if (!r.ok) throw r; saved = note; state = 'ok'; setTimeout(() => state = '', 2000); })
+                                                      .catch(() => state = 'error')"
+                                            class="text-xs bg-gray-800 text-white px-3 py-1 rounded hover:bg-gray-700 transition"
+                                            x-text="state === 'saving' ? 'Kaydediliyor...' : 'Kaydet'"></button>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="px-4 py-12 text-center text-sm text-gray-400">
+                                Henuz favori eklenmemis.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 
     {{-- Pagination --}}

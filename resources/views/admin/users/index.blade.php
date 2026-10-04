@@ -81,98 +81,90 @@
     </div>
 
     <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-        <table class="w-full">
-            <thead class="bg-gray-50">
-                @php
-                    // Başlığa tıklayınca sıralama; aynı başlığa tekrar tıklayınca yön değişir
-                    $sortLink = function (string $key, string $label, string $firstDir = 'desc') {
-                        $active = request('sort') === $key && request()->filled('dir');
-                        $dir = $active ? (request('dir') === 'asc' ? 'desc' : 'asc') : $firstDir;
-                        $url = request()->fullUrlWithQuery(['sort' => $key, 'dir' => $dir, 'page' => null]);
-                        $arrow = $active ? (request('dir') === 'asc' ? ' ▲' : ' ▼') : '';
-                        return '<a href="' . e($url) . '" class="hover:text-gray-800 ' . ($active ? 'text-gray-800' : '') . '">' . e($label) . $arrow . '</a>';
-                    };
-                @endphp
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{!! $sortLink('id', 'ID') !!}</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{!! $sortLink('name', 'Kullanici', 'asc') !!}</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{!! $sortLink('phone', 'Telefon', 'asc') !!}</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{!! $sortLink('orders', 'Siparisler') !!}</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{!! $sortLink('artpuan', 'ArtPuan') !!}</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{!! $sortLink('referrals', 'Referanslar') !!}</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{!! $sortLink('role', 'Rol') !!}</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{!! $sortLink('created', 'Kayit') !!}</th>
-                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Islemler</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200">
-                @forelse($users as $user)
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 text-sm text-gray-400 font-mono">
-                            #{{ $user->id }}
-                        </td>
-                        <td class="px-6 py-4">
-                            <div>
-                                <p class="font-medium text-gray-900">{{ $user->name }}</p>
-                                <p class="text-xs text-gray-500">{{ $user->email }}</p>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-600">
-                            {{ $user->phone ?: '-' }}
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="inline-flex items-center gap-1 text-sm {{ $user->orders_count > 0 ? 'text-blue-700 font-medium' : 'text-gray-400' }}">
-                                {{ $user->orders_count }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4">
-                            @if($user->art_puan > 0)
-                                <span class="inline-block px-2 py-0.5 text-xs rounded-full bg-green-100 text-green-800 font-medium">
-                                    {{ number_format($user->art_puan, 2, ',', '.') }} AP
-                                </span>
-                            @else
-                                <span class="text-sm text-gray-400">0</span>
-                            @endif
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-600">
-                            {{ $user->referrals_count }}
-                        </td>
-                        <td class="px-6 py-4">
-                            @if($user->is_admin)
-                                <span class="inline-block px-2 py-0.5 text-xs rounded-full bg-purple-100 text-purple-800">Admin</span>
-                            @else
-                                <span class="inline-block px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-600">Kullanici</span>
-                            @endif
-                        </td>
-                        <td class="px-6 py-4 text-xs text-gray-500">
-                            {{ $user->created_at->format('d.m.Y') }}
-                        </td>
-                        <td class="px-6 py-4 text-right">
-                            <div class="flex items-center justify-end gap-2">
-                                <a href="{{ route('admin.users.show', $user) }}" class="text-blue-600 hover:text-blue-800 text-sm">Detay</a>
-                                <a href="{{ route('admin.users.edit', $user) }}" class="text-gray-500 hover:text-gray-700 text-sm">Duzenle</a>
-                            </div>
-                        </td>
-                    </tr>
-                @empty
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50">
                     <tr>
-                        <td colspan="9" class="px-6 py-12 text-center">
-                            <div class="text-gray-400">
-                                <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                </svg>
-                                @if(request()->hasAny(['search', 'role', 'has_orders', 'has_artpuan']))
-                                    <p class="text-sm font-medium text-gray-500">Filtrelere uygun kullanici bulunamadi</p>
-                                    <a href="{{ route('admin.users.index') }}" class="text-sm text-blue-600 hover:text-blue-800 mt-1 inline-block">Filtreleri temizle</a>
-                                @else
-                                    <p class="text-sm text-gray-500">Henuz kullanici yok.</p>
-                                @endif
-                            </div>
-                        </td>
+                        <x-admin.th sort="id" first="desc" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</x-admin.th>
+                        <x-admin.th sort="name" first="asc" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kullanici</x-admin.th>
+                        <x-admin.th sort="phone" first="asc" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Telefon</x-admin.th>
+                        <x-admin.th sort="orders" first="desc" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Siparisler</x-admin.th>
+                        <x-admin.th sort="artpuan" first="desc" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ArtPuan</x-admin.th>
+                        <x-admin.th sort="referrals" first="desc" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Referanslar</x-admin.th>
+                        <x-admin.th sort="role" first="desc" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rol</x-admin.th>
+                        <x-admin.th sort="created" first="desc" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kayit</x-admin.th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Islemler</th>
                     </tr>
-                @endforelse
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    @forelse($users as $user)
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 text-sm text-gray-400 font-mono">
+                                #{{ $user->id }}
+                            </td>
+                            <td class="px-6 py-4">
+                                <div>
+                                    <p class="font-medium text-gray-900">{{ $user->name }}</p>
+                                    <p class="text-xs text-gray-500">{{ $user->email }}</p>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-600">
+                                {{ $user->phone ?: '-' }}
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="inline-flex items-center gap-1 text-sm {{ $user->orders_count > 0 ? 'text-blue-700 font-medium' : 'text-gray-400' }}">
+                                    {{ $user->orders_count }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                @if($user->art_puan > 0)
+                                    <span class="inline-block px-2 py-0.5 text-xs rounded-full bg-green-100 text-green-800 font-medium">
+                                        {{ number_format($user->art_puan, 2, ',', '.') }} AP
+                                    </span>
+                                @else
+                                    <span class="text-sm text-gray-400">0</span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-600">
+                                {{ $user->referrals_count }}
+                            </td>
+                            <td class="px-6 py-4">
+                                @if($user->is_admin)
+                                    <span class="inline-block px-2 py-0.5 text-xs rounded-full bg-purple-100 text-purple-800">Admin</span>
+                                @else
+                                    <span class="inline-block px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-600">Kullanici</span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 text-xs text-gray-500">
+                                {{ $user->created_at->format('d.m.Y') }}
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <div class="flex items-center justify-end gap-2">
+                                    <a href="{{ route('admin.users.show', $user) }}" class="text-blue-600 hover:text-blue-800 text-sm">Detay</a>
+                                    <a href="{{ route('admin.users.edit', $user) }}" class="text-gray-500 hover:text-gray-700 text-sm">Duzenle</a>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="9" class="px-6 py-12 text-center">
+                                <div class="text-gray-400">
+                                    <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    </svg>
+                                    @if(request()->hasAny(['search', 'role', 'has_orders', 'has_artpuan']))
+                                        <p class="text-sm font-medium text-gray-500">Filtrelere uygun kullanici bulunamadi</p>
+                                        <a href="{{ route('admin.users.index') }}" class="text-sm text-blue-600 hover:text-blue-800 mt-1 inline-block">Filtreleri temizle</a>
+                                    @else
+                                        <p class="text-sm text-gray-500">Henuz kullanici yok.</p>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 
     @if($users->hasPages())

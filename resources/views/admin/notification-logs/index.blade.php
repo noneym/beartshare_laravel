@@ -101,100 +101,102 @@
 
     {{-- Tablo --}}
     <div class="bg-white rounded-lg shadow overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tarih</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kanal</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tip</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alici</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mesaj / Konu</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Siparis</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Durum</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                @forelse($logs as $log)
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-3 whitespace-nowrap text-xs text-gray-500">
-                            {{ $log->created_at->format('d.m.Y H:i:s') }}
-                        </td>
-                        <td class="px-4 py-3 whitespace-nowrap">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $log->channel_color }}">
-                                {{ $log->channel_label }}
-                            </span>
-                        </td>
-                        <td class="px-4 py-3 whitespace-nowrap">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $log->type_color }}">
-                                {{ $log->type_label }}
-                            </span>
-                        </td>
-                        <td class="px-4 py-3 whitespace-nowrap">
-                            <div>
-                                <p class="text-sm text-gray-900">{{ $log->recipient }}</p>
-                                @if($log->user)
-                                    <p class="text-xs text-gray-400">{{ $log->user->name }}</p>
-                                @endif
-                            </div>
-                        </td>
-                        @php
-                            $logData = [
-                                'channel' => $log->channel_label,
-                                'type' => $log->type_label,
-                                'recipient' => $log->recipient,
-                                'subject' => $log->subject ?? '',
-                                'message' => $log->message ?? '',
-                                'error' => $log->error ?? '',
-                                'api_response' => $log->api_response ?? '',
-                                'created_at' => $log->created_at->format('d.m.Y H:i:s'),
-                                'user_name' => $log->user?->name ?? '',
-                                'order_number' => $log->order?->order_number ?? '',
-                                'order_url' => $log->order ? route('admin.orders.show', $log->order) : ''
-                            ];
-                        @endphp
-                        <td class="px-4 py-3 text-xs text-gray-600 max-w-xs">
-                            <button type="button"
-                                    @click="modalData = {{ Js::from($logData) }}; showModal = true"
-                                    class="text-left hover:bg-gray-100 p-1 -m-1 rounded transition w-full cursor-pointer">
-                                @if($log->subject)
-                                    <p class="font-medium text-gray-700 truncate">{{ $log->subject }}</p>
-                                @endif
-                                <p class="truncate text-gray-400">{{ Str::limit($log->message, 80) }}</p>
-                                @if($log->error)
-                                    <p class="text-red-500 text-xs mt-1 truncate">
-                                        Hata: {{ Str::limit($log->error, 60) }}
-                                    </p>
-                                @endif
-                                <span class="text-primary text-[10px] mt-1 inline-block">Detay için tıklayın</span>
-                            </button>
-                        </td>
-                        <td class="px-4 py-3 whitespace-nowrap text-xs">
-                            @if($log->order)
-                                <a href="{{ route('admin.orders.show', $log->order) }}" class="text-primary hover:underline">
-                                    #{{ $log->order->order_number }}
-                                </a>
-                            @else
-                                <span class="text-gray-400">-</span>
-                            @endif
-                        </td>
-                        <td class="px-4 py-3 whitespace-nowrap">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $log->status_color }}">
-                                {{ $log->status_label }}
-                            </span>
-                            @if($log->api_response)
-                                <p class="text-[10px] text-gray-400 mt-0.5 font-mono">{{ Str::limit($log->api_response, 20) }}</p>
-                            @endif
-                        </td>
-                    </tr>
-                @empty
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
                     <tr>
-                        <td colspan="7" class="px-4 py-12 text-center text-sm text-gray-400">
-                            Henuz bildirim logu bulunmuyor.
-                        </td>
+                        <x-admin.th sort="created" first="desc" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tarih</x-admin.th>
+                        <x-admin.th sort="channel" first="asc" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kanal</x-admin.th>
+                        <x-admin.th sort="type" first="asc" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tip</x-admin.th>
+                        <x-admin.th sort="recipient" first="asc" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alici</x-admin.th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mesaj / Konu</th>
+                        <x-admin.th sort="order" first="desc" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Siparis</x-admin.th>
+                        <x-admin.th sort="status" first="asc" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Durum</x-admin.th>
                     </tr>
-                @endforelse
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @forelse($logs as $log)
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-3 whitespace-nowrap text-xs text-gray-500">
+                                {{ $log->created_at->format('d.m.Y H:i:s') }}
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $log->channel_color }}">
+                                    {{ $log->channel_label }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $log->type_color }}">
+                                    {{ $log->type_label }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                <div>
+                                    <p class="text-sm text-gray-900">{{ $log->recipient }}</p>
+                                    @if($log->user)
+                                        <p class="text-xs text-gray-400">{{ $log->user->name }}</p>
+                                    @endif
+                                </div>
+                            </td>
+                            @php
+                                $logData = [
+                                    'channel' => $log->channel_label,
+                                    'type' => $log->type_label,
+                                    'recipient' => $log->recipient,
+                                    'subject' => $log->subject ?? '',
+                                    'message' => $log->message ?? '',
+                                    'error' => $log->error ?? '',
+                                    'api_response' => $log->api_response ?? '',
+                                    'created_at' => $log->created_at->format('d.m.Y H:i:s'),
+                                    'user_name' => $log->user?->name ?? '',
+                                    'order_number' => $log->order?->order_number ?? '',
+                                    'order_url' => $log->order ? route('admin.orders.show', $log->order) : ''
+                                ];
+                            @endphp
+                            <td class="px-4 py-3 text-xs text-gray-600 max-w-xs">
+                                <button type="button"
+                                        @click="modalData = {{ Js::from($logData) }}; showModal = true"
+                                        class="text-left hover:bg-gray-100 p-1 -m-1 rounded transition w-full cursor-pointer">
+                                    @if($log->subject)
+                                        <p class="font-medium text-gray-700 truncate">{{ $log->subject }}</p>
+                                    @endif
+                                    <p class="truncate text-gray-400">{{ Str::limit($log->message, 80) }}</p>
+                                    @if($log->error)
+                                        <p class="text-red-500 text-xs mt-1 truncate">
+                                            Hata: {{ Str::limit($log->error, 60) }}
+                                        </p>
+                                    @endif
+                                    <span class="text-primary text-[10px] mt-1 inline-block">Detay için tıklayın</span>
+                                </button>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-xs">
+                                @if($log->order)
+                                    <a href="{{ route('admin.orders.show', $log->order) }}" class="text-primary hover:underline">
+                                        #{{ $log->order->order_number }}
+                                    </a>
+                                @else
+                                    <span class="text-gray-400">-</span>
+                                @endif
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $log->status_color }}">
+                                    {{ $log->status_label }}
+                                </span>
+                                @if($log->api_response)
+                                    <p class="text-[10px] text-gray-400 mt-0.5 font-mono">{{ Str::limit($log->api_response, 20) }}</p>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="px-4 py-12 text-center text-sm text-gray-400">
+                                Henuz bildirim logu bulunmuyor.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 
     {{-- Pagination --}}

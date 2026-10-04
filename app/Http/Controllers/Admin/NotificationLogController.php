@@ -2,16 +2,32 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\SortsIndex;
 use App\Http\Controllers\Controller;
 use App\Models\NotificationLog;
+use App\Models\Order;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class NotificationLogController extends Controller
 {
+    use SortsIndex;
+
     public function index(Request $request)
     {
-        $query = NotificationLog::with(['user', 'order'])
-            ->latest();
+        $query = NotificationLog::with(['user', 'order']);
+
+        // Başlık sıralaması (yoksa en yeni üstte)
+        $this->applySort($query, $request, [
+            'created' => 'notification_logs.created_at',
+            'channel' => 'notification_logs.channel',
+            'type' => 'notification_logs.type',
+            'recipient' => 'notification_logs.recipient',
+            'order' => fn (Builder $q, string $dir) => $q->orderBy(
+                Order::select('order_number')->whereColumn('orders.id', 'notification_logs.order_id'), $dir
+            ),
+            'status' => 'notification_logs.status',
+        ]) || $query->latest();
 
         // Kanal filtresi
         if ($request->filled('channel')) {

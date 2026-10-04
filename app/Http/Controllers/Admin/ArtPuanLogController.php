@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\SortsIndex;
 use App\Http\Controllers\Controller;
 use App\Models\ArtPuanLog;
+use App\Models\Order;
 use App\Models\User;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
@@ -12,10 +14,11 @@ use Illuminate\Support\Facades\Log;
 
 class ArtPuanLogController extends Controller
 {
+    use SortsIndex;
+
     public function index(Request $request)
     {
-        $query = ArtPuanLog::with(['user', 'order', 'artwork', 'sourceUser'])
-            ->latest();
+        $query = ArtPuanLog::with(['user', 'order', 'artwork', 'sourceUser']);
 
         // Tip filtresi
         if ($request->filled('type')) {
@@ -35,6 +38,17 @@ class ArtPuanLogController extends Controller
         if ($request->has('with_trashed')) {
             $query->withTrashed();
         }
+
+        // Başlık sıralaması (?sort=..&dir=..); yoksa en yeniler
+        $this->applySort($query, $request, [
+            'date' => 'art_puan_logs.created_at',
+            'user' => fn ($q, $dir) => $q->orderBy(User::select('name')->whereColumn('users.id', 'art_puan_logs.user_id'), $dir),
+            'type' => 'art_puan_logs.type',
+            'description' => 'art_puan_logs.description',
+            'order' => fn ($q, $dir) => $q->orderBy(Order::withTrashed()->select('order_number')->whereColumn('orders.id', 'art_puan_logs.order_id'), $dir),
+            'amount' => 'art_puan_logs.amount',
+            'balance' => 'art_puan_logs.balance_after',
+        ]) || $query->latest();
 
         $logs = $query->paginate(30)->withQueryString();
 

@@ -35,57 +35,59 @@
 
     <!-- Table -->
     <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-        <table class="w-full text-sm">
-            <thead class="bg-gray-50 border-b">
-                <tr>
-                    <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">ID</th>
-                    <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Kategori Adi</th>
-                    <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Slug</th>
-                    <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Yazi Sayisi</th>
-                    <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Durum</th>
-                    <th class="text-right px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Islemler</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100">
-                @forelse($categories as $category)
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-3 text-gray-400 font-mono text-xs">#{{ $category->id }}</td>
-                        <td class="px-6 py-3 font-medium text-gray-900">{{ $category->title }}</td>
-                        <td class="px-6 py-3 text-gray-500 font-mono text-xs">{{ $category->slug }}</td>
-                        <td class="px-6 py-3">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                {{ $category->posts_count }} yazi
-                            </span>
-                        </td>
-                        <td class="px-6 py-3">
-                            @if($category->is_active)
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Aktif</span>
-                            @else
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Pasif</span>
-                            @endif
-                        </td>
-                        <td class="px-6 py-3 text-right">
-                            <div class="flex items-center justify-end gap-2">
-                                <a href="{{ route('admin.blog-categories.edit', $category) }}" class="text-blue-600 hover:text-blue-800 text-xs font-medium">Duzenle</a>
-                                <form method="POST" action="{{ route('admin.blog-categories.destroy', $category) }}" class="inline"
-                                      onsubmit="return confirm('Bu kategoriyi silmek istediginize emin misiniz?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-800 text-xs font-medium">Sil</button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                @empty
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-gray-50 border-b">
                     <tr>
-                        <td colspan="6" class="px-6 py-12 text-center text-gray-400">
-                            <p class="text-sm">Henuz blog kategorisi yok.</p>
-                            <a href="{{ route('admin.blog-categories.create') }}" class="text-blue-600 hover:text-blue-800 text-sm mt-2 inline-block">Ilk kategoriyi olusturun</a>
-                        </td>
+                        <x-admin.th sort="id" first="desc" class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">ID</x-admin.th>
+                        <x-admin.th sort="title" first="asc" class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Kategori Adi</x-admin.th>
+                        <x-admin.th sort="slug" first="asc" class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Slug</x-admin.th>
+                        <x-admin.th sort="posts" first="desc" class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Yazi Sayisi</x-admin.th>
+                        <x-admin.th sort="status" first="desc" class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Durum</x-admin.th>
+                        <th class="text-right px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Islemler</th>
                     </tr>
-                @endforelse
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    @forelse($categories as $category)
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-3 text-gray-400 font-mono text-xs">#{{ $category->id }}</td>
+                            <td class="px-6 py-3 font-medium text-gray-900">{{ $category->title }}</td>
+                            <td class="px-6 py-3 text-gray-500 font-mono text-xs">{{ $category->slug }}</td>
+                            <td class="px-6 py-3">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    {{ $category->posts_count }} yazi
+                                </span>
+                            </td>
+                            <td class="px-6 py-3">
+                                @if($category->is_active)
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Aktif</span>
+                                @else
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Pasif</span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-3 text-right">
+                                <div class="flex items-center justify-end gap-2">
+                                    <a href="{{ route('admin.blog-categories.edit', $category) }}" class="text-blue-600 hover:text-blue-800 text-xs font-medium">Duzenle</a>
+                                    <form method="POST" action="{{ route('admin.blog-categories.destroy', $category) }}" class="inline"
+                                          onsubmit="return confirm('Bu kategoriyi silmek istediginize emin misiniz?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-600 hover:text-red-800 text-xs font-medium">Sil</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="px-6 py-12 text-center text-gray-400">
+                                <p class="text-sm">Henuz blog kategorisi yok.</p>
+                                <a href="{{ route('admin.blog-categories.create') }}" class="text-blue-600 hover:text-blue-800 text-sm mt-2 inline-block">Ilk kategoriyi olusturun</a>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 
     @if($categories->hasPages())

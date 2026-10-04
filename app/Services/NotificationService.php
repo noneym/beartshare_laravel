@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Jobs\NotifyAdminRecipients;
 use App\Models\Artwork;
 use App\Models\NotificationLog;
+use App\Models\NotificationRecipient;
 use App\Models\Order;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
@@ -268,6 +270,56 @@ class NotificationService
                 $userId
             );
         }
+
+        $this->notifyAdminsNewOrder($order);
+    }
+
+    /**
+     * Yeni sipariş → Bildirim Alıcıları (new_order). Havalede sipariş oluşunca,
+     * kartta ödeme başarılı olunca çağrılır (notifyOrderCreated üzerinden).
+     */
+    public function notifyAdminsNewOrder(Order $order): void
+    {
+        $order->loadMissing('items');
+        $total = number_format($order->total_tl, 0, ',', '.') . ' TL';
+        $method = $order->payment_method_label;
+        $adminUrl = route('admin.orders.show', $order->id);
+        $titles = $order->items->pluck('artwork_title')->filter()->implode(', ');
+
+        $sms = "BeArtShare yeni sipariş: {$order->order_number} - {$order->customer_name} - {$total} ({$method})"
+            . ($titles ? " - " . \Illuminate\Support\Str::limit($titles, 60) : '');
+
+        $rows = '';
+        foreach ($order->items as $item) {
+            $rows .= "<tr><td style='padding:6px 0;border-bottom:1px solid #eee;'>" . e($item->artwork_title) . "<br><span style='color:#888;font-size:12px;'>" . e($item->artist_name) . "</span></td>"
+                . "<td style='padding:6px 0;border-bottom:1px solid #eee;text-align:right;white-space:nowrap;'>" . number_format($item->price_tl, 0, ',', '.') . " TL</td></tr>";
+        }
+        $artpuan = $order->artpuan_used > 0
+            ? "<tr><td style='padding:6px 0;color:#888;'>ArtPuan kullanıldı</td><td style='padding:6px 0;text-align:right;'>-" . number_format($order->artpuan_used, 0, ',', '.') . " TL</td></tr>"
+            : '';
+
+        $html = "
+        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
+            <div style='background: #14171c; padding: 20px 24px;'>
+                <h1 style='color: #fff; font-size: 18px; margin: 0;'>Yeni Sipariş · " . e($order->order_number) . "</h1>
+            </div>
+            <div style='padding: 24px; background: #fff; border: 1px solid #eee; font-size: 14px; color: #333;'>
+                <table style='width:100%;'>
+                    <tr><td style='padding:4px 0;width:120px;color:#888;'>Müşteri</td><td>" . e($order->customer_name) . "</td></tr>
+                    <tr><td style='padding:4px 0;color:#888;'>Telefon</td><td>" . e($order->customer_phone ?: '-') . "</td></tr>
+                    <tr><td style='padding:4px 0;color:#888;'>E-posta</td><td>" . e($order->customer_email) . "</td></tr>
+                    <tr><td style='padding:4px 0;color:#888;'>Ödeme</td><td>" . e($method) . ($order->payment_code ? ' · Kod: ' . e($order->payment_code) : '') . "</td></tr>
+                    <tr><td style='padding:4px 0;color:#888;'>Adres</td><td>" . e(trim($order->shipping_address . ' ' . $order->district . '/' . $order->city, ' /')) . "</td></tr>
+                </table>
+                <table style='width:100%;margin-top:16px;'>{$rows}{$artpuan}
+                    <tr><td style='padding:8px 0;font-weight:bold;'>Toplam</td><td style='padding:8px 0;text-align:right;font-weight:bold;'>{$total}</td></tr>
+                </table>
+                " . ($order->notes ? "<p style='background:#f8f8f8;padding:12px;margin:16px 0 0;'><b>Not:</b> " . e($order->notes) . "</p>" : '') . "
+                <p style='margin:24px 0 0;'><a href='" . e($adminUrl) . "' style='display:inline-block;background:#D4A017;color:#fff;padding:10px 18px;text-decoration:none;'>Siparişi admin panelde aç</a></p>
+            </div>
+        </div>";
+
+        $this->notifyRecipients('new_order', "Yeni Sipariş: {$order->order_number} - {$total}", $html, $sms, $order->id, $order->customer_email, $order->customer_name);
     }
 
     /**
@@ -277,7 +329,33 @@ class NotificationService
     public function sendAdminNotification(string $subject, string $htmlBody, string $type, ?string $replyTo = null, ?string $replyName = null, ?int $userId = null): bool
     {
         $to = config('mail.admin_address', 'info@beartshare.com');
+        $sent = $this->sendRecipientEmail($to, $subject, $htmlBody, $type, null, $replyTo, $replyName, $userId);
 
+        // Ayrıca Admin > Bildirim Alıcıları'nda bu olayı seçenlere (kuyruktan)
+        if (isset(NotificationRecipient::EVENTS[$type])) {
+            $this->notifyRecipients($type, $subject, $htmlBody, 'BeArtShare: ' . $subject, null, $replyTo, $replyName, $to);
+        }
+
+        return $sent;
+    }
+
+    /**
+     * Olayı Bildirim Alıcıları listesindeki kişilere kuyruk üzerinden gönderir.
+     */
+    public function notifyRecipients(string $event, string $subject, string $htmlBody, string $smsText, ?int $orderId = null, ?string $replyTo = null, ?string $replyName = null, ?string $skipEmail = null): void
+    {
+        try {
+            NotifyAdminRecipients::dispatch($event, $subject, $htmlBody, $smsText, $orderId, $replyTo, $replyName, $skipEmail);
+        } catch (\Throwable $e) {
+            Log::error("Bildirim alicilari kuyruga alinamadi ({$event}): " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Tek bir yönetici/alıcıya e-posta (Yanıtla → formu dolduran kişi). Sonuç Bildirim Log'a yazılır.
+     */
+    public function sendRecipientEmail(string $to, string $subject, string $htmlBody, string $type, ?int $orderId = null, ?string $replyTo = null, ?string $replyName = null, ?int $userId = null): bool
+    {
         try {
             Mail::html($htmlBody, function ($message) use ($to, $subject, $replyTo, $replyName) {
                 $message->to($to)
@@ -303,6 +381,7 @@ class NotificationService
             'message' => mb_substr(trim(preg_replace('/\s+/', ' ', strip_tags($htmlBody))), 0, 500),
             'status' => $status,
             'error' => $error,
+            'order_id' => $orderId,
             'user_id' => $userId,
         ]);
 

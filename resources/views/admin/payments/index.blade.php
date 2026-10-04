@@ -54,82 +54,84 @@
 
     {{-- Tablo --}}
     <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-        <table class="w-full">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sipariş</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Müşteri</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Yöntem</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tutar</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Durum</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tarih</th>
-                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">İşlem</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200">
-                @forelse($payments as $payment)
-                    <tr class="{{ $payment->trashed() ? 'bg-red-50' : '' }}">
-                        <td class="px-6 py-4 text-sm text-gray-500">#{{ $payment->id }}</td>
-                        <td class="px-6 py-4">
-                            @if($payment->order)
-                                <a href="{{ route('admin.orders.show', $payment->order) }}" class="text-blue-600 hover:underline text-sm font-medium">
-                                    {{ $payment->order->order_number }}
-                                </a>
-                            @else
-                                <span class="text-gray-400 text-sm">-</span>
-                            @endif
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-600">
-                            {{ $payment->order->user->name ?? $payment->order->customer_name ?? '-' }}
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="inline-block px-2 py-1 text-xs rounded {{ $payment->gateway === 'garanti' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700' }}">
-                                {{ ucfirst($payment->gateway) }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 font-medium text-gray-900">{{ $payment->formatted_amount }}</td>
-                        <td class="px-6 py-4">
-                            <span class="inline-block px-2 py-1 text-xs rounded-full
-                                {{ $payment->status === 'completed' ? 'bg-green-100 text-green-800' : '' }}
-                                {{ $payment->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : '' }}
-                                {{ $payment->status === 'failed' ? 'bg-red-100 text-red-800' : '' }}
-                                {{ $payment->status === 'refunded' ? 'bg-blue-100 text-blue-800' : '' }}
-                            ">
-                                {{ $payment->status_text }}
-                            </span>
-                            @if($payment->trashed())
-                                <span class="inline-block px-2 py-1 text-xs rounded-full bg-red-100 text-red-800 ml-1">Silindi</span>
-                            @endif
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-500">{{ $payment->created_at->format('d.m.Y H:i') }}</td>
-                        <td class="px-6 py-4 text-right">
-                            <div class="flex items-center justify-end gap-2">
-                                <a href="{{ route('admin.payments.show', $payment) }}" class="text-blue-600 hover:text-blue-800 text-sm">Detay</a>
-                                @if($payment->trashed())
-                                    <form action="{{ route('admin.payments.restore', $payment->id) }}" method="POST" class="inline">
-                                        @csrf
-                                        <button type="submit" class="text-green-600 hover:text-green-800 text-sm">Geri Al</button>
-                                    </form>
-                                @else
-                                    <form action="{{ route('admin.payments.destroy', $payment) }}" method="POST" class="inline" onsubmit="return confirm('Bu ödeme kaydını silmek istediğinize emin misiniz?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-800 text-sm">Sil</button>
-                                    </form>
-                                @endif
-                            </div>
-                        </td>
-                    </tr>
-                @empty
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50">
                     <tr>
-                        <td colspan="8" class="px-6 py-12 text-center text-gray-500">
-                            Ödeme kaydı bulunamadı.
-                        </td>
+                        <x-admin.th sort="id" first="desc" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</x-admin.th>
+                        <x-admin.th sort="order" first="desc" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sipariş</x-admin.th>
+                        <x-admin.th sort="customer" first="asc" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Müşteri</x-admin.th>
+                        <x-admin.th sort="gateway" first="asc" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Yöntem</x-admin.th>
+                        <x-admin.th sort="amount" first="desc" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tutar</x-admin.th>
+                        <x-admin.th sort="status" first="asc" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Durum</x-admin.th>
+                        <x-admin.th sort="date" first="desc" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tarih</x-admin.th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">İşlem</th>
                     </tr>
-                @endforelse
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    @forelse($payments as $payment)
+                        <tr class="{{ $payment->trashed() ? 'bg-red-50' : '' }}">
+                            <td class="px-6 py-4 text-sm text-gray-500">#{{ $payment->id }}</td>
+                            <td class="px-6 py-4">
+                                @if($payment->order)
+                                    <a href="{{ route('admin.orders.show', $payment->order) }}" class="text-blue-600 hover:underline text-sm font-medium">
+                                        {{ $payment->order->order_number }}
+                                    </a>
+                                @else
+                                    <span class="text-gray-400 text-sm">-</span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-600">
+                                {{ $payment->order->user->name ?? $payment->order->customer_name ?? '-' }}
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="inline-block px-2 py-1 text-xs rounded {{ $payment->gateway === 'garanti' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700' }}">
+                                    {{ ucfirst($payment->gateway) }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 font-medium text-gray-900">{{ $payment->formatted_amount }}</td>
+                            <td class="px-6 py-4">
+                                <span class="inline-block px-2 py-1 text-xs rounded-full
+                                    {{ $payment->status === 'completed' ? 'bg-green-100 text-green-800' : '' }}
+                                    {{ $payment->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : '' }}
+                                    {{ $payment->status === 'failed' ? 'bg-red-100 text-red-800' : '' }}
+                                    {{ $payment->status === 'refunded' ? 'bg-blue-100 text-blue-800' : '' }}
+                                ">
+                                    {{ $payment->status_text }}
+                                </span>
+                                @if($payment->trashed())
+                                    <span class="inline-block px-2 py-1 text-xs rounded-full bg-red-100 text-red-800 ml-1">Silindi</span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-500">{{ $payment->created_at->format('d.m.Y H:i') }}</td>
+                            <td class="px-6 py-4 text-right">
+                                <div class="flex items-center justify-end gap-2">
+                                    <a href="{{ route('admin.payments.show', $payment) }}" class="text-blue-600 hover:text-blue-800 text-sm">Detay</a>
+                                    @if($payment->trashed())
+                                        <form action="{{ route('admin.payments.restore', $payment->id) }}" method="POST" class="inline">
+                                            @csrf
+                                            <button type="submit" class="text-green-600 hover:text-green-800 text-sm">Geri Al</button>
+                                        </form>
+                                    @else
+                                        <form action="{{ route('admin.payments.destroy', $payment) }}" method="POST" class="inline" onsubmit="return confirm('Bu ödeme kaydını silmek istediğinize emin misiniz?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-red-600 hover:text-red-800 text-sm">Sil</button>
+                                        </form>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="8" class="px-6 py-12 text-center text-gray-500">
+                                Ödeme kaydı bulunamadı.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 
     {{-- Pagination --}}

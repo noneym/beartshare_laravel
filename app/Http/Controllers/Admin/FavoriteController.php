@@ -2,12 +2,19 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\SortsIndex;
 use App\Http\Controllers\Controller;
+use App\Models\Artist;
+use App\Models\Artwork;
 use App\Models\Favorite;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class FavoriteController extends Controller
 {
+    use SortsIndex;
+
     public function index(Request $request)
     {
         $query = Favorite::with(['user', 'artwork.artist']);
@@ -16,7 +23,58 @@ class FavoriteController extends Controller
         $sort = $request->get('sort', 'latest');
         $grouped = $request->boolean('group');
 
+        // Başlık sıralaması (?sort=<anahtar>&dir=asc|desc); açılır menü değerleriyle çakışmayan anahtarlar
+        $artworkCol = fn (string $col) => fn (Builder $q, string $dir) => $q->orderBy(
+            Artwork::select($col)->whereColumn('artworks.id', 'favorites.artwork_id'), $dir
+        );
+        $artworkLevel = [
+            'artwork_title' => $artworkCol('title'),
+            'artist' => fn (Builder $q, string $dir) => $q->orderBy(
+                Artist::select('artists.name')
+                    ->join('artworks', 'artworks.artist_id', '=', 'artists.id')
+                    ->whereColumn('artworks.id', 'favorites.artwork_id')
+                    ->limit(1),
+                $dir
+            ),
+            'price' => $artworkCol('price_tl'),
+            // Satildi > Rezerve > Satilikta
+            'status' => function (Builder $q, string $dir) use ($artworkCol) {
+                $artworkCol('is_sold')($q, $dir);
+                $artworkCol('is_reserved')($q, $dir);
+            },
+        ];
+        $favoriteLevel = [
+            'user_name' => fn (Builder $q, string $dir) => $q->orderBy(
+                User::select('name')->whereColumn('users.id', 'favorites.user_id'), $dir
+            ),
+            'created' => 'favorites.created_at',
+        ];
+
         if ($grouped) {
+            // Gruplu modda gruplar bozulmasın: eser düzeyindeki sütunlar grupları sıralar (eşitlikte eser ID),
+            // favori düzeyindeki sütunlar grup içinde sıralar.
+            $sortColumns = [];
+            foreach ($artworkLevel as $key => $fn) {
+                $sortColumns[$key] = function (Builder $q, string $dir) use ($fn) {
+                    $fn($q, $dir);
+                    $q->orderBy('favorites.artwork_id');
+                };
+            }
+            foreach ($favoriteLevel as $key => $col) {
+                $sortColumns[$key] = function (Builder $q, string $dir) use ($col) {
+                    $q->orderBy('favorites.artwork_id');
+                    $col instanceof \Closure ? $col($q, $dir) : $q->orderBy($col, $dir);
+                };
+            }
+        } else {
+            $sortColumns = $artworkLevel + $favoriteLevel;
+        }
+
+        $headerSorted = $this->applySort($query, $request, $sortColumns);
+
+        if ($headerSorted) {
+            // Başlık sıralaması uygulandı
+        } elseif ($grouped) {
             // Esere göre grupla: aynı eserin favorileri alt alta, grup içinde en yeni üstte
             $query->orderBy('artwork_id', $sort === 'artwork_desc' ? 'desc' : 'asc')->latest();
         } else switch ($sort) {

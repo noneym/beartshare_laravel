@@ -146,6 +146,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     Route::get('notification-logs',[App\Http\Controllers\Admin\NotificationLogController::class, 'index'])->name('notification-logs.index');
 
+    // Yönetici bildirim alıcıları (yeni sipariş / iletişim / eser başvurusu)
+    Route::get('notification-recipients', [App\Http\Controllers\Admin\NotificationRecipientController::class, 'index'])->name('notification-recipients.index');
+    Route::post('notification-recipients', [App\Http\Controllers\Admin\NotificationRecipientController::class, 'store'])->name('notification-recipients.store');
+    Route::put('notification-recipients/{notificationRecipient}', [App\Http\Controllers\Admin\NotificationRecipientController::class, 'update'])->name('notification-recipients.update');
+    Route::delete('notification-recipients/{notificationRecipient}', [App\Http\Controllers\Admin\NotificationRecipientController::class, 'destroy'])->name('notification-recipients.destroy');
+    Route::post('notification-recipients/{notificationRecipient}/test', [App\Http\Controllers\Admin\NotificationRecipientController::class, 'test'])->name('notification-recipients.test');
+
     // İletişim Mesajları
     Route::get('contact-messages', [App\Http\Controllers\Admin\ContactMessageController::class, 'index'])->name('contact-messages.index');
     Route::get('contact-messages/{contactMessage}', [App\Http\Controllers\Admin\ContactMessageController::class, 'show'])->name('contact-messages.show');

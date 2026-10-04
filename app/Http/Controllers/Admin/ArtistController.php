@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\SortsIndex;
 use App\Http\Controllers\Controller;
 use App\Models\Artist;
 use Illuminate\Http\Request;
@@ -9,11 +10,20 @@ use Illuminate\Support\Str;
 
 class ArtistController extends Controller
 {
-    public function index()
+    use SortsIndex;
+
+    public function index(Request $request)
     {
-        $artists = Artist::withCount('artworks')
-            ->latest()
-            ->paginate(20);
+        $query = Artist::withCount('artworks');
+
+        $this->applySort($query, $request, [
+            'name' => 'name',
+            'birth' => 'birth_year',
+            'artworks' => 'artworks_count',
+            'status' => 'is_active',
+        ]) || $query->latest();
+
+        $artists = $query->paginate(20)->withQueryString();
 
         return view('admin.artists.index', compact('artists'));
     }

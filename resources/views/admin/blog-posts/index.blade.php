@@ -74,82 +74,84 @@
 
     <!-- Table -->
     <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-        <table class="w-full text-sm">
-            <thead class="bg-gray-50 border-b">
-                <tr>
-                    <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">ID</th>
-                    <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Gorsel</th>
-                    <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Baslik</th>
-                    <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Kategori</th>
-                    <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Yazar</th>
-                    <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Durum</th>
-                    <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Tarih</th>
-                    <th class="text-right px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Islemler</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100">
-                @forelse($posts as $post)
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-3 text-gray-400 font-mono text-xs">#{{ $post->id }}</td>
-                        <td class="px-6 py-3">
-                            @if($post->image)
-                                <img src="{{ $post->image_url }}" alt="" class="w-12 h-8 object-cover rounded">
-                            @else
-                                <div class="w-12 h-8 bg-gray-100 rounded flex items-center justify-center">
-                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                </div>
-                            @endif
-                        </td>
-                        <td class="px-6 py-3">
-                            <p class="font-medium text-gray-900 truncate max-w-xs">{{ $post->title }}</p>
-                            <p class="text-xs text-gray-400 font-mono truncate">{{ $post->slug }}</p>
-                        </td>
-                        <td class="px-6 py-3">
-                            @if($post->category)
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">{{ $post->category->title }}</span>
-                            @else
-                                <span class="text-gray-400 text-xs">Kategorisiz</span>
-                            @endif
-                        </td>
-                        <td class="px-6 py-3 text-gray-500 text-xs">{{ $post->user?->name ?? '-' }}</td>
-                        <td class="px-6 py-3">
-                            @if($post->is_active)
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Aktif</span>
-                            @else
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Pasif</span>
-                            @endif
-                        </td>
-                        <td class="px-6 py-3 text-gray-500 text-xs">{{ $post->created_at->format('d.m.Y H:i') }}</td>
-                        <td class="px-6 py-3 text-right">
-                            <div class="flex items-center justify-end gap-2">
-                                <a href="{{ route('blog.detail', $post->slug) }}" target="_blank" class="text-gray-400 hover:text-gray-600 text-xs" title="Sitede Gor">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                                </a>
-                                <a href="{{ route('admin.blog-posts.edit', $post) }}" class="text-blue-600 hover:text-blue-800 text-xs font-medium">Duzenle</a>
-                                <form method="POST" action="{{ route('admin.blog-posts.destroy', $post) }}" class="inline"
-                                      onsubmit="return confirm('Bu yaziyi silmek istediginize emin misiniz?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-800 text-xs font-medium">Sil</button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                @empty
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-gray-50 border-b">
                     <tr>
-                        <td colspan="8" class="px-6 py-12 text-center text-gray-400">
-                            @if(request()->hasAny(['search', 'status', 'category_id']))
-                                <p class="text-sm">Filtrelere uygun yazi bulunamadi.</p>
-                                <a href="{{ route('admin.blog-posts.index') }}" class="text-blue-600 hover:text-blue-800 text-sm mt-2 inline-block">Filtreleri temizle</a>
-                            @else
-                                <p class="text-sm">Henuz blog yazisi yok.</p>
-                                <a href="{{ route('admin.blog-posts.create') }}" class="text-blue-600 hover:text-blue-800 text-sm mt-2 inline-block">Ilk yaziyi olusturun</a>
-                            @endif
-                        </td>
+                        <x-admin.th sort="id" first="desc" class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">ID</x-admin.th>
+                        <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Gorsel</th>
+                        <x-admin.th sort="title" first="asc" class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Baslik</x-admin.th>
+                        <x-admin.th sort="category" first="asc" class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Kategori</x-admin.th>
+                        <x-admin.th sort="author" first="asc" class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Yazar</x-admin.th>
+                        <x-admin.th sort="status" first="desc" class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Durum</x-admin.th>
+                        <x-admin.th sort="date" first="desc" class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Tarih</x-admin.th>
+                        <th class="text-right px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Islemler</th>
                     </tr>
-                @endforelse
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    @forelse($posts as $post)
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-3 text-gray-400 font-mono text-xs">#{{ $post->id }}</td>
+                            <td class="px-6 py-3">
+                                @if($post->image)
+                                    <img src="{{ $post->image_url }}" alt="" class="w-12 h-8 object-cover rounded">
+                                @else
+                                    <div class="w-12 h-8 bg-gray-100 rounded flex items-center justify-center">
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    </div>
+                                @endif
+                            </td>
+                            <td class="px-6 py-3">
+                                <p class="font-medium text-gray-900 truncate max-w-xs">{{ $post->title }}</p>
+                                <p class="text-xs text-gray-400 font-mono truncate">{{ $post->slug }}</p>
+                            </td>
+                            <td class="px-6 py-3">
+                                @if($post->category)
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">{{ $post->category->title }}</span>
+                                @else
+                                    <span class="text-gray-400 text-xs">Kategorisiz</span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-3 text-gray-500 text-xs">{{ $post->user?->name ?? '-' }}</td>
+                            <td class="px-6 py-3">
+                                @if($post->is_active)
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Aktif</span>
+                                @else
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Pasif</span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-3 text-gray-500 text-xs">{{ $post->created_at->format('d.m.Y H:i') }}</td>
+                            <td class="px-6 py-3 text-right">
+                                <div class="flex items-center justify-end gap-2">
+                                    <a href="{{ route('blog.detail', $post->slug) }}" target="_blank" class="text-gray-400 hover:text-gray-600 text-xs" title="Sitede Gor">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                    </a>
+                                    <a href="{{ route('admin.blog-posts.edit', $post) }}" class="text-blue-600 hover:text-blue-800 text-xs font-medium">Duzenle</a>
+                                    <form method="POST" action="{{ route('admin.blog-posts.destroy', $post) }}" class="inline"
+                                          onsubmit="return confirm('Bu yaziyi silmek istediginize emin misiniz?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-600 hover:text-red-800 text-xs font-medium">Sil</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="8" class="px-6 py-12 text-center text-gray-400">
+                                @if(request()->hasAny(['search', 'status', 'category_id']))
+                                    <p class="text-sm">Filtrelere uygun yazi bulunamadi.</p>
+                                    <a href="{{ route('admin.blog-posts.index') }}" class="text-blue-600 hover:text-blue-800 text-sm mt-2 inline-block">Filtreleri temizle</a>
+                                @else
+                                    <p class="text-sm">Henuz blog yazisi yok.</p>
+                                    <a href="{{ route('admin.blog-posts.create') }}" class="text-blue-600 hover:text-blue-800 text-sm mt-2 inline-block">Ilk yaziyi olusturun</a>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 
     @if($posts->hasPages())

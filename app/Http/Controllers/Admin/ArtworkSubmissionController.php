@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\SortsIndex;
 use App\Http\Controllers\Controller;
 use App\Models\ArtworkSubmission;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class ArtworkSubmissionController extends Controller
 {
+    use SortsIndex;
+
     public function index(Request $request)
     {
         $query = ArtworkSubmission::query();
@@ -26,7 +30,17 @@ class ArtworkSubmissionController extends Controller
             });
         }
 
-        $submissions = $query->orderByDesc('created_at')->paginate(20)->withQueryString();
+        // Başlık sıralaması (yoksa en yeni üstte)
+        $this->applySort($query, $request, [
+            'created' => 'created_at',
+            'name' => 'name',
+            'artist' => 'artist_name',
+            'price' => 'expected_price',
+            'photos' => fn (Builder $q, string $dir) => $q->orderByRaw('COALESCE(JSON_LENGTH(images), 0) ' . $dir),
+            'status' => 'status',
+        ]) || $query->orderByDesc('created_at');
+
+        $submissions = $query->paginate(20)->withQueryString();
 
         $stats = [
             'total'      => ArtworkSubmission::count(),

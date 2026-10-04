@@ -2,18 +2,21 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\SortsIndex;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\PaymentTransaction;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class PaymentController extends Controller
 {
+    use SortsIndex;
+
     public function index(Request $request)
     {
-        $query = PaymentTransaction::with(['order.user'])
-            ->latest();
+        $query = PaymentTransaction::with(['order.user']);
 
         // Filtreleme
         if ($request->filled('status')) {
@@ -40,6 +43,24 @@ class PaymentController extends Controller
         if ($request->has('with_trashed')) {
             $query->withTrashed();
         }
+
+        // Başlık sıralaması (?sort=..&dir=..); yoksa en yeniler
+        $this->applySort($query, $request, [
+            'id' => 'payment_transactions.id',
+            'order' => fn ($q, $dir) => $q->orderBy(Order::withTrashed()->select('order_number')->whereColumn('orders.id', 'payment_transactions.order_id'), $dir),
+            // Müşteri: üye adı, yoksa siparişteki müşteri adı (görünümdeki ile aynı)
+            'customer' => fn ($q, $dir) => $q->orderBy(
+                Order::withTrashed()
+                    ->leftJoin('users', 'users.id', '=', 'orders.user_id')
+                    ->selectRaw('COALESCE(users.name, orders.customer_name)')
+                    ->whereColumn('orders.id', 'payment_transactions.order_id'),
+                $dir
+            ),
+            'gateway' => 'payment_transactions.gateway',
+            'amount' => 'payment_transactions.amount',
+            'status' => 'payment_transactions.status',
+            'date' => 'payment_transactions.created_at',
+        ]) || $query->latest();
 
         $payments = $query->paginate(20)->withQueryString();
 

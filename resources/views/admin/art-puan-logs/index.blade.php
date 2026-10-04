@@ -75,94 +75,96 @@
 
     {{-- Tablo --}}
     <div class="bg-white rounded-lg shadow overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tarih</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kullanici</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tip</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aciklama</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Siparis</th>
-                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Miktar</th>
-                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Bakiye</th>
-                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Islemler</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                @forelse($logs as $log)
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-3 whitespace-nowrap text-xs text-gray-500">
-                            {{ $log->created_at->format('d.m.Y H:i') }}
-                        </td>
-                        <td class="px-4 py-3 whitespace-nowrap">
-                            <div>
-                                <p class="text-sm font-medium text-gray-900">{{ $log->user->name ?? '-' }}</p>
-                                <p class="text-xs text-gray-400">{{ $log->user->email ?? '' }}</p>
-                            </div>
-                        </td>
-                        <td class="px-4 py-3 whitespace-nowrap">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $log->type_color }}">
-                                {{ $log->type_label }}
-                            </span>
-                        </td>
-                        <td class="px-4 py-3 text-xs text-gray-600 max-w-xs truncate">
-                            {{ $log->description ?? '-' }}
-                            @if($log->sourceUser)
-                                <br><span class="text-gray-400">Ref: {{ $log->sourceUser->name }}</span>
-                            @endif
-                        </td>
-                        <td class="px-4 py-3 whitespace-nowrap text-xs">
-                            @if($log->order)
-                                <a href="{{ route('admin.orders.show', $log->order) }}" class="text-primary hover:underline">
-                                    #{{ $log->order->order_number }}
-                                </a>
-                            @else
-                                <span class="text-gray-400">-</span>
-                            @endif
-                        </td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-right font-medium {{ $log->amount >= 0 ? 'text-green-600' : 'text-red-600' }}">
-                            {{ $log->formatted_amount }}
-                        </td>
-                        <td class="px-4 py-3 whitespace-nowrap text-sm text-right text-gray-500">
-                            {{ number_format($log->balance_after, 2, ',', '.') }} AP
-                        </td>
-                        <td class="px-4 py-3 whitespace-nowrap text-center">
-                            @if($log->trashed())
-                                <form action="{{ route('admin.art-puan-logs.restore', $log->id) }}" method="POST" class="inline">
-                                    @csrf
-                                    <button type="submit" class="text-green-600 hover:text-green-800 text-xs font-medium" title="Geri Yukle">
-                                        <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                                        </svg>
-                                    </button>
-                                </form>
-                            @else
-                                @if($log->amount > 0)
-                                    <form action="{{ route('admin.art-puan-logs.destroy', $log) }}" method="POST" class="inline"
-                                          onsubmit="return confirm('Bu kaydi silmek ve {{ number_format($log->amount, 2, ',', '.') }} AP geri almak istediginize emin misiniz?')">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <x-admin.th sort="date" first="desc" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tarih</x-admin.th>
+                        <x-admin.th sort="user" first="asc" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kullanici</x-admin.th>
+                        <x-admin.th sort="type" first="asc" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tip</x-admin.th>
+                        <x-admin.th sort="description" first="asc" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aciklama</x-admin.th>
+                        <x-admin.th sort="order" first="desc" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Siparis</x-admin.th>
+                        <x-admin.th sort="amount" first="desc" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Miktar</x-admin.th>
+                        <x-admin.th sort="balance" first="desc" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Bakiye</x-admin.th>
+                        <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Islemler</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @forelse($logs as $log)
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-3 whitespace-nowrap text-xs text-gray-500">
+                                {{ $log->created_at->format('d.m.Y H:i') }}
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">{{ $log->user->name ?? '-' }}</p>
+                                    <p class="text-xs text-gray-400">{{ $log->user->email ?? '' }}</p>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $log->type_color }}">
+                                    {{ $log->type_label }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-xs text-gray-600 max-w-xs truncate">
+                                {{ $log->description ?? '-' }}
+                                @if($log->sourceUser)
+                                    <br><span class="text-gray-400">Ref: {{ $log->sourceUser->name }}</span>
+                                @endif
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-xs">
+                                @if($log->order)
+                                    <a href="{{ route('admin.orders.show', $log->order) }}" class="text-primary hover:underline">
+                                        #{{ $log->order->order_number }}
+                                    </a>
+                                @else
+                                    <span class="text-gray-400">-</span>
+                                @endif
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-right font-medium {{ $log->amount >= 0 ? 'text-green-600' : 'text-red-600' }}">
+                                {{ $log->formatted_amount }}
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-sm text-right text-gray-500">
+                                {{ number_format($log->balance_after, 2, ',', '.') }} AP
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-center">
+                                @if($log->trashed())
+                                    <form action="{{ route('admin.art-puan-logs.restore', $log->id) }}" method="POST" class="inline">
                                         @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-800 text-xs font-medium" title="Sil ve Puani Geri Al">
+                                        <button type="submit" class="text-green-600 hover:text-green-800 text-xs font-medium" title="Geri Yukle">
                                             <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                                             </svg>
                                         </button>
                                     </form>
                                 @else
-                                    <span class="text-gray-400 text-xs">-</span>
+                                    @if($log->amount > 0)
+                                        <form action="{{ route('admin.art-puan-logs.destroy', $log) }}" method="POST" class="inline"
+                                              onsubmit="return confirm('Bu kaydi silmek ve {{ number_format($log->amount, 2, ',', '.') }} AP geri almak istediginize emin misiniz?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-red-600 hover:text-red-800 text-xs font-medium" title="Sil ve Puani Geri Al">
+                                                <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @else
+                                        <span class="text-gray-400 text-xs">-</span>
+                                    @endif
                                 @endif
-                            @endif
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="8" class="px-4 py-12 text-center text-sm text-gray-400">
-                            Henuz ArtPuan hareketi bulunmuyor.
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="8" class="px-4 py-12 text-center text-sm text-gray-400">
+                                Henuz ArtPuan hareketi bulunmuyor.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 
     {{-- Pagination --}}

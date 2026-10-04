@@ -54,64 +54,66 @@
 
     {{-- Tablo --}}
     <div class="bg-white rounded-lg shadow overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tarih</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Gönderen</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Konu</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Mesaj</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Durum</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">İşlem</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                @forelse($messages as $msg)
-                    <tr class="hover:bg-gray-50 {{ $msg->status === 'new' ? 'bg-yellow-50' : '' }}">
-                        <td class="px-4 py-3 whitespace-nowrap text-xs text-gray-500">
-                            {{ $msg->created_at->format('d.m.Y H:i') }}
-                        </td>
-                        <td class="px-4 py-3 whitespace-nowrap">
-                            <p class="text-sm text-gray-900">{{ $msg->name }}</p>
-                            <p class="text-xs text-gray-400">{{ $msg->email }}</p>
-                            @if($msg->phone)
-                                <p class="text-xs text-gray-400">{{ $msg->phone }}</p>
-                            @endif
-                        </td>
-                        <td class="px-4 py-3 whitespace-nowrap text-xs text-gray-600">
-                            {{ $msg->subject_label }}
-                        </td>
-                        <td class="px-4 py-3 text-xs text-gray-600 max-w-xs">
-                            <p class="truncate">{{ \Illuminate\Support\Str::limit($msg->message, 80) }}</p>
-                        </td>
-                        <td class="px-4 py-3 whitespace-nowrap">
-                            @php
-                                $colors = [
-                                    'new'     => 'bg-yellow-100 text-yellow-800',
-                                    'read'    => 'bg-blue-100 text-blue-800',
-                                    'replied' => 'bg-green-100 text-green-800',
-                                    'closed'  => 'bg-gray-100 text-gray-800',
-                                ];
-                            @endphp
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $colors[$msg->status] ?? 'bg-gray-100 text-gray-800' }}">
-                                {{ $msg->status_label }}
-                            </span>
-                        </td>
-                        <td class="px-4 py-3 whitespace-nowrap text-xs">
-                            <a href="{{ route('admin.contact-messages.show', $msg) }}" class="text-primary hover:underline font-medium">
-                                Detay
-                            </a>
-                        </td>
-                    </tr>
-                @empty
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
                     <tr>
-                        <td colspan="6" class="px-4 py-12 text-center text-sm text-gray-400">
-                            Henüz mesaj bulunmuyor.
-                        </td>
+                        <x-admin.th sort="created" first="desc" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tarih</x-admin.th>
+                        <x-admin.th sort="name" first="asc" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Gönderen</x-admin.th>
+                        <x-admin.th sort="subject" first="asc" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Konu</x-admin.th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Mesaj</th>
+                        <x-admin.th sort="status" first="asc" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Durum</x-admin.th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">İşlem</th>
                     </tr>
-                @endforelse
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @forelse($messages as $msg)
+                        <tr class="hover:bg-gray-50 {{ $msg->status === 'new' ? 'bg-yellow-50' : '' }}">
+                            <td class="px-4 py-3 whitespace-nowrap text-xs text-gray-500">
+                                {{ $msg->created_at->format('d.m.Y H:i') }}
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                <p class="text-sm text-gray-900">{{ $msg->name }}</p>
+                                <p class="text-xs text-gray-400">{{ $msg->email }}</p>
+                                @if($msg->phone)
+                                    <p class="text-xs text-gray-400">{{ $msg->phone }}</p>
+                                @endif
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-xs text-gray-600">
+                                {{ $msg->subject_label }}
+                            </td>
+                            <td class="px-4 py-3 text-xs text-gray-600 max-w-xs">
+                                <p class="truncate">{{ \Illuminate\Support\Str::limit($msg->message, 80) }}</p>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                @php
+                                    $colors = [
+                                        'new'     => 'bg-yellow-100 text-yellow-800',
+                                        'read'    => 'bg-blue-100 text-blue-800',
+                                        'replied' => 'bg-green-100 text-green-800',
+                                        'closed'  => 'bg-gray-100 text-gray-800',
+                                    ];
+                                @endphp
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $colors[$msg->status] ?? 'bg-gray-100 text-gray-800' }}">
+                                    {{ $msg->status_label }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap text-xs">
+                                <a href="{{ route('admin.contact-messages.show', $msg) }}" class="text-primary hover:underline font-medium">
+                                    Detay
+                                </a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="px-4 py-12 text-center text-sm text-gray-400">
+                                Henüz mesaj bulunmuyor.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 
     @if($messages->hasPages())

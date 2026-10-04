@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\SortsIndex;
 use App\Http\Controllers\Controller;
 use App\Models\BlogCategory;
 use App\Models\BlogPost;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class BlogPostController extends Controller
 {
+    use SortsIndex;
+
     /**
      * TinyMCE editöründen gelen görseli R2'ye yükler, Thumbor URL'i döner.
      */
@@ -39,7 +43,7 @@ class BlogPostController extends Controller
 
     public function index(Request $request)
     {
-        $posts = BlogPost::with('category', 'user')
+        $query = BlogPost::with('category', 'user')
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->input('search');
                 $query->where(function ($q) use ($search) {
@@ -56,8 +60,26 @@ class BlogPostController extends Controller
             })
             ->when($request->filled('category_id'), function ($query) use ($request) {
                 $query->where('blog_category_id', $request->input('category_id'));
-            })
-            ->when($request->filled('sort'), function ($query) use ($request) {
+            });
+
+        // Başlık sıralaması (sort + dir) yoksa mevcut sıralama seçimi / varsayılan
+        $sorted = $this->applySort($query, $request, [
+            'id' => 'blog_posts.id',
+            'title' => 'blog_posts.title',
+            'category' => fn ($q, $dir) => $q->orderBy(
+                BlogCategory::select('title')->whereColumn('blog_categories.id', 'blog_posts.blog_category_id'),
+                $dir
+            ),
+            'author' => fn ($q, $dir) => $q->orderBy(
+                User::select('name')->whereColumn('users.id', 'blog_posts.user_id'),
+                $dir
+            ),
+            'status' => 'blog_posts.is_active',
+            'date' => 'blog_posts.created_at',
+        ]);
+
+        if (!$sorted) {
+            $query->when($request->filled('sort'), function ($query) use ($request) {
                 match ($request->input('sort')) {
                     'oldest' => $query->oldest(),
                     'title' => $query->orderBy('title', 'asc'),
@@ -65,9 +87,10 @@ class BlogPostController extends Controller
                 };
             }, function ($query) {
                 $query->latest();
-            })
-            ->paginate(20)
-            ->withQueryString();
+            });
+        }
+
+        $posts = $query->paginate(20)->withQueryString();
 
         $categories = BlogCategory::orderBy('title')->get();
 

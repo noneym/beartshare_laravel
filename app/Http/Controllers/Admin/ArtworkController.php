@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Concerns\SortsIndex;
 use App\Http\Controllers\Controller;
 use App\Models\Artist;
 use App\Models\Artwork;
@@ -12,9 +13,23 @@ use Illuminate\Support\Str;
 
 class ArtworkController extends Controller
 {
+    use SortsIndex;
+
     public function index(Request $request)
     {
-        $artworks = Artwork::with('artist', 'category')
+        $query = Artwork::with('artist', 'category');
+
+        // Başlık sıralaması (?sort=..&dir=..); uygulanmadıysa açılır listedeki sıralama geçerli
+        $headerSorted = $this->applySort($query, $request, [
+            'id' => 'id',
+            'title' => 'title',
+            'artist' => fn ($q, $dir) => $q->orderBy(Artist::select('name')->whereColumn('artists.id', 'artworks.artist_id'), $dir),
+            'category' => fn ($q, $dir) => $q->orderBy(Category::select('name')->whereColumn('categories.id', 'artworks.category_id'), $dir),
+            'price' => 'price_tl',
+            'status' => fn ($q, $dir) => $q->orderBy('is_sold', $dir)->orderBy('is_reserved', $dir)->orderBy('is_active', $dir),
+        ]);
+
+        $artworks = $query
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->input('search');
                 $query->where(function ($q) use ($search) {
@@ -51,7 +66,7 @@ class ArtworkController extends Controller
                     default => $query,
                 };
             })
-            ->when($request->filled('sort'), function ($query) use ($request) {
+            ->when(!$headerSorted && $request->filled('sort'), function ($query) use ($request) {
                 match ($request->input('sort')) {
                     'oldest' => $query->oldest(),
                     'price_asc' => $query->orderBy('price_tl', 'asc'),
@@ -59,8 +74,10 @@ class ArtworkController extends Controller
                     'title' => $query->orderBy('title', 'asc'),
                     default => $query->latest(),
                 };
-            }, function ($query) {
-                $query->latest();
+            }, function ($query) use ($headerSorted) {
+                if (!$headerSorted) {
+                    $query->latest();
+                }
             })
             ->paginate(20)
             ->withQueryString();

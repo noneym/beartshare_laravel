@@ -111,26 +111,28 @@
             <div class="px-4 py-3 border-b border-gray-100">
                 <h2 class="font-semibold text-gray-800">Bekleyen İşler <span class="text-xs text-gray-400 font-normal">(ilk 50)</span></h2>
             </div>
-            <table class="w-full text-sm">
-                <tbody class="divide-y divide-gray-100">
-                    @forelse($jobs as $j)
-                        <tr>
-                            <td class="px-4 py-2 text-gray-400">#{{ $j->id }}</td>
-                            <td class="px-4 py-2 text-gray-800">{{ $j->name }}</td>
-                            <td class="px-4 py-2 text-xs">
-                                @if($j->reserved_at)
-                                    <span class="text-blue-600">işleniyor</span>
-                                @else
-                                    <span class="text-gray-500">sırada</span>
-                                @endif
-                            </td>
-                            <td class="px-4 py-2 text-xs text-gray-400 text-right">{{ \Carbon\Carbon::createFromTimestamp($j->created_at)->format('d.m H:i:s') }}</td>
-                        </tr>
-                    @empty
-                        <tr><td class="px-4 py-6 text-center text-gray-400">Kuyruk boş.</td></tr>
-                    @endforelse
-                </tbody>
-            </table>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <tbody class="divide-y divide-gray-100">
+                        @forelse($jobs as $j)
+                            <tr>
+                                <td class="px-4 py-2 text-gray-400">#{{ $j->id }}</td>
+                                <td class="px-4 py-2 text-gray-800">{{ $j->name }}</td>
+                                <td class="px-4 py-2 text-xs">
+                                    @if($j->reserved_at)
+                                        <span class="text-blue-600">işleniyor</span>
+                                    @else
+                                        <span class="text-gray-500">sırada</span>
+                                    @endif
+                                </td>
+                                <td class="px-4 py-2 text-xs text-gray-400 text-right">{{ \Carbon\Carbon::createFromTimestamp($j->created_at)->format('d.m H:i:s') }}</td>
+                            </tr>
+                        @empty
+                            <tr><td class="px-4 py-6 text-center text-gray-400">Kuyruk boş.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         {{-- Kur geçmişi --}}
@@ -142,28 +144,30 @@
                     <button class="text-xs px-3 py-1.5 bg-primary text-white rounded hover:opacity-90">Şimdi Güncelle</button>
                 </form>
             </div>
-            <table class="w-full text-sm">
-                <thead class="bg-gray-50 text-xs text-gray-500 uppercase">
-                    <tr>
-                        <th class="px-4 py-2 text-left">Zaman</th>
-                        <th class="px-4 py-2 text-right">USD/TRY</th>
-                        <th class="px-4 py-2 text-right">Güncellenen eser</th>
-                        <th class="px-4 py-2 text-left">Kaynak</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                    @forelse($rates as $r)
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-gray-50 text-xs text-gray-500 uppercase">
                         <tr>
-                            <td class="px-4 py-2 text-gray-500">{{ $r->created_at->format('d.m.Y H:i') }}</td>
-                            <td class="px-4 py-2 text-right font-medium">{{ number_format($r->rate, 4, ',', '.') }}</td>
-                            <td class="px-4 py-2 text-right text-gray-500">{{ $r->artworks_updated }}</td>
-                            <td class="px-4 py-2 text-xs text-gray-500">{{ $r->source }}{{ $r->rate_date ? ' · ' . $r->rate_date->format('d.m.Y') : '' }}</td>
+                            <th class="px-4 py-2 text-left">Zaman</th>
+                            <th class="px-4 py-2 text-right">USD/TRY</th>
+                            <th class="px-4 py-2 text-right">Güncellenen eser</th>
+                            <th class="px-4 py-2 text-left">Kaynak</th>
                         </tr>
-                    @empty
-                        <tr><td colspan="4" class="px-4 py-6 text-center text-gray-400">Henüz kur çekilmedi.</td></tr>
-                    @endforelse
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        @forelse($rates as $r)
+                            <tr>
+                                <td class="px-4 py-2 text-gray-500">{{ $r->created_at->format('d.m.Y H:i') }}</td>
+                                <td class="px-4 py-2 text-right font-medium">{{ number_format($r->rate, 4, ',', '.') }}</td>
+                                <td class="px-4 py-2 text-right text-gray-500">{{ $r->artworks_updated }}</td>
+                                <td class="px-4 py-2 text-xs text-gray-500">{{ $r->source }}{{ $r->rate_date ? ' · ' . $r->rate_date->format('d.m.Y') : '' }}</td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="4" class="px-4 py-6 text-center text-gray-400">Henüz kur çekilmedi.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 

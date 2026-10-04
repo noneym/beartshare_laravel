@@ -173,96 +173,98 @@
     </div>
 
     <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-        <table class="w-full">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Eser</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sanatci</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kategori</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fiyat</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Durum</th>
-                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Islemler</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200">
-                @forelse($artworks as $artwork)
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 text-sm text-gray-400 font-mono">
-                            #{{ $artwork->id }}
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="flex items-center">
-                                <div class="w-16 h-12 bg-gray-200 rounded overflow-hidden flex-shrink-0">
-                                    @if($artwork->first_image)
-                                        <img src="{{ $artwork->first_image_url }}" alt="{{ $artwork->title }}" class="w-full h-full object-cover">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <x-admin.th sort="id" first="desc" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</x-admin.th>
+                        <x-admin.th sort="title" first="asc" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Eser</x-admin.th>
+                        <x-admin.th sort="artist" first="asc" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sanatci</x-admin.th>
+                        <x-admin.th sort="category" first="asc" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kategori</x-admin.th>
+                        <x-admin.th sort="price" first="desc" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fiyat</x-admin.th>
+                        <x-admin.th sort="status" first="desc" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Durum</x-admin.th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Islemler</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    @forelse($artworks as $artwork)
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 text-sm text-gray-400 font-mono">
+                                #{{ $artwork->id }}
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center">
+                                    <div class="w-16 h-12 bg-gray-200 rounded overflow-hidden flex-shrink-0">
+                                        @if($artwork->first_image)
+                                            <img src="{{ $artwork->first_image_url }}" alt="{{ $artwork->title }}" class="w-full h-full object-cover">
+                                        @endif
+                                    </div>
+                                    <div class="ml-4">
+                                        <p class="font-medium text-gray-900">{{ $artwork->title }}</p>
+                                        <p class="text-xs text-gray-500">{{ $artwork->technique }} {{ $artwork->dimensions ? '- ' . $artwork->dimensions : '' }} {{ $artwork->year ? '(' . $artwork->year . ')' : '' }}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-600">
+                                {{ $artwork->artist->name ?? '-' }}
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-600">
+                                {{ $artwork->category->name ?? '-' }}
+                            </td>
+                            <td class="px-6 py-4">
+                                <p class="font-medium text-gray-900 text-sm">{{ $artwork->formatted_price_tl }}</p>
+                                <p class="text-xs text-gray-500">{{ $artwork->formatted_price_usd }}</p>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex flex-wrap gap-1">
+                                    @if($artwork->is_sold)
+                                        <span class="inline-block px-2 py-0.5 text-xs rounded-full bg-red-100 text-red-800">Satildi</span>
+                                    @elseif($artwork->is_reserved)
+                                        <span class="inline-block px-2 py-0.5 text-xs rounded-full bg-orange-100 text-orange-800">Rezerve</span>
+                                    @elseif($artwork->is_active)
+                                        <span class="inline-block px-2 py-0.5 text-xs rounded-full bg-green-100 text-green-800">Aktif</span>
+                                    @else
+                                        <span class="inline-block px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-800">Pasif</span>
+                                    @endif
+                                    @if($artwork->is_featured)
+                                        <span class="inline-block px-2 py-0.5 text-xs rounded-full bg-yellow-100 text-yellow-800">One Cikan</span>
                                     @endif
                                 </div>
-                                <div class="ml-4">
-                                    <p class="font-medium text-gray-900">{{ $artwork->title }}</p>
-                                    <p class="text-xs text-gray-500">{{ $artwork->technique }} {{ $artwork->dimensions ? '- ' . $artwork->dimensions : '' }} {{ $artwork->year ? '(' . $artwork->year . ')' : '' }}</p>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <div class="flex items-center justify-end gap-2">
+                                    <a href="{{ route('artwork.detail', $artwork->slug) }}" target="_blank" class="text-gray-400 hover:text-gray-600" title="Sitede Gor">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                    </a>
+                                    <a href="{{ route('admin.artworks.edit', $artwork) }}" class="text-blue-600 hover:text-blue-800 text-sm">Duzenle</a>
+                                    <form action="{{ route('admin.artworks.destroy', $artwork) }}" method="POST" class="inline" onsubmit="return confirm('{{ $artwork->title }} eserini silmek istediginize emin misiniz?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-600 hover:text-red-800 text-sm">Sil</button>
+                                    </form>
                                 </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-600">
-                            {{ $artwork->artist->name ?? '-' }}
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-600">
-                            {{ $artwork->category->name ?? '-' }}
-                        </td>
-                        <td class="px-6 py-4">
-                            <p class="font-medium text-gray-900 text-sm">{{ $artwork->formatted_price_tl }}</p>
-                            <p class="text-xs text-gray-500">{{ $artwork->formatted_price_usd }}</p>
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="flex flex-wrap gap-1">
-                                @if($artwork->is_sold)
-                                    <span class="inline-block px-2 py-0.5 text-xs rounded-full bg-red-100 text-red-800">Satildi</span>
-                                @elseif($artwork->is_reserved)
-                                    <span class="inline-block px-2 py-0.5 text-xs rounded-full bg-orange-100 text-orange-800">Rezerve</span>
-                                @elseif($artwork->is_active)
-                                    <span class="inline-block px-2 py-0.5 text-xs rounded-full bg-green-100 text-green-800">Aktif</span>
-                                @else
-                                    <span class="inline-block px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-800">Pasif</span>
-                                @endif
-                                @if($artwork->is_featured)
-                                    <span class="inline-block px-2 py-0.5 text-xs rounded-full bg-yellow-100 text-yellow-800">One Cikan</span>
-                                @endif
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 text-right">
-                            <div class="flex items-center justify-end gap-2">
-                                <a href="{{ route('artwork.detail', $artwork->slug) }}" target="_blank" class="text-gray-400 hover:text-gray-600" title="Sitede Gor">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                                </a>
-                                <a href="{{ route('admin.artworks.edit', $artwork) }}" class="text-blue-600 hover:text-blue-800 text-sm">Duzenle</a>
-                                <form action="{{ route('admin.artworks.destroy', $artwork) }}" method="POST" class="inline" onsubmit="return confirm('{{ $artwork->title }} eserini silmek istediginize emin misiniz?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-800 text-sm">Sil</button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="7" class="px-6 py-12 text-center">
-                            <div class="text-gray-400">
-                                <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                                </svg>
-                                @if(request()->hasAny(['search', 'status', 'artist_id', 'category_id', 'price_range']))
-                                    <p class="text-sm font-medium text-gray-500">Filtrelere uygun eser bulunamadi</p>
-                                    <a href="{{ route('admin.artworks.index') }}" class="text-sm text-blue-600 hover:text-blue-800 mt-1 inline-block">Filtreleri temizle</a>
-                                @else
-                                    <p class="text-sm text-gray-500">Henuz eser eklenmemis.</p>
-                                @endif
-                            </div>
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="px-6 py-12 text-center">
+                                <div class="text-gray-400">
+                                    <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                    </svg>
+                                    @if(request()->hasAny(['search', 'status', 'artist_id', 'category_id', 'price_range']))
+                                        <p class="text-sm font-medium text-gray-500">Filtrelere uygun eser bulunamadi</p>
+                                        <a href="{{ route('admin.artworks.index') }}" class="text-sm text-blue-600 hover:text-blue-800 mt-1 inline-block">Filtreleri temizle</a>
+                                    @else
+                                        <p class="text-sm text-gray-500">Henuz eser eklenmemis.</p>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 
     @if($artworks->hasPages())

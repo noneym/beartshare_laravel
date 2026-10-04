@@ -14,7 +14,7 @@
 
             <div>
                 <label class="block text-xs text-gray-500 mb-1.5">Şifre</label>
-                <input type="password" wire:model="password" class="w-full border px-4 py-2.5 text-sm focus:outline-none transition {{ $errors->has('password') ? 'border-red-400' : 'border-gray-200 focus:border-brand-black100' }}" placeholder="••••••••">
+                <x-password-input wire:model="password" class="w-full border px-4 py-2.5 text-sm focus:outline-none transition {{ $errors->has('password') ? 'border-red-400' : 'border-gray-200 focus:border-brand-black100' }}" placeholder="••••••••" />
                 @error('password') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
 

@@ -659,20 +659,20 @@
                         <div class="space-y-4">
                             <div>
                                 <label class="block text-xs text-gray-500 mb-1.5">Mevcut Şifre *</label>
-                                <input type="password" wire:model="current_password"
-                                       class="w-full border px-4 py-2.5 text-sm focus:outline-none transition {{ $errors->has('current_password') ? 'border-red-400' : 'border-gray-200 focus:border-brand-black100' }}">
+                                <x-password-input wire:model="current_password"
+                                       class="w-full border px-4 py-2.5 text-sm focus:outline-none transition {{ $errors->has('current_password') ? 'border-red-400' : 'border-gray-200 focus:border-brand-black100' }}" />
                                 @error('current_password') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
                             <div>
                                 <label class="block text-xs text-gray-500 mb-1.5">Yeni Şifre *</label>
-                                <input type="password" wire:model="new_password"
-                                       class="w-full border px-4 py-2.5 text-sm focus:outline-none transition {{ $errors->has('new_password') ? 'border-red-400' : 'border-gray-200 focus:border-brand-black100' }}">
+                                <x-password-input wire:model="new_password"
+                                       class="w-full border px-4 py-2.5 text-sm focus:outline-none transition {{ $errors->has('new_password') ? 'border-red-400' : 'border-gray-200 focus:border-brand-black100' }}" />
                                 @error('new_password') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
                             <div>
                                 <label class="block text-xs text-gray-500 mb-1.5">Yeni Şifre (Tekrar) *</label>
-                                <input type="password" wire:model="new_password_confirmation"
-                                       class="w-full border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:border-brand-black100 transition">
+                                <x-password-input wire:model="new_password_confirmation"
+                                       class="w-full border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:border-brand-black100 transition" />
                             </div>
                             <div class="flex gap-3">
                                 <button wire:click="changePassword" class="bg-brand-black100 hover:bg-black text-white px-6 py-2.5 text-sm font-medium transition">Şifreyi Güncelle</button>

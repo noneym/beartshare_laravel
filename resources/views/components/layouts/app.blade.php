@@ -42,8 +42,7 @@
     <meta name="twitter:image" content="{{ $ogImage ?? asset('images/og-default.jpg') }}">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
-    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    @include('partials.favicon')
 
     <!-- JSON-LD Structured Data -->
     @if(isset($jsonLd))

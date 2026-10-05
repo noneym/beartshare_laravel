@@ -68,6 +68,20 @@
                     <dt class="text-xs text-gray-500">Referans Kodu</dt>
                     <dd class="text-sm text-gray-900 font-mono">{{ $user->referral_code }}</dd>
                 </div>
+                <div>
+                    <dt class="text-xs text-gray-500">İki Adımlı Doğrulama</dt>
+                    <dd class="text-sm text-gray-900 flex items-center gap-3">
+                        @if($user->hasTwoFactor())
+                            <span>Açık · {{ $user->two_factor_label }}</span>
+                            <form method="POST" action="{{ route('admin.users.disable-2fa', $user) }}" onsubmit="return confirm('Bu kullanıcının iki adımlı doğrulaması kapatılsın mı? (Telefonuna ve kurtarma kodlarına erişemeyen üye için)')">
+                                @csrf
+                                <button class="text-xs text-red-600 hover:underline">Kapat</button>
+                            </form>
+                        @else
+                            <span class="text-gray-400">Kapalı</span>
+                        @endif
+                    </dd>
+                </div>
             </dl>
         </div>
 

@@ -684,6 +684,9 @@
                     @endif
                 </div>
 
+                {{-- İki Adımlı Doğrulama --}}
+                <livewire:two-factor-settings />
+
                 {{-- Referans Kodu --}}
                 <div class="bg-white border border-gray-100 p-6">
                     <h3 class="text-sm font-semibold text-brand-black100 uppercase tracking-wider mb-4">Referans Bilgileri</h3>

@@ -2,13 +2,15 @@
 
 namespace App\Livewire\Auth;
 
-use App\Models\CartItem;
+use App\Livewire\Concerns\CompletesLogin;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
+use App\Services\TwoFactorService;
 use Livewire\Component;
 
 class Login extends Component
 {
+    use CompletesLogin;
+
     public $email = '';
     public $password = '';
     public $remember = false;
@@ -43,43 +45,28 @@ class Login extends Component
             $this->addError('email', 'E-posta veya şifre hatalı.');
             return;
         }
-        Auth::login($user, $this->remember);
 
-        // Misafir sepetindeki ürünleri kullanıcıya aktar
-        $this->mergeGuestCartToUser($guestSessionId, Auth::id());
+        // İki adımlı doğrulama açıksa oturum henüz açılmaz; kod ekranına geçilir
+        if ($user->hasTwoFactor()) {
+            session()->put('two_factor_login', [
+                'user_id' => $user->id,
+                'remember' => (bool) $this->remember,
+                'guest_session' => $guestSessionId,
+                'expires_at' => now()->addMinutes(10)->timestamp,
+                'attempts' => 0,
+            ]);
 
-        session()->regenerate();
-
-        return redirect()->intended(route('home'));
-    }
-
-    /**
-     * Misafir sepetindeki ürünleri kullanıcıya aktar
-     */
-    protected function mergeGuestCartToUser($guestSessionId, $userId)
-    {
-        // Misafir sepetindeki ürünleri bul
-        $guestCartItems = CartItem::where('session_id', $guestSessionId)
-            ->whereNull('user_id')
-            ->get();
-
-        foreach ($guestCartItems as $guestItem) {
-            // Kullanıcının sepetinde aynı eser var mı kontrol et
-            $existingItem = CartItem::where('user_id', $userId)
-                ->where('artwork_id', $guestItem->artwork_id)
-                ->first();
-
-            if (!$existingItem) {
-                // Yoksa misafir ürününü kullanıcıya aktar
-                $guestItem->update([
-                    'user_id' => $userId,
-                    'session_id' => null,
-                ]);
-            } else {
-                // Zaten varsa misafir ürününü sil (duplicate olmasın)
-                $guestItem->delete();
+            if ($user->two_factor_method === 'sms') {
+                $sent = app(TwoFactorService::class)->sendSmsCode($user, 'login');
+                if ($sent !== true) {
+                    session()->flash('two_factor_notice', $sent);
+                }
             }
+
+            return redirect()->route('two-factor.challenge');
         }
+
+        return $this->completeLogin($user, (bool) $this->remember, $guestSessionId);
     }
 
     public function render()

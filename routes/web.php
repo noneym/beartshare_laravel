@@ -90,6 +90,7 @@ Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('
 // Auth Routes
 Route::middleware('guest')->group(function () {
     Route::get('/giris', Login::class)->name('login');
+    Route::get('/giris/dogrulama', App\Livewire\Auth\TwoFactorChallenge::class)->name('two-factor.challenge');
     Route::get('/kayit', Register::class)->name('register');
 });
 
@@ -112,6 +113,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('categories', App\Http\Controllers\Admin\CategoryController::class)->except(['show']);
     Route::patch('categories/{category}/toggle-active', [App\Http\Controllers\Admin\CategoryController::class, 'toggleActive'])->name('categories.toggle-active');
     Route::resource('users', App\Http\Controllers\Admin\UserController::class)->only(['index', 'show', 'edit', 'update']);
+    Route::post('users/{user}/disable-2fa', [App\Http\Controllers\Admin\UserController::class, 'disableTwoFactor'])->name('users.disable-2fa');
     Route::resource('orders', App\Http\Controllers\Admin\OrderController::class)->only(['index', 'show', 'update', 'destroy']);
     Route::post('orders/{id}/restore', [App\Http\Controllers\Admin\OrderController::class, 'restore'])->name('orders.restore');
 

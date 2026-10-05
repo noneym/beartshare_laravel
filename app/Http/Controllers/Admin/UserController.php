@@ -7,7 +7,9 @@ use App\Models\ArtPuanLog;
 use App\Models\NotificationLog;
 use App\Models\Order;
 use App\Models\User;
+use App\Services\TwoFactorService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -103,6 +105,15 @@ class UserController extends Controller
     public function edit(User $user)
     {
         return view('admin.users.edit', compact('user'));
+    }
+
+    /** Telefonuna ve kurtarma kodlarına erişemeyen üye için 2FA'yı kapatır */
+    public function disableTwoFactor(User $user, TwoFactorService $twoFactor)
+    {
+        $twoFactor->disable($user);
+        Log::info('Admin 2FA kapatti', ['user_id' => $user->id, 'admin_id' => auth()->id()]);
+
+        return back()->with('success', "{$user->name} için iki adımlı doğrulama kapatıldı.");
     }
 
     public function update(Request $request, User $user)

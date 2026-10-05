@@ -5,6 +5,10 @@
             <p class="text-gray-400 text-xs mt-2">Hesabınıza giriş yapın</p>
         </div>
 
+        @if(session('error'))
+            <div class="mb-4 text-xs text-red-600 bg-red-50 border border-red-100 px-3 py-2">{{ session('error') }}</div>
+        @endif
+
         <form wire:submit="login" class="space-y-4">
             <div>
                 <label class="block text-xs text-gray-500 mb-1.5">E-posta</label>

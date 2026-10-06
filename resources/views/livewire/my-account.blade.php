@@ -684,6 +684,11 @@
                     @endif
                 </div>
 
+                {{-- Passkey (PASSKEYS_ENABLED açıkken) --}}
+                @if(config('passkeys.enabled'))
+                    <livewire:passkey-settings />
+                @endif
+
                 {{-- İki Adımlı Doğrulama --}}
                 <livewire:two-factor-settings />
 

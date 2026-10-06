@@ -176,6 +176,11 @@ class User extends Authenticatable
         return $this->hasMany(Order::class);
     }
 
+    public function passkeys()
+    {
+        return $this->hasMany(Passkey::class);
+    }
+
     // ── Şifre ──
 
     /**

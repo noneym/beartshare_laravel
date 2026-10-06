@@ -40,6 +40,26 @@
             </button>
         </form>
 
+        @if(config('passkeys.enabled'))
+            {{-- Şifresiz giriş: tarayıcı passkey desteklemiyorsa gizli kalır --}}
+            <div wire:ignore x-data="{ ok: false, busy: false, error: '' }" x-init="ok = window.Passkey && Passkey.supported()" x-show="ok" x-cloak class="mt-4">
+                <div class="flex items-center gap-3 my-4">
+                    <span class="flex-1 h-px bg-gray-100"></span><span class="text-[11px] text-gray-400">veya</span><span class="flex-1 h-px bg-gray-100"></span>
+                </div>
+                <button type="button" :disabled="busy"
+                        @click="busy = true; error = ''; Passkey.login().catch(e => { error = e.message; busy = false; })"
+                        class="w-full border border-gray-200 hover:border-brand-black100 py-3 text-sm font-medium text-brand-black100 transition flex items-center justify-center gap-2 disabled:opacity-60">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z"/>
+                    </svg>
+                    <span x-text="busy ? 'Bekleniyor…' : 'Passkey ile giriş yap'">Passkey ile giriş yap</span>
+                </button>
+                <p x-show="error" x-text="error" class="text-red-500 text-xs mt-2 text-center"></p>
+                <p class="text-[11px] text-gray-400 mt-2 text-center">Face ID, parmak izi ya da cihaz PIN’i ile şifresiz giriş</p>
+            </div>
+            @include('partials.passkey-script')
+        @endif
+
         <div class="text-center mt-8">
             <p class="text-gray-400 text-xs">
                 Hesabınız yok mu?

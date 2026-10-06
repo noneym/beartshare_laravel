@@ -17,6 +17,7 @@ use App\Livewire\Auth\Register;
 use App\Livewire\FaqPage;
 use App\Http\Controllers\ArtworkSubmissionController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\PasskeyController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductFeedController;
 use App\Http\Controllers\SearchController;
@@ -100,6 +101,15 @@ Route::post('/cikis', function () {
     session()->regenerateToken();
     return redirect('/');
 })->middleware('auth')->name('logout');
+
+// Passkey (WebAuthn) — config('passkeys.enabled') kapalıysa 404
+Route::prefix('passkeys')->name('passkeys.')->middleware('throttle:30,1')->group(function () {
+    Route::post('login/options', [PasskeyController::class, 'loginOptions'])->middleware('guest')->name('login.options');
+    Route::post('login', [PasskeyController::class, 'login'])->middleware('guest')->name('login');
+    Route::post('register/options', [PasskeyController::class, 'registerOptions'])->middleware('auth')->name('register.options');
+    Route::post('register', [PasskeyController::class, 'register'])->middleware('auth')->name('register');
+    Route::delete('{passkey}', [PasskeyController::class, 'destroy'])->middleware('auth')->name('destroy');
+});
 
 Route::get('/hesabim/{tab?}', MyAccount::class)->middleware('auth')->name('profile');
 Route::get('/favorilerim', Favorites::class)->middleware('auth')->name('favorites');

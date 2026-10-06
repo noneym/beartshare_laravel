@@ -14,8 +14,16 @@ class Invoice extends Model
         'manual' => 'Elle',
     ];
 
+    public const STATUSES = [
+        'draft' => 'Taslak',
+        'formalizing' => 'Gönderiliyor',
+        'issued' => 'Resmileşti',
+        'failed' => 'Hata',
+    ];
+
     protected $fillable = [
-        'parasut_id', 'invoice_no', 'issue_date', 'description',
+        'status', 'parasut_id', 'parasut_contact_id', 'trackable_job_id', 'error', 'payment_recorded', 'created_by',
+        'invoice_no', 'issue_date', 'description',
         'contact_name', 'contact_tax_number', 'contact_type', 'party',
         'net_total', 'vat_total', 'total', 'currency', 'lines',
         'e_document_type', 'e_document_id', 'e_document_status', 'e_document_uuid', 'pdf_path',
@@ -29,7 +37,18 @@ class Invoice extends Model
         'total' => 'decimal:2',
         'lines' => 'array',
         'synced_at' => 'datetime',
+        'payment_recorded' => 'boolean',
     ];
+
+    public function getStatusLabelAttribute(): string
+    {
+        return self::STATUSES[$this->status] ?? $this->status;
+    }
+
+    public function isDraft(): bool
+    {
+        return $this->status === 'draft' && !$this->e_document_id;
+    }
 
     public function orders()
     {

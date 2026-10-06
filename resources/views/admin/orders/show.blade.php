@@ -355,12 +355,13 @@
             <div class="bg-white rounded-xl shadow-sm p-6">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-lg font-semibold">Faturalar</h2>
-                    <a href="{{ route('admin.invoices.index', ['search' => $order->id]) }}" class="text-xs text-gray-400 hover:text-gray-700">Tümü</a>
+                    <a href="{{ route('admin.invoices.create', ['orders' => $order->id]) }}" class="text-xs px-2.5 py-1 bg-primary text-white rounded hover:opacity-90">+ Fatura oluştur</a>
                 </div>
                 @forelse($orderInvoices as $inv)
                     <div class="flex items-start justify-between gap-3 py-2 {{ !$loop->first ? 'border-t border-gray-100' : '' }}">
                         <div class="min-w-0">
-                            <p class="text-sm font-mono text-gray-900">{{ $inv->invoice_no ?: '—' }}</p>
+                            <a href="{{ route('admin.invoices.show', $inv) }}" class="text-sm font-mono text-gray-900 hover:text-primary">{{ $inv->invoice_no ?: 'Taslak' }}</a>
+                            @if($inv->status !== 'issued')<span class="text-[11px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">{{ $inv->status_label }}</span>@endif
                             <p class="text-xs text-gray-500">
                                 {{ $inv->issue_date->format('d.m.Y') }} · {{ $inv->contact_name }}
                                 @if($inv->party_label) · {{ $inv->party_label }} @endif

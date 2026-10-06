@@ -153,6 +153,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     // Faturalar (Paraşüt)
     Route::get('invoices', [App\Http\Controllers\Admin\InvoiceController::class, 'index'])->name('invoices.index');
+    Route::get('invoices/create', [App\Http\Controllers\Admin\InvoiceController::class, 'create'])->name('invoices.create');
+    Route::post('invoices', [App\Http\Controllers\Admin\InvoiceController::class, 'store'])->name('invoices.store');
+    Route::get('invoices/{invoice}', [App\Http\Controllers\Admin\InvoiceController::class, 'show'])->name('invoices.show');
+    Route::delete('invoices/{invoice}', [App\Http\Controllers\Admin\InvoiceController::class, 'destroy'])->name('invoices.destroy');
+    Route::post('invoices/{invoice}/formalize', [App\Http\Controllers\Admin\InvoiceController::class, 'formalize'])->name('invoices.formalize');
+    Route::post('invoices/{invoice}/refresh', [App\Http\Controllers\Admin\InvoiceController::class, 'refreshStatus'])->name('invoices.refresh');
     Route::get('invoices/{invoice}/pdf', [App\Http\Controllers\Admin\InvoiceController::class, 'pdf'])->name('invoices.pdf');
     Route::post('invoices/{invoice}/link', [App\Http\Controllers\Admin\InvoiceController::class, 'link'])->name('invoices.link');
     Route::post('invoices/{invoice}/confirm', [App\Http\Controllers\Admin\InvoiceController::class, 'confirm'])->name('invoices.confirm');

@@ -92,6 +92,8 @@ class ImportParasutInvoices extends Command
                 'match_method' => $method,
                 'match_note' => $note,
                 'synced_at' => now(),
+                // e-belgesi olan resmileşmiştir; olmayan Paraşüt'te taslaktır
+                'status' => $ed ? 'issued' : 'draft',
             ];
 
             if ($this->option('dry-run')) continue;

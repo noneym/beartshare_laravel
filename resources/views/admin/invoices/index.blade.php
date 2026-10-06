@@ -9,6 +9,7 @@
                 @if($stats['last_sync']) · son aktarım {{ \Carbon\Carbon::parse($stats['last_sync'])->format('d.m.Y H:i') }} @endif
             </p>
         </div>
+        <a href="{{ route('admin.invoices.create') }}" class="px-4 py-2 bg-primary text-white rounded-lg text-sm hover:opacity-90">+ Yeni fatura</a>
     </div>
 
     <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
@@ -94,7 +95,8 @@
                     @forelse($invoices as $inv)
                         <tr class="align-top hover:bg-gray-50">
                             <td class="px-4 py-3 whitespace-nowrap">
-                                <p class="font-mono text-gray-900">{{ $inv->invoice_no ?: '—' }}</p>
+                                <a href="{{ route('admin.invoices.show', $inv) }}" class="font-mono text-gray-900 hover:text-primary">{{ $inv->invoice_no ?: 'Taslak' }}</a>
+                                @if($inv->status !== 'issued')<span class="ml-1 text-[11px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">{{ $inv->status_label }}</span>@endif
                                 <p class="text-xs text-gray-500">{{ $inv->issue_date->format('d.m.Y') }} · {{ $inv->e_document_label ?? 'belge yok' }}</p>
                             </td>
                             <td class="px-4 py-3">

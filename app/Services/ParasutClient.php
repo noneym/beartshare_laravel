@@ -56,6 +56,36 @@ class ParasutClient
         return $res->json();
     }
 
+    public function post(string $path, array $body, array $query = []): array
+    {
+        return $this->send('post', $path, $body, $query);
+    }
+
+    public function delete(string $path): void
+    {
+        $this->send('delete', $path);
+    }
+
+    protected function send(string $method, string $path, array $body = [], array $query = []): array
+    {
+        $url = $this->config['base_url'] . "/v4/{$this->config['company_id']}/" . ltrim($path, '/')
+            . ($query ? '?' . http_build_query($query) : '');
+        $request = fn () => Http::withToken($this->token())->acceptJson()->asJson()->timeout(90)->{$method}($url, $body ?: null);
+
+        $res = $request();
+        if ($res->status() === 401) {
+            Cache::forget('parasut:token');
+            $res = $request();
+        }
+        if (!$res->successful()) {
+            // JSON:API hata mesajlarını okunur hale getir
+            $errors = collect($res->json('errors') ?? [])->map(fn ($e) => trim(($e['title'] ?? '') . ' ' . ($e['detail'] ?? '')))->filter()->implode('; ');
+            throw new RuntimeException("Paraşüt {$path}: " . ($errors ?: 'HTTP ' . $res->status() . ' ' . mb_substr($res->body(), 0, 200)));
+        }
+
+        return $res->json() ?? [];
+    }
+
     /**
      * Tüm satış faturaları (müşteri, satırlar + ürün, e-belge dahil).
      * @return array{data: array, included: array<string, array>} included anahtarı "tip:id"

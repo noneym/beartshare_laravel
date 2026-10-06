@@ -12,6 +12,14 @@
                        class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary">
             </div>
             <div class="min-w-[160px]">
+                <label class="block text-xs text-gray-500 mb-1">Fatura</label>
+                <select name="invoice" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary">
+                    <option value="">Tumu</option>
+                    <option value="none" @selected(request('invoice') === 'none')>Faturası kesilmemiş (ödenmiş)</option>
+                    <option value="has" @selected(request('invoice') === 'has')>Faturalı</option>
+                </select>
+            </div>
+            <div class="min-w-[160px]">
                 <label class="block text-xs text-gray-500 mb-1">Durum</label>
                 <select name="status" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary">
                     <option value="">Tumu</option>

@@ -30,6 +30,13 @@ class OrderController extends Controller
             $query->where('status', $request->status);
         }
 
+        // Fatura: none = ödemesi alınmış ama faturası kesilmemiş, has = faturalı
+        if ($request->input('invoice') === 'none') {
+            $query->whereIn('status', ['paid', 'confirmed', 'shipped', 'delivered'])->doesntHave('invoices');
+        } elseif ($request->input('invoice') === 'has') {
+            $query->has('invoices');
+        }
+
         // Arama
         if ($request->filled('search')) {
             $search = $request->search;

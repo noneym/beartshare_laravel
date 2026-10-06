@@ -111,6 +111,7 @@ Route::prefix('passkeys')->name('passkeys.')->middleware('throttle:30,1')->group
     Route::delete('{passkey}', [PasskeyController::class, 'destroy'])->middleware('auth')->name('destroy');
 });
 
+Route::get('/hesabim/fatura/{invoice}', [App\Http\Controllers\AccountInvoiceController::class, 'show'])->middleware('auth')->name('account.invoice');
 Route::get('/hesabim/{tab?}', MyAccount::class)->middleware('auth')->name('profile');
 Route::get('/favorilerim', Favorites::class)->middleware('auth')->name('favorites');
 Route::get('/adreslerim', AddressManager::class)->middleware('auth')->name('addresses');

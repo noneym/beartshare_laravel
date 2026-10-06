@@ -76,6 +76,19 @@ class Order extends Model
         return $this->belongsToMany(Invoice::class);
     }
 
+    /**
+     * Müşterinin görebileceği faturalar: alıcıya kesilmiş, resmileşmiş, PDF'i olan.
+     * (Aynı siparişin satıcıya / konsinye sahibine kesilmiş faturası başkasının bilgisini içerir.)
+     */
+    public function customerInvoices()
+    {
+        return $this->belongsToMany(Invoice::class)
+            ->where('invoices.party', 'buyer')
+            ->where('invoices.status', 'issued')
+            ->whereNotNull('invoices.pdf_path')
+            ->orderBy('invoices.issue_date');
+    }
+
     public function getStatusLabelAttribute()
     {
         return match($this->status) {

@@ -185,7 +185,7 @@ class MyAccount extends Component
         // Siparişler
         $orders = collect();
         if ($this->activeTab === 'orders' || $this->activeTab === 'overview') {
-            $ordersQuery = Order::with('items.artwork')
+            $ordersQuery = Order::with(['items.artwork', 'customerInvoices'])
                 ->where('user_id', $userId)
                 ->latest();
 

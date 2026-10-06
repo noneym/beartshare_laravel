@@ -82,6 +82,13 @@
                         @endif
                     </dd>
                 </div>
+                <div>
+                    <dt class="text-xs text-gray-500">Passkey</dt>
+                    <dd class="text-sm text-gray-900">
+                        @php $passkeyCount = $user->passkeys()->count(); @endphp
+                        {{ $passkeyCount ? $passkeyCount . ' passkey' : '—' }}
+                    </dd>
+                </div>
             </dl>
         </div>
 
@@ -199,6 +206,14 @@
                                 <a href="{{ route('admin.orders.show', $order) }}" class="text-blue-600 hover:text-blue-800 text-xs">Goruntule</a>
                             </td>
                         </tr>
+                        {{-- Siparişteki eserler --}}
+                        @if($order->items->isNotEmpty())
+                            <tr class="!border-t-0">
+                                <td colspan="6" class="px-5 pb-3 pt-0">
+                                    <x-admin.order-items :items="$order->items" />
+                                </td>
+                            </tr>
+                        @endif
                     @empty
                         <tr>
                             <td colspan="6" class="px-5 py-6 text-center text-sm text-gray-400">Siparis bulunamadi</td>

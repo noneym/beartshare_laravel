@@ -117,6 +117,14 @@
                                 </div>
                             </td>
                         </tr>
+                        {{-- Siparişteki eserler --}}
+                        @if($order->items->isNotEmpty())
+                            <tr class="!border-t-0 {{ $order->trashed() ? 'bg-red-50' : '' }}">
+                                <td colspan="6" class="px-6 pb-4 pt-0">
+                                    <x-admin.order-items :items="$order->items" />
+                                </td>
+                            </tr>
+                        @endif
                     @empty
                         <tr>
                             <td colspan="6" class="px-6 py-8 text-center text-gray-500">

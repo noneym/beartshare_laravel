@@ -80,6 +80,7 @@ class UserController extends Controller
         $user->loadCount(['orders', 'favorites', 'referrals']);
 
         $orders = $user->orders()
+            ->with('items.artwork')
             ->latest()
             ->take(10)
             ->get();

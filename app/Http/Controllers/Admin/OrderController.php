@@ -17,7 +17,8 @@ class OrderController extends Controller
 
     public function index(Request $request)
     {
-        $query = Order::with('user', 'items.artwork');
+        // Kalemler listede siparişin altında gösterilir; silinmiş siparişin kalemleri de
+        $query = Order::with(['user', 'items' => fn ($q) => $q->withTrashed(), 'items.artwork']);
 
         // Silinmişleri göster
         if ($request->has('with_trashed')) {

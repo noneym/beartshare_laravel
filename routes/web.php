@@ -43,7 +43,7 @@ Route::get('/eserler', ArtworkList::class)->name('artworks');
 Route::get('/eser/{slug}', ArtworkDetail::class)->name('artwork.detail');
 // Deneysel: 3D sanal galeri
 Route::get('/eser/{slug}/3d', [App\Http\Controllers\ArtworkGalleryController::class, 'show'])->name('artwork.3d');
-// Deneysel, sitede linki yok: satıştaki tüm eserlerin sanal sergisi
+// Sanal Galeri: satıştaki tüm eserlerin 3D sergisi
 Route::get('/sanal-sergi', [App\Http\Controllers\ArtworkGalleryController::class, 'showAll'])->name('exhibition.3d');
 Route::get('/3d-gorsel/{artwork}', [App\Http\Controllers\ArtworkGalleryController::class, 'image'])->name('artwork.3d.image');
 Route::get('/3d-sanatci/{artist}', [App\Http\Controllers\ArtworkGalleryController::class, 'artistPhoto'])->name('artwork.3d.artist');

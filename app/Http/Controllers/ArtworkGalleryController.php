@@ -51,7 +51,7 @@ class ArtworkGalleryController extends Controller
     }
 
     /**
-     * Deneysel ve listelenmeyen sayfa: satıştaki tüm eserlerin tek salonda sergisi.
+     * Sanal Galeri (header'daki menü): satıştaki tüm eserlerin tek salonda sergisi.
      * Eserler sanatçıya göre gruplanır; dokular hafif boyutta yüklenir.
      */
     public function showAll()

@@ -256,7 +256,15 @@
         @if($activeTab === 'orders')
             <h2 class="text-lg font-semibold text-brand-black100 mb-6">Siparişlerim</h2>
             @if($orders->count() > 0)
-                <div class="space-y-4">
+                {{-- lightbox: tıklanan eser görselinin büyük hali --}}
+                <div class="space-y-4" x-data="{ lightbox: null }" @keydown.escape.window="lightbox = null">
+                    <div x-show="lightbox" x-cloak x-transition.opacity @click="lightbox = null"
+                         class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 cursor-zoom-out">
+                        <img :src="lightbox" alt="" class="max-w-full max-h-full object-contain shadow-2xl" @click.stop>
+                        <button type="button" @click="lightbox = null" class="absolute top-4 right-4 text-white/80 hover:text-white" aria-label="Kapat">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
                     @foreach($orders as $order)
                         <div class="bg-white border border-gray-100 overflow-hidden">
                             <div class="p-5 flex flex-col sm:flex-row sm:items-center gap-4">
@@ -287,16 +295,27 @@
                             <div class="border-t border-gray-50 px-5 py-3 bg-gray-50/50">
                                 <div class="flex flex-wrap gap-3">
                                     @foreach($order->items as $item)
+                                        @php
+                                            $artwork = $item->artwork;
+                                            // Eser hâlâ sitede yayındaysa sayfasına bağlanır
+                                            $artworkUrl = $artwork && $artwork->is_active ? route('artwork.detail', $artwork->slug) : null;
+                                        @endphp
                                         <div class="flex items-center gap-2">
-                                            @if($item->artwork && $item->artwork->first_image_url)
-                                                <img src="{{ $item->artwork->first_image_url }}" alt="" class="w-10 h-10 object-cover border border-gray-100">
+                                            @if($artwork && $artwork->first_image_url)
+                                                <button type="button" @click="lightbox = @js($artwork->imageUrl('detail'))" class="shrink-0 cursor-zoom-in" title="Büyüt">
+                                                    <img src="{{ $artwork->first_image_url }}" alt="{{ $item->artwork_title }}" class="w-10 h-10 object-cover border border-gray-100 hover:opacity-80 transition">
+                                                </button>
                                             @else
                                                 <div class="w-10 h-10 bg-gray-200 flex items-center justify-center border border-gray-100">
                                                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16"/></svg>
                                                 </div>
                                             @endif
                                             <div>
-                                                <p class="text-xs font-medium text-brand-black100">{{ $item->artwork_title }}</p>
+                                                @if($artworkUrl)
+                                                    <a href="{{ $artworkUrl }}" class="text-xs font-medium text-brand-black100 hover:underline">{{ $item->artwork_title }}</a>
+                                                @else
+                                                    <p class="text-xs font-medium text-brand-black100">{{ $item->artwork_title }}</p>
+                                                @endif
                                                 <p class="text-[10px] text-gray-400">{{ number_format($item->price_tl, 0, ',', '.') }} TL</p>
                                             </div>
                                         </div>
@@ -608,7 +627,8 @@
         @if($activeTab === 'settings')
             <h2 class="text-lg font-semibold text-brand-black100 mb-6">Hesap Ayarları</h2>
 
-            <div class="space-y-6 max-w-2xl">
+            {{-- Geniş ekranda kartlar iki sütuna boşluksuz dizilir; mobilde alt alta --}}
+            <div class="lg:columns-2 gap-6 [&>*]:mb-6 [&>*]:break-inside-avoid">
                 {{-- Profil Bilgileri --}}
                 <div class="bg-white border border-gray-100 p-6">
                     <h3 class="text-sm font-semibold text-brand-black100 uppercase tracking-wider mb-4">Profil Bilgileri</h3>

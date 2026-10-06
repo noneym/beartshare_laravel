@@ -57,7 +57,6 @@
                 <p x-show="error" x-text="error" class="text-red-500 text-xs mt-2 text-center"></p>
                 <p class="text-[11px] text-gray-400 mt-2 text-center">Face ID, parmak izi ya da cihaz PIN’i ile şifresiz giriş</p>
             </div>
-            @include('partials.passkey-script')
         @endif
 
         <div class="text-center mt-8">

@@ -47,10 +47,10 @@
                     <span x-text="busy ? 'Bekleniyor…' : '+ Bu cihaza passkey ekle'">+ Bu cihaza passkey ekle</span>
                 </button>
             </template>
-            <p x-show="!ok" class="text-xs text-gray-400">Bu tarayıcı passkey desteklemiyor. Güncel bir tarayıcı ya da telefon kullanın.</p>
+            <p x-show="!ok" class="text-xs text-gray-400"
+               x-text="window.isSecureContext ? 'Bu tarayıcı passkey desteklemiyor. Güncel bir tarayıcı ya da telefon kullanın.' : 'Passkey yalnızca güvenli (https) bağlantıda çalışır.'">Bu tarayıcı passkey desteklemiyor.</p>
             <p x-show="error" x-text="error" class="text-red-500 text-xs mt-2"></p>
         </div>
     @endif
 
-    @include('partials.passkey-script')
 </div>

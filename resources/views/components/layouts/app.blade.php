@@ -717,6 +717,11 @@
         </div>
     </div>
 
+    {{-- Passkey yardımcıları sayfa şablonunda: Livewire ile sonradan gelen içerikteki <script> çalışmaz --}}
+    @if(config('passkeys.enabled'))
+        @include('partials.passkey-script')
+    @endif
+
     @livewireScripts
 </body>
 </html>

@@ -189,7 +189,19 @@ class PasskeyController extends Controller
 
     protected function rpId(): string
     {
-        return config('passkeys.rp_id') ?: request()->getHost();
+        $host = request()->getHost();
+        $configured = config('passkeys.rp_id');
+
+        // Passkey yalnızca bulunulan alan adına ya da üst alan adına bağlanabilir; uymuyorsa
+        // (ör. test alan adında PASSKEY_RP_ID=beartshare.com) tarayıcı reddeder → mevcut host
+        if ($configured && ($host === $configured || str_ends_with($host, '.' . $configured))) {
+            return $configured;
+        }
+        if ($configured) {
+            Log::notice("PASSKEY_RP_ID ({$configured}) bu alan adına ({$host}) uymuyor; {$host} kullanılıyor.");
+        }
+
+        return $host;
     }
 
     protected function deviceName(Request $request): string

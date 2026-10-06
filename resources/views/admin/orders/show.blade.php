@@ -351,6 +351,31 @@
             </div>
             @endif
 
+            @php $orderInvoices = $order->invoices()->orderBy('issue_date')->get(); @endphp
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold">Faturalar</h2>
+                    <a href="{{ route('admin.invoices.index', ['search' => $order->id]) }}" class="text-xs text-gray-400 hover:text-gray-700">Tümü</a>
+                </div>
+                @forelse($orderInvoices as $inv)
+                    <div class="flex items-start justify-between gap-3 py-2 {{ !$loop->first ? 'border-t border-gray-100' : '' }}">
+                        <div class="min-w-0">
+                            <p class="text-sm font-mono text-gray-900">{{ $inv->invoice_no ?: '—' }}</p>
+                            <p class="text-xs text-gray-500">
+                                {{ $inv->issue_date->format('d.m.Y') }} · {{ $inv->contact_name }}
+                                @if($inv->party_label) · {{ $inv->party_label }} @endif
+                            </p>
+                            <p class="text-xs text-gray-700 mt-0.5">{{ number_format($inv->total, 2, ',', '.') }} TL</p>
+                        </div>
+                        @if($inv->pdf_path)
+                            <a href="{{ route('admin.invoices.pdf', $inv) }}" target="_blank" class="text-xs text-primary hover:underline shrink-0">PDF</a>
+                        @endif
+                    </div>
+                @empty
+                    <p class="text-sm text-gray-400">Bu siparişe bağlı fatura yok.</p>
+                @endforelse
+            </div>
+
             @if($order->admin_notes)
             <div class="bg-white rounded-xl shadow-sm p-6">
                 <h2 class="text-lg font-semibold mb-4">İşlem Geçmişi</h2>

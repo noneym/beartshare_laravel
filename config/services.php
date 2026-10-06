@@ -38,6 +38,16 @@ return [
         'key' => env('CLOUDFLARE_API_KEY'),
     ],
 
+    // Paraşüt muhasebe API v4 (OAuth2 password grant)
+    'parasut' => [
+        'client_id' => env('PARASUT_CLIENT_ID'),
+        'client_secret' => env('PARASUT_CLIENT_SECRET'),
+        'username' => env('PARASUT_USERNAME'),
+        'password' => env('PARASUT_PASSWORD'),
+        'company_id' => env('PARASUT_COMPANY_ID'),
+        'base_url' => env('PARASUT_BASE_URL', 'https://api.parasut.com'),
+    ],
+
     'netgsm' => [
         'username' => env('NETGSM_USERNAME'),
         'password' => env('NETGSM_PASSWORD'),

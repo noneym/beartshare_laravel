@@ -71,6 +71,11 @@ class Order extends Model
         return $this->hasMany(PaymentTransaction::class);
     }
 
+    public function invoices()
+    {
+        return $this->belongsToMany(Invoice::class);
+    }
+
     public function getStatusLabelAttribute()
     {
         return match($this->status) {

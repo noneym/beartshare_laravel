@@ -151,6 +151,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::delete('payments/{payment}', [App\Http\Controllers\Admin\PaymentController::class, 'destroy'])->name('payments.destroy');
     Route::post('payments/{id}/restore', [App\Http\Controllers\Admin\PaymentController::class, 'restore'])->name('payments.restore');
 
+    // Faturalar (Paraşüt)
+    Route::get('invoices', [App\Http\Controllers\Admin\InvoiceController::class, 'index'])->name('invoices.index');
+    Route::get('invoices/{invoice}/pdf', [App\Http\Controllers\Admin\InvoiceController::class, 'pdf'])->name('invoices.pdf');
+    Route::post('invoices/{invoice}/link', [App\Http\Controllers\Admin\InvoiceController::class, 'link'])->name('invoices.link');
+    Route::post('invoices/{invoice}/confirm', [App\Http\Controllers\Admin\InvoiceController::class, 'confirm'])->name('invoices.confirm');
+
     // Kuyruk / döviz kuru
     Route::get('queue', [App\Http\Controllers\Admin\QueueController::class, 'index'])->name('queue.index');
     Route::post('queue/retry', [App\Http\Controllers\Admin\QueueController::class, 'retry'])->name('queue.retry');

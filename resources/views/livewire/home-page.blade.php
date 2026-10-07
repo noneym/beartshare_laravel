@@ -296,60 +296,6 @@
         </script>
     </section>
 
-    <!-- Artists Section -->
-    <section class="py-12 bg-gray-50">
-        <div class="container mx-auto px-4">
-            <div class="flex items-end justify-between mb-8">
-                <div>
-                    <h2 class="text-2xl font-semibold text-brand-black100">Sanatçılar</h2>
-                    <p class="text-gray-400 text-xs mt-1">Koleksiyonumuzdaki seçkin sanatçılar</p>
-                </div>
-                <a href="{{ route('artists') }}" class="text-xs text-brand-black100 hover:text-primary transition flex items-center gap-1 font-medium">
-                    Tümünü Gör
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                </a>
-            </div>
-            <div class="relative" x-data="{ scrollContainer: null }" x-init="scrollContainer = $refs.artistScroll">
-                <button @click="scrollContainer.scrollBy({left: -400, behavior: 'smooth'})"
-                    class="absolute -left-4 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full w-10 h-10 flex items-center justify-center hover:shadow-xl hover:scale-105 transition hidden lg:flex">
-                    <svg class="w-5 h-5 text-brand-black100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                    </svg>
-                </button>
-
-                <div x-ref="artistScroll" class="flex space-x-4 overflow-x-auto pb-2 scrollbar-hide scroll-smooth">
-                    @foreach($artists as $artist)
-                        <a href="{{ route('artist.detail', $artist->slug) }}" class="flex-shrink-0 group" wire:key="artist-{{ $artist->id }}">
-                            <div class="bg-white rounded-lg border border-gray-100 px-3 py-4 w-[120px] hover:shadow-md hover:border-gray-200 transition-all duration-300 text-center">
-                                <div class="w-20 h-20 rounded-full overflow-hidden border-2 border-gray-100 group-hover:border-primary transition-all mx-auto mb-3">
-                                    @if($artist->avatar_url)
-                                        <img src="{{ $artist->avatar_url }}" alt="{{ $artist->name }}" class="w-full h-full object-cover">
-                                    @else
-                                        <div class="w-full h-full bg-gray-100 flex items-center justify-center text-lg font-light text-gray-400">
-                                            {{ mb_substr($artist->name, 0, 1) }}
-                                        </div>
-                                    @endif
-                                </div>
-                                <h3 class="font-medium text-brand-black100 text-[11px] leading-tight line-clamp-1">{{ $artist->name }}</h3>
-                                <p class="text-gray-400 text-[10px] mt-0.5">{{ $artist->life_span }}</p>
-                                @if($artist->artworks_count > 0)
-                                    <p class="text-primary text-[9px] mt-1 font-medium">{{ $artist->artworks_count }} eser</p>
-                                @endif
-                            </div>
-                        </a>
-                    @endforeach
-                </div>
-
-                <button @click="scrollContainer.scrollBy({left: 400, behavior: 'smooth'})"
-                    class="absolute -right-4 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full w-10 h-10 flex items-center justify-center hover:shadow-xl hover:scale-105 transition hidden lg:flex">
-                    <svg class="w-5 h-5 text-brand-black100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </section>
-
     <!-- Featured Artworks -->
     @if($featuredArtworks->count() > 0)
     <section class="py-12">
@@ -454,9 +400,63 @@
         </div>
     </section>
 
+    <!-- Artists Section -->
+    <section class="py-12">
+        <div class="container mx-auto px-4">
+            <div class="flex items-end justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl font-semibold text-brand-black100">Sanatçılar</h2>
+                    <p class="text-gray-400 text-xs mt-1">Koleksiyonumuzdaki seçkin sanatçılar</p>
+                </div>
+                <a href="{{ route('artists') }}" class="text-xs text-brand-black100 hover:text-primary transition flex items-center gap-1 font-medium">
+                    Tümünü Gör
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </a>
+            </div>
+            <div class="relative" x-data="{ scrollContainer: null }" x-init="scrollContainer = $refs.artistScroll">
+                <button @click="scrollContainer.scrollBy({left: -400, behavior: 'smooth'})"
+                    class="absolute -left-4 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full w-10 h-10 flex items-center justify-center hover:shadow-xl hover:scale-105 transition hidden lg:flex">
+                    <svg class="w-5 h-5 text-brand-black100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+
+                <div x-ref="artistScroll" class="flex space-x-4 overflow-x-auto pb-2 scrollbar-hide scroll-smooth">
+                    @foreach($artists as $artist)
+                        <a href="{{ route('artist.detail', $artist->slug) }}" class="flex-shrink-0 group" wire:key="artist-{{ $artist->id }}">
+                            <div class="bg-white rounded-lg border border-gray-100 px-3 py-4 w-[120px] hover:shadow-md hover:border-gray-200 transition-all duration-300 text-center">
+                                <div class="w-20 h-20 rounded-full overflow-hidden border-2 border-gray-100 group-hover:border-primary transition-all mx-auto mb-3">
+                                    @if($artist->avatar_url)
+                                        <img src="{{ $artist->avatar_url }}" alt="{{ $artist->name }}" class="w-full h-full object-cover">
+                                    @else
+                                        <div class="w-full h-full bg-gray-100 flex items-center justify-center text-lg font-light text-gray-400">
+                                            {{ mb_substr($artist->name, 0, 1) }}
+                                        </div>
+                                    @endif
+                                </div>
+                                <h3 class="font-medium text-brand-black100 text-[11px] leading-tight line-clamp-1">{{ $artist->name }}</h3>
+                                <p class="text-gray-400 text-[10px] mt-0.5">{{ $artist->life_span }}</p>
+                                @if($artist->artworks_count > 0)
+                                    <p class="text-primary text-[9px] mt-1 font-medium">{{ $artist->artworks_count }} eser</p>
+                                @endif
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+
+                <button @click="scrollContainer.scrollBy({left: 400, behavior: 'smooth'})"
+                    class="absolute -right-4 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg rounded-full w-10 h-10 flex items-center justify-center hover:shadow-xl hover:scale-105 transition hidden lg:flex">
+                    <svg class="w-5 h-5 text-brand-black100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </section>
+
     <!-- Satılan Eserler Carousel -->
     @if($soldArtworks->count() > 0)
-    <section class="py-12">
+    <section class="py-12 bg-gray-50">
         <div class="container mx-auto px-4">
             <div class="flex items-end justify-between mb-8">
                 <div>

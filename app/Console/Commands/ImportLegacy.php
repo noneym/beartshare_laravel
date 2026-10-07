@@ -31,7 +31,10 @@ class ImportLegacy extends Command
     protected $description = 'Eski sistem veritabanını (kullanıcılar, eserler, siparişler, ArtPuan, blog...) yeni sisteme aktarır';
 
     /** Yeni sistemde yönetilen, sıfırlamadan sonra yedekten geri yüklenen tablolar */
-    protected const PRESERVED_TABLES = ['categories', 'faqs', 'static_pages', 'art_terms', 'blog_categories'];
+    protected const PRESERVED_TABLES = [
+        'categories', 'faqs', 'static_pages', 'art_terms', 'blog_categories',
+        'invoices', 'invoice_order', 'notification_recipients',
+    ];
 
     /** Eski blog kategorilerinden İngilizce olanlar (yeni site Türkçe) — yazılar pasif aktarılır */
     protected const EN_BLOG_CATEGORIES = [4, 6, 8];
@@ -104,6 +107,7 @@ class ImportLegacy extends Command
             $this->line('  Satış tarihi doldurulan eser: ' . \App\Models\Artwork::backfillSaleData());
             $this->importBlog();
             $this->importArtPuan($voidOrders);
+            $this->pruneInvoiceLinks();
         } finally {
             Schema::enableForeignKeyConstraints();
         }
@@ -144,12 +148,26 @@ class ImportLegacy extends Command
 
     protected function restorePreserved(): void
     {
+        // invoice_order -> orders, invoices -> users: siparişler/kullanıcılar henüz aktarılmadı
+        Schema::disableForeignKeyConstraints();
         foreach (self::PRESERVED_TABLES as $table) {
             $rows = $this->backup[$table] ?? [];
             foreach (array_chunk($rows, 200) as $chunk) {
                 DB::table($table)->insert($chunk);
             }
             $this->line("  {$table}: " . count($rows) . ' kayıt geri yüklendi');
+        }
+        Schema::enableForeignKeyConstraints();
+    }
+
+    /** Geri yüklenen fatura eşleşmelerinden, aktarımdan sonra karşılığı kalmayanları temizler */
+    protected function pruneInvoiceLinks(): void
+    {
+        $orphans = DB::table('invoice_order')->whereNotIn('order_id', DB::table('orders')->select('id'))->delete();
+        DB::table('invoices')->whereNotNull('created_by')
+            ->whereNotIn('created_by', DB::table('users')->select('id'))->update(['created_by' => null]);
+        if ($orphans) {
+            $this->warnings[] = "Siparişi artık olmayan {$orphans} fatura eşleşmesi kaldırıldı";
         }
     }
 

@@ -22,7 +22,7 @@
                         <input type="checkbox" class="rounded border-gray-300 text-brand-black100 focus:ring-brand-black100">
                         <span class="ml-2 text-gray-400 text-xs">Beni hatırla</span>
                     </label>
-                    <a href="#" class="text-xs text-gray-400 hover:text-brand-black100 transition link-underline pb-0.5">Şifremi unuttum</a>
+                    <a href="{{ route('password.request') }}" class="text-xs text-gray-400 hover:text-brand-black100 transition link-underline pb-0.5">Şifremi unuttum</a>
                 </div>
 
                 <button type="submit" class="w-full bg-brand-black100 hover:bg-black text-white py-3 text-sm font-medium transition">

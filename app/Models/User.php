@@ -183,6 +183,13 @@ class User extends Authenticatable
 
     // ── Şifre ──
 
+    /** Şifre sıfırlama bağlantısını Türkçe e-postayla gönderir (Bildirim Log'a yazılır) */
+    public function sendPasswordResetNotification($token): void
+    {
+        $url = route('password.reset', ['token' => $token, 'email' => $this->email]);
+        app(\App\Services\NotificationService::class)->sendPasswordReset($this, $url);
+    }
+
     /**
      * Şifre doğrulama. Eski sistemden gelen hesaplarda şifre bcrypt(sha1(şifre)) olarak
      * saklanır; doğru girildiğinde normal bcrypt'e yükseltilir.

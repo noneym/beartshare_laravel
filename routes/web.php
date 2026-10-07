@@ -14,6 +14,8 @@ use App\Livewire\BlogDetail;
 use App\Livewire\Favorites;
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
+use App\Livewire\Auth\ForgotPassword;
+use App\Livewire\Auth\ResetPassword;
 use App\Livewire\FaqPage;
 use App\Http\Controllers\ArtworkSubmissionController;
 use App\Http\Controllers\ContactController;
@@ -93,6 +95,8 @@ Route::middleware('guest')->group(function () {
     Route::get('/giris', Login::class)->name('login');
     Route::get('/giris/dogrulama', App\Livewire\Auth\TwoFactorChallenge::class)->name('two-factor.challenge');
     Route::get('/kayit', Register::class)->name('register');
+    Route::get('/sifremi-unuttum', ForgotPassword::class)->name('password.request');
+    Route::get('/sifre-sifirla/{token}', ResetPassword::class)->name('password.reset');
 });
 
 Route::post('/cikis', function () {

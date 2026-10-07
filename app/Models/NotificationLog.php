@@ -84,6 +84,7 @@ class NotificationLog extends Model
             'sms_verification_resend' => 'SMS Dogrulama (Tekrar)',
             'admin_sms' => 'Admin SMS',
             'admin_email' => 'Admin E-posta',
+            'password_reset' => 'Sifre Sifirlama',
             default => $this->type,
         };
     }

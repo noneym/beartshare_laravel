@@ -86,6 +86,7 @@
                     <option value="sms_verification_resend" {{ request('type') === 'sms_verification_resend' ? 'selected' : '' }}>SMS Dogrulama (Tekrar)</option>
                     <option value="admin_sms" {{ request('type') === 'admin_sms' ? 'selected' : '' }}>Admin SMS</option>
                     <option value="admin_email" {{ request('type') === 'admin_email' ? 'selected' : '' }}>Admin E-posta</option>
+                    <option value="password_reset" {{ request('type') === 'password_reset' ? 'selected' : '' }}>Sifre Sifirlama</option>
                 </select>
             </div>
             <button type="submit" class="bg-gray-800 text-white px-4 py-2 rounded text-sm hover:bg-gray-700 transition">

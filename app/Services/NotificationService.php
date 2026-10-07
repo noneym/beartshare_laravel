@@ -400,6 +400,38 @@ class NotificationService
         });
     }
 
+    /**
+     * Şifre sıfırlama bağlantısı e-postası
+     */
+    public function sendPasswordReset(User $user, string $url): bool
+    {
+        $minutes = config('auth.passwords.users.expire', 60);
+        $name = e($user->name);
+        $html = "
+        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
+            <div style='background: #1a1a1a; padding: 24px; text-align: center;'>
+                <h1 style='color: #fff; font-size: 20px; margin: 0;'>BeArtShare</h1>
+            </div>
+            <div style='padding: 32px 24px; background: #fff;'>
+                <p style='color: #333; font-size: 14px;'>Merhaba {$name},</p>
+                <p style='color: #555; font-size: 14px;'>
+                    Hesabınız için bir şifre sıfırlama talebi aldık. Yeni şifrenizi belirlemek için aşağıdaki butona tıklayın.
+                </p>
+                <div style='text-align: center; margin: 32px 0;'>
+                    <a href='{$url}' style='background: #1a1a1a; color: #fff; padding: 12px 32px; text-decoration: none; font-size: 14px; display: inline-block;'>Şifremi Sıfırla</a>
+                </div>
+                <p style='color: #888; font-size: 12px;'>
+                    Bu bağlantı {$minutes} dakika geçerlidir. Bu talebi siz yapmadıysanız bu e-postayı yok sayabilirsiniz; şifreniz değişmez.
+                </p>
+                <p style='color: #aaa; font-size: 11px; word-break: break-all;'>
+                    Buton çalışmazsa bu adresi tarayıcınıza yapıştırın:<br>{$url}
+                </p>
+            </div>
+        </div>";
+
+        return $this->sendEmailAndLog($user->email, 'Şifre Sıfırlama - BeArtShare', $html, 'password_reset', null, $user->id);
+    }
+
     // ── E-posta Şablonları ──
 
     protected function buildReservedEmailBody(Artwork $artwork, User $watcher): string

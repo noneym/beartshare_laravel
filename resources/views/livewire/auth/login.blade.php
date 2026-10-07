@@ -5,6 +5,10 @@
             <p class="text-gray-400 text-xs mt-2">Hesabınıza giriş yapın</p>
         </div>
 
+        @if(session('status'))
+            <div class="mb-4 text-xs text-green-700 bg-green-50 border border-green-100 px-3 py-2">{{ session('status') }}</div>
+        @endif
+
         @if(session('error'))
             <div class="mb-4 text-xs text-red-600 bg-red-50 border border-red-100 px-3 py-2">{{ session('error') }}</div>
         @endif
@@ -27,7 +31,7 @@
                     <input type="checkbox" wire:model="remember" class="rounded border-gray-300 text-brand-black100 focus:ring-brand-black100">
                     <span class="ml-2 text-gray-400 text-xs">Beni hatırla</span>
                 </label>
-                <a href="#" class="text-xs text-gray-400 hover:text-brand-black100 transition link-underline pb-0.5">Şifremi unuttum</a>
+                <a href="{{ route('password.request') }}" class="text-xs text-gray-400 hover:text-brand-black100 transition link-underline pb-0.5">Şifremi unuttum</a>
             </div>
 
             <button type="submit" wire:loading.attr="disabled" wire:loading.class="opacity-70 cursor-wait" class="w-full bg-brand-black100 hover:bg-black text-white py-3 text-sm font-medium transition flex items-center justify-center">

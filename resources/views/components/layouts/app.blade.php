@@ -620,6 +620,7 @@
                         <li><a href="{{ route('artists') }}" class="hover:text-white transition">Sanatçılar</a></li>
                         <li><a href="{{ route('about') }}" class="hover:text-white transition">Hakkımızda</a></li>
                         <li><a href="{{ route('blog') }}" class="hover:text-white transition">Sanat Haberleri</a></li>
+                        <li><a href="{{ route('art-terms') }}" class="hover:text-white transition">Sanat Terimleri</a></li>
                         <li><a href="{{ route('artpuan') }}" class="text-artpuan hover:text-white transition">ArtPuan&reg;</a></li>
                         <li><a href="{{ route('eser-kabulu') }}" class="hover:text-white transition">Eser Kabulü</a></li>
                     </ul>
@@ -631,6 +632,7 @@
                         <li><a href="{{ route('contact') }}" class="hover:text-white transition">İletişim</a></li>
                         <li><a href="{{ route('banka-hesaplari') }}" class="hover:text-white transition">Banka Hesapları</a></li>
                         <li><a href="{{ route('teslimat-iade') }}" class="hover:text-white transition">Teslimat ve İade Şartları</a></li>
+                        <li><a href="{{ route('mesafeli-satis') }}" class="hover:text-white transition">Mesafeli Satış Sözleşmesi</a></li>
                         <li><a href="{{ route('gizlilik-kvkk') }}" class="hover:text-white transition">Gizlilik ve KVKK</a></li>
                     </ul>
                 </div>

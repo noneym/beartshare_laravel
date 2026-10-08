@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 class MigrateImagesToR2 extends Command
 {
     protected $signature = 'images:migrate
-        {--only= : artworks|artists|blog|content (boş = hepsi; content = blog yazısı içindeki gömülü görseller)}
+        {--only= : artworks|artists|blog|art-terms|content (boş = hepsi; content = blog yazısı içindeki gömülü görseller)}
         {--limit=0 : En fazla kaç kayıt işlensin (0 = sınırsız)}
         {--from=0 : Başlangıç id (dahil)}
         {--to=0 : Bitiş id (dahil, 0 = sınırsız)}
@@ -104,6 +104,19 @@ class MigrateImagesToR2 extends Command
                 if ($stored && !$dry) {
                     $this->backup['blog'][$post->id] = $src;
                     $post->forceFill(['image' => $stored])->saveQuietly();
+                }
+            }
+        }
+
+        if (!$only || $only === 'art-terms') {
+            foreach (\App\Models\ArtTerm::query()->orderBy('id')->get() as $term) {
+                $src = $term->image;
+                if (!$src || !$this->isExternal($src)) { if ($src) $this->skipped++; continue; }
+                $key = sprintf('art-terms/%d/%s', $term->id, substr(sha1($src), 0, 12));
+                $stored = $this->transfer($disk, $src, $key, $dry);
+                if ($stored && !$dry) {
+                    $this->backup['art_terms'][$term->id] = $src;
+                    $term->forceFill(['image' => $stored])->saveQuietly();
                 }
             }
         }
@@ -325,6 +338,9 @@ class MigrateImagesToR2 extends Command
         }
         foreach ($data['blog'] ?? [] as $id => $image) {
             BlogPost::whereKey($id)->update(['image' => $image]);
+        }
+        foreach ($data['art_terms'] ?? [] as $id => $image) {
+            \App\Models\ArtTerm::whereKey($id)->update(['image' => $image]);
         }
         foreach ($data['content'] ?? [] as $id => $content) {
             BlogPost::whereKey($id)->update(['content' => $content]);

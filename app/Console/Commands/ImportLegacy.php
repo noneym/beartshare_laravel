@@ -32,7 +32,7 @@ class ImportLegacy extends Command
 
     /** Yeni sistemde yönetilen, sıfırlamadan sonra yedekten geri yüklenen tablolar */
     protected const PRESERVED_TABLES = [
-        'categories', 'faqs', 'static_pages', 'art_terms', 'blog_categories',
+        'categories', 'faqs', 'static_pages', 'blog_categories',
         'invoices', 'invoice_order', 'notification_recipients',
     ];
 
@@ -106,6 +106,7 @@ class ImportLegacy extends Command
             $voidOrders = $this->importOrders();
             $this->line('  Satış tarihi doldurulan eser: ' . \App\Models\Artwork::backfillSaleData());
             $this->importBlog();
+            $this->importArtTerms();
             $this->importArtPuan($voidOrders);
             $this->remapInvoiceLinks();
             $this->pruneInvoiceLinks();
@@ -502,6 +503,7 @@ class ImportLegacy extends Command
                 'old_id' => $a->id,
                 'name' => trim($a->name),
                 'slug' => $c['slug'] ?? $this->uniqueSlug($a->name, 'artists', $a->id, $used),
+                'legacy_slug' => trim((string) $a->slug) ?: null,
                 'birth_year' => $year($a->born_date),
                 'death_year' => $year($a->death_date),
                 'biography' => $a->detail ?: null,
@@ -869,6 +871,13 @@ class ImportLegacy extends Command
     }
 
     // ───────────────────────── Blog ─────────────────────────
+
+    protected function importArtTerms(): void
+    {
+        $count = \App\Support\LegacyArtTerms::import($this->legacy, fn ($url) => $this->mapImage($url),
+            $this->backupRows('art_terms')->pluck('image', 'id')->all());
+        $this->info('Sanat terimleri: ' . $count);
+    }
 
     protected function importBlog(): void
     {

@@ -67,6 +67,20 @@ Route::view('/teslimat-ve-iade', 'pages.teslimat-iade')->name('teslimat-iade');
 Route::view('/gizlilik-ve-kvkk', 'pages.gizlilik-kvkk')->name('gizlilik-kvkk');
 Route::view('/kullanim-kosullari', 'pages.kullanim-kosullari')->name('kullanim-kosullari');
 Route::get('/sikca-sorulan-sorular', FaqPage::class)->name('faq');
+Route::view('/mesafeli-satis-sozlesmesi', 'pages.mesafeli-satis-sozlesmesi')->name('mesafeli-satis');
+Route::get('/sanat-terimleri', [App\Http\Controllers\ArtTermController::class, 'index'])->name('art-terms');
+Route::get('/sanat-terimleri/{slug}', [App\Http\Controllers\ArtTermController::class, 'show'])->name('art-terms.show');
+Route::get('/sitemap.xml', App\Http\Controllers\SitemapController::class)->name('sitemap');
+Route::get('/robots.txt', fn () => response("User-agent: *
+Disallow: /admin
+Disallow: /hesabim
+Disallow: /odeme
+
+Sitemap: " . route('sitemap') . "
+", 200, ['Content-Type' => 'text/plain']));
+
+// Eski siteden (Nuxt) kalan adresler: kalıcı (301) yönlendirmeler
+require __DIR__ . '/redirects.php';
 Route::post('/eser-kabulu', [ArtworkSubmissionController::class, 'submit'])->name('eser-kabulu.submit');
 
 // Meta Commerce Manager - Product Feed

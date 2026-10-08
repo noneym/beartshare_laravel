@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 
 class ArtworkSubmissionController extends Controller
@@ -33,7 +34,10 @@ class ArtworkSubmissionController extends Controller
             'notes' => 'nullable|string|max:2000',
             'images' => 'nullable|array|max:5',
             'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:5120',
+            // Üye olmayan başvurana hesap açıldığı için sözleşme onayı zorunlu
+            'terms' => Auth::check() ? 'nullable' : 'accepted',
         ], [
+            'terms.accepted' => 'Başvuru için kullanım koşullarını ve KVKK sözleşmesini kabul etmelisiniz.',
             'name.required' => 'Ad soyad zorunludur.',
             'phone.required' => 'Telefon numarasi zorunludur.',
             'email.required' => 'E-posta zorunludur.',
@@ -145,7 +149,7 @@ class ArtworkSubmissionController extends Controller
                 'password' => Hash::make($password),
             ]);
             Auth::login($user);
-            $this->sendWelcomeEmail($user, $password);
+            $this->sendWelcomeEmail($user);
 
             return [$user, true];
         } catch (\Throwable $e) {
@@ -154,9 +158,13 @@ class ArtworkSubmissionController extends Controller
         }
     }
 
-    protected function sendWelcomeEmail(User $user, string $password): void
+    /**
+     * Hoş geldin e-postası: şifre e-postayla gönderilmez, "şifreni belirle" bağlantısı (şifre sıfırlama token'ı) gider.
+     */
+    protected function sendWelcomeEmail(User $user): void
     {
-        $loginUrl = route('login');
+        $setUrl = route('password.reset', ['token' => Password::broker()->createToken($user), 'email' => $user->email]);
+        $forgotUrl = route('password.request');
         $name = e($user->name);
         $email = e($user->email);
 
@@ -170,12 +178,12 @@ class ArtworkSubmissionController extends Controller
                 <p>Eser başvurunuz alındı. Başvurunuzu takip edebilmeniz için sizin adınıza bir BeArtShare hesabı oluşturduk.</p>
                 <div style='background: #f8f8f8; border-left: 3px solid #D4A017; padding: 16px; margin: 20px 0;'>
                     <p style='margin: 0;'><strong>E-posta:</strong> {$email}</p>
-                    <p style='margin: 6px 0 0;'><strong>Geçici şifre:</strong> <span style='font-family: monospace; font-size: 16px;'>{$password}</span></p>
                 </div>
-                <p>Güvenliğiniz için ilk girişinizden sonra Hesabım &gt; Ayarlar bölümünden şifrenizi değiştirmenizi öneririz.</p>
+                <p>Hesabınıza giriş yapabilmek için aşağıdaki bağlantıdan şifrenizi belirleyin.</p>
                 <p style='text-align: center; margin: 28px 0;'>
-                    <a href='{$loginUrl}' style='background: #14171c; color: #fff; padding: 12px 32px; text-decoration: none;'>Giriş Yap</a>
+                    <a href='{$setUrl}' style='background: #14171c; color: #fff; padding: 12px 32px; text-decoration: none;'>Şifremi Belirle</a>
                 </p>
+                <p style='font-size: 12px; color: #888;'>Bağlantının süresi dolduysa <a href='{$forgotUrl}' style='color: #888;'>şifremi unuttum</a> sayfasından yeni bir bağlantı isteyebilirsiniz.</p>
             </div>
         </div>";
 

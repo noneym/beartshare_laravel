@@ -187,6 +187,26 @@
                         </div>
                     </div>
 
+                    @guest
+                        <!-- Üyelik ve sözleşme onayı: üye olmayan başvuran için hesap açılır -->
+                        <div class="border border-gray-200 rounded-xl p-5 space-y-3">
+                            <p class="text-xs text-gray-500 leading-relaxed">
+                                Başvurunuzu takip edebilmeniz için bu e-posta adresiyle sizin adınıza bir BeArtShare üyeliği oluşturulur
+                                (bu e-postayla zaten üyeyseniz başvuru mevcut hesabınıza eklenir). Şifrenizi belirlemeniz için e-posta adresinize bir bağlantı gönderilir.
+                            </p>
+                            <label class="flex items-start gap-2.5 cursor-pointer">
+                                <input type="checkbox" name="terms" value="1" {{ old('terms') ? 'checked' : '' }} required
+                                       class="rounded border-gray-300 text-brand-black100 focus:ring-brand-black100 mt-0.5">
+                                <span class="text-xs text-gray-600 leading-relaxed">
+                                    <a href="{{ route('kullanim-kosullari') }}" target="_blank" class="text-brand-black100 underline">Kullanım koşullarını</a> ve
+                                    <a href="{{ route('gizlilik-kvkk') }}" target="_blank" class="text-brand-black100 underline">KVKK ve Gizlilik Sözleşmesini</a>
+                                    okudum, kabul ediyorum; üyeliğimin oluşturulmasını onaylıyorum.
+                                </span>
+                            </label>
+                            @error('terms') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
+                        </div>
+                    @endguest
+
                     <!-- Submit -->
                     <div class="text-center pt-2">
                         <button type="submit" class="inline-flex items-center bg-brand-black100 text-white px-10 py-3.5 rounded-full text-sm font-semibold hover:shadow-xl hover:scale-[1.02] transition-all duration-300 shadow-lg group">

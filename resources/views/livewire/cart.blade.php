@@ -15,7 +15,7 @@
                         <div class="border border-gray-100 p-4 flex gap-4" wire:key="cart-{{ $item->id }}">
                             <a href="{{ route('artwork.detail', $item->artwork->slug) }}" class="w-28 h-28 bg-gray-50 overflow-hidden flex-shrink-0">
                                 @if($item->artwork->first_image)
-                                    <img src="{{ $item->artwork->first_image_url }}" alt="{{ $item->artwork->title }}" class="w-full h-full object-cover">
+                                    <img src="{{ $item->artwork->first_image_url }}" alt="{{ $item->artwork->image_alt }}" class="w-full h-full object-cover">
                                 @else
                                     <div class="w-full h-full flex items-center justify-center">
                                         <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">

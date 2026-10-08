@@ -32,7 +32,7 @@
                                 <div class="flex gap-3">
                                     <div class="w-16 h-16 bg-gray-100 overflow-hidden flex-shrink-0 border border-gray-100 rounded">
                                         @if($item->artwork && $item->artwork->first_image)
-                                            <img src="{{ $item->artwork->first_image_url }}" alt="{{ $item->artwork_title }}" class="w-full h-full object-cover">
+                                            <img src="{{ $item->artwork->first_image_url }}" alt="{{ $item->artwork->image_alt }}" class="w-full h-full object-cover">
                                         @else
                                             <div class="w-full h-full flex items-center justify-center">
                                                 <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">

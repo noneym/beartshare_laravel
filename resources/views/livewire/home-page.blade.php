@@ -324,7 +324,7 @@
                                     <span class="absolute top-3 left-3 bg-amber-500 text-white text-[10px] px-3 py-1 z-10 uppercase tracking-wider">Rezerve</span>
                                 @endif
                                 @if($artwork->list_image)
-                                    <img src="{{ $artwork->list_image_url }}" srcset="{{ $artwork->list_image_srcset }}" sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw" alt="{{ $artwork->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" decoding="async">
+                                    <img src="{{ $artwork->list_image_url }}" srcset="{{ $artwork->list_image_srcset }}" sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw" alt="{{ $artwork->image_alt }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" decoding="async">
                                 @else
                                     <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
                                         <svg class="w-16 h-16 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -378,7 +378,7 @@
                                     <span class="absolute top-2 left-2 bg-amber-500 text-white text-[9px] px-2 py-0.5 z-10 uppercase tracking-wider">Rezerve</span>
                                 @endif
                                 @if($artwork->list_image)
-                                    <img src="{{ $artwork->list_image_url }}" srcset="{{ $artwork->list_image_srcset }}" sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw" alt="{{ $artwork->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" decoding="async">
+                                    <img src="{{ $artwork->list_image_url }}" srcset="{{ $artwork->list_image_srcset }}" sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw" alt="{{ $artwork->image_alt }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" decoding="async">
                                 @else
                                     <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
                                         <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -487,7 +487,7 @@
                             <div class="relative bg-white border border-gray-100 overflow-hidden aspect-square mb-3">
                                 <span class="absolute top-2 left-2 bg-red-500 text-white text-[9px] px-2 py-0.5 z-10 uppercase tracking-wider">Satıldı</span>
                                 @if($artwork->list_image)
-                                    <img src="{{ $artwork->list_image_url }}" srcset="{{ $artwork->list_image_srcset }}" sizes="200px" alt="{{ $artwork->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-90" loading="lazy" decoding="async">
+                                    <img src="{{ $artwork->list_image_url }}" srcset="{{ $artwork->list_image_srcset }}" sizes="200px" alt="{{ $artwork->image_alt }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-90" loading="lazy" decoding="async">
                                 @else
                                     <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
                                         <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">

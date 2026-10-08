@@ -62,7 +62,7 @@
                                 <span class="absolute top-3 left-3 bg-amber-500 text-white text-[10px] px-3 py-1 z-10 uppercase tracking-wider">Rezerve</span>
                             @endif
                             @if($artwork->list_image)
-                                <img src="{{ $artwork->list_image_url }}" srcset="{{ $artwork->list_image_srcset }}" sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw" alt="{{ $artwork->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" decoding="async">
+                                <img src="{{ $artwork->list_image_url }}" srcset="{{ $artwork->list_image_srcset }}" sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw" alt="{{ $artwork->image_alt }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" decoding="async">
                             @else
                                 <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
                                     <svg class="w-16 h-16 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -72,7 +72,7 @@
                                 <a href="{{ route('artwork.detail', $work->slug) }}"
                                    class="{{ $i === 0 ? 'col-span-7' : 'col-span-5 mb-10' }} about-frame block group">
                                     <div class="about-mat">
-                                        <img src="{{ $work->list_image_url }}" alt="{{ $work->title }}{{ $work->artist ? ', ' . $work->artist->name : '' }}"
+                                        <img src="{{ $work->list_image_url }}" alt="{{ $work->image_alt }}"
                                              class="w-full {{ $i === 0 ? 'aspect-[4/5]' : 'aspect-square' }} object-cover transition duration-700 group-hover:scale-[1.02]"
                                              {{ $i === 0 ? 'fetchpriority=high' : 'loading=lazy' }}>
                                     </div>

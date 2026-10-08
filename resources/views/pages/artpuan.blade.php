@@ -72,7 +72,7 @@
                             @foreach($heroWorks as $i => $work)
                                 <a href="{{ route('artwork.detail', $work->slug) }}"
                                    class="{{ $i === 0 ? 'col-span-3 row-span-2' : 'col-span-2' }} block bg-white p-2 md:p-3 rounded-2xl shadow-[0_18px_40px_-18px_rgba(71,115,47,0.45)] hover:-translate-y-1 transition duration-500 overflow-hidden">
-                                    <img src="{{ $work->list_image_url }}" alt="{{ $work->title }}, {{ $work->artist->name ?? '' }}"
+                                    <img src="{{ $work->list_image_url }}" alt="{{ $work->image_alt }}"
                                          class="w-full h-full object-cover rounded-xl bg-artpuan-soft" {{ $i === 0 ? 'fetchpriority=high' : 'loading=lazy' }}>
                                 </a>
                             @endforeach

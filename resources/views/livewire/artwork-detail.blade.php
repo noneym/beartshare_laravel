@@ -163,7 +163,7 @@
         <!-- Image Container -->
         <div class="relative max-w-[90vw] max-h-[90vh] flex items-center justify-center" @click.stop>
             <img :src="images[lightbox.index]"
-                 alt="{{ $artwork->title }}"
+                 alt="{{ $artwork->image_alt }}"
                  class="max-w-full max-h-[90vh] object-contain"
                  x-transition:enter="transition ease-out duration-200"
                  x-transition:enter-start="opacity-0 scale-95"
@@ -208,7 +208,7 @@
                      @endif
                 >
                     @if($artwork->image_urls && count($artwork->image_urls) > 0)
-                        <img src="{{ $artwork->image_urls[$currentImage] }}" alt="{{ $artwork->title }}" class="w-full h-full object-contain" fetchpriority="high">
+                        <img src="{{ $artwork->image_urls[$currentImage] }}" alt="{{ $artwork->image_alt }}" class="w-full h-full object-contain" fetchpriority="high">
                         <!-- Zoom hint icon -->
                         <div class="absolute bottom-3 right-3 bg-white/80 backdrop-blur-sm p-2 rounded-full shadow-sm opacity-60 hover:opacity-100 transition pointer-events-none">
                             <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -240,7 +240,7 @@
                                 class="w-16 h-16 bg-gray-50 overflow-hidden border-2 transition {{ $currentImage == $index ? 'border-brand-black100' : 'border-gray-200 hover:border-gray-400' }}"
                                 title="Tam boyut için çift tıklayın"
                             >
-                                <img src="{{ $imageUrl }}" alt="{{ $artwork->title }} – görsel {{ $index + 1 }}" class="w-full h-full object-cover" loading="lazy" decoding="async">
+                                <img src="{{ $imageUrl }}" alt="{{ $artwork->image_alt }} – görsel {{ $index + 1 }}" class="w-full h-full object-cover" loading="lazy" decoding="async">
                             </button>
                         @endforeach
                     </div>
@@ -473,7 +473,7 @@
                                         <span class="absolute top-2 left-2 bg-amber-500 text-white text-[9px] px-2 py-0.5 z-10 uppercase tracking-wider">Rezerve</span>
                                     @endif
                                     @if($related->list_image)
-                                        <img src="{{ $related->list_image_url }}" srcset="{{ $related->list_image_srcset }}" sizes="(min-width: 768px) 25vw, 50vw" alt="{{ $related->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" decoding="async">
+                                        <img src="{{ $related->list_image_url }}" srcset="{{ $related->list_image_srcset }}" sizes="(min-width: 768px) 25vw, 50vw" alt="{{ $related->image_alt }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" decoding="async">
                                     @else
                                         <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
                                             <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">

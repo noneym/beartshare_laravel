@@ -159,6 +159,16 @@ class Artwork extends Model
         return $this->cover_image ?: $this->first_image;
     }
 
+    /** Görsel alt metni: "Sanatçı - Eser Adı - Yıl" (yıl varsa) */
+    public function getImageAltAttribute(): string
+    {
+        return implode(' - ', array_filter([
+            $this->artist?->name,
+            $this->title,
+            $this->year ? (string) $this->year : null,
+        ]));
+    }
+
     public function getListImageUrlAttribute()
     {
         return \App\Support\ImageUrl::web($this->list_image, 'card');

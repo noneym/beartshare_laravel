@@ -161,10 +161,18 @@
                         <input type="checkbox" name="is_active" value="1" {{ $artwork->is_active ? 'checked' : '' }} class="rounded border-gray-300 text-primary focus:ring-primary">
                         <span class="ml-2 text-gray-700">Aktif</span>
                     </label>
+                    <div x-data="{ featured: {{ $artwork->is_featured ? 'true' : 'false' }} }" class="space-y-2">
                     <label class="flex items-center">
-                        <input type="checkbox" name="is_featured" value="1" {{ $artwork->is_featured ? 'checked' : '' }} class="rounded border-gray-300 text-primary focus:ring-primary">
-                        <span class="ml-2 text-gray-700">One Cikar</span>
+                        <input type="checkbox" name="is_featured" value="1" x-model="featured" {{ $artwork->is_featured ? 'checked' : '' }} class="rounded border-gray-300 text-primary focus:ring-primary">
+                        <span class="ml-2 text-gray-700">Öne Çıkar</span>
                     </label>
+                    <div class="flex items-center gap-2 ml-6 -mt-1" x-show="featured" x-cloak>
+                        <label for="featured_weight" class="text-sm text-gray-600">Sıra ağırlığı</label>
+                        <input type="number" id="featured_weight" name="featured_weight" value="{{ old('featured_weight', $artwork->featured_weight) }}" min="0" max="100000" class="w-24 border border-gray-300 rounded-lg px-3 py-1 text-sm focus:outline-none focus:border-primary">
+                        <span class="text-xs text-gray-500">Yüksek olan ana sayfada önce gösterilir</span>
+                    </div>
+                    @error('featured_weight') <p class="text-red-500 text-sm ml-6">{{ $message }}</p> @enderror
+                    </div>
                     <label class="flex items-center">
                         <input type="checkbox" name="is_sold" value="1" {{ $artwork->is_sold ? 'checked' : '' }} class="rounded border-gray-300 text-primary focus:ring-primary">
                         <span class="ml-2 text-gray-700">Satildi</span>

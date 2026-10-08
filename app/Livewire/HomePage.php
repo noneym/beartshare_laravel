@@ -20,6 +20,7 @@ class HomePage extends Component
         $featuredArtworks = Artwork::with('artist')
             ->available()
             ->featured()
+            ->orderByDesc('featured_weight')
             ->latest()
             ->take(8)
             ->get();

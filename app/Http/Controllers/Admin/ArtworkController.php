@@ -112,6 +112,7 @@ class ArtworkController extends Controller
             'is_sold' => 'boolean',
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
+            'featured_weight' => 'nullable|integer|min:0|max:100000',
             'allow_credit_card' => 'boolean',
             'hide_from_gallery' => 'boolean',
             'owner_name' => 'nullable|string|max:255',
@@ -126,6 +127,7 @@ class ArtworkController extends Controller
         foreach (['is_active', 'is_featured', 'is_sold', 'hide_from_gallery'] as $flag) {
             $validated[$flag] = $request->boolean($flag);
         }
+        $validated['featured_weight'] = (int) ($validated['featured_weight'] ?? 0);
         $validated['price_usd'] = $this->usdPrice($validated);
 
         if ($request->hasFile('images')) {
@@ -172,6 +174,7 @@ class ArtworkController extends Controller
             'is_sold' => 'boolean',
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
+            'featured_weight' => 'nullable|integer|min:0|max:100000',
             'allow_credit_card' => 'boolean',
             'hide_from_gallery' => 'boolean',
             'owner_name' => 'nullable|string|max:255',
@@ -186,6 +189,7 @@ class ArtworkController extends Controller
         foreach (['is_active', 'is_featured', 'is_sold', 'hide_from_gallery'] as $flag) {
             $validated[$flag] = $request->boolean($flag);
         }
+        $validated['featured_weight'] = (int) ($validated['featured_weight'] ?? 0);
         // Satılmış eserin USD fiyatı satış anındaki kurla sabit kalır (TL değişmediyse)
         $keepSaleUsd = $artwork->is_sold && $validated['is_sold'] && (float) $validated['price_tl'] === (float) $artwork->price_tl;
         $validated['price_usd'] = $keepSaleUsd ? $artwork->price_usd : $this->usdPrice($validated);

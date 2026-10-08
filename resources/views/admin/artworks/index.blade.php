@@ -227,7 +227,7 @@
                                         <span class="inline-block px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-800">Pasif</span>
                                     @endif
                                     @if($artwork->is_featured)
-                                        <span class="inline-block px-2 py-0.5 text-xs rounded-full bg-yellow-100 text-yellow-800">One Cikan</span>
+                                        <span class="inline-block px-2 py-0.5 text-xs rounded-full bg-yellow-100 text-yellow-800" title="Sıra ağırlığı">Öne Çıkan{{ $artwork->featured_weight ? ' · ' . $artwork->featured_weight : '' }}</span>
                                     @endif
                                 </div>
                             </td>

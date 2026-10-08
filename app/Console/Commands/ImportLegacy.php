@@ -613,6 +613,7 @@ class ImportLegacy extends Command
                 'admin_notes' => $c['admin_notes'] ?? null,
                 'is_active' => !$p->passive,
                 'is_featured' => (bool) ($c['is_featured'] ?? false),
+                'featured_weight' => (int) ($c['featured_weight'] ?? 0),
                 'type' => $p->type === 'shared' ? 'shared' : 'wholesale',
                 'sort_order' => (int) $p->sort_index,
                 'images' => json_encode($images, JSON_UNESCAPED_SLASHES),

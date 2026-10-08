@@ -153,6 +153,8 @@ class ImportLegacy extends Command
         Schema::disableForeignKeyConstraints();
         foreach (self::PRESERVED_TABLES as $table) {
             $rows = $this->backup[$table] ?? [];
+            // Migration'ın eklediği varsayılan kayıtlar (ör. bildirim alıcıları) yedekle çakışmasın
+            DB::table($table)->delete();
             foreach (array_chunk($rows, 200) as $chunk) {
                 DB::table($table)->insert($chunk);
             }
@@ -784,7 +786,10 @@ class ImportLegacy extends Command
 
         foreach (array_chunk($orders, 100) as $chunk) DB::table('orders')->insert($chunk);
         foreach (array_chunk($orderItems, 200) as $chunk) DB::table('order_items')->insert($chunk);
-        foreach (array_chunk($transactions, 200) as $chunk) DB::table('payment_transactions')->insert($chunk);
+        // Yedekten gelen kart işlem kayıtları daha fazla sütun taşır: aynı sütun setine sahip satırlar birlikte yazılır
+        foreach (collect($transactions)->groupBy(fn ($t) => implode(',', array_keys($t))) as $group) {
+            foreach ($group->chunk(200) as $chunk) DB::table('payment_transactions')->insert($chunk->values()->all());
+        }
 
         if ($dupPayments) {
             $this->warnings[] = "{$dupPayments} mükerrer ödeme kaydı (aynı siparişe çift onay) atlandı";

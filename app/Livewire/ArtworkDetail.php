@@ -159,12 +159,27 @@ class ArtworkDetail extends Component
 
         $artwork = $this->artwork;
         $artistName = $artwork->artist ? $artwork->artist->name : 'Bilinmeyen Sanatçı';
-        $description = $artwork->description
-            ? Str::limit(strip_tags(html_entity_decode($artwork->description, ENT_QUOTES, 'UTF-8')), 160)
-            : "{$artwork->title} - {$artistName} tarafından. BeArtShare online sanat galerisinde orijinal eserleri keşfedin.";
+        $category = $artwork->category ? $artwork->category->name : '';
+        $year = $artwork->year ? (string) $artwork->year : null;
+
+        // "İsimsiz" gibi tekrar eden başlıklar: teknik ve yıl ile ayrıştırılır (aynı başlıklı sayfalar oluşmasın)
+        // Teknik uzun olabilir ("Tuval üzerine yağlıboya, imzalı. Provenance ..."): ilk parçası alınır
+        $technique = Str::limit(trim(Str::before(Str::before((string) $artwork->technique, ','), '.')), 40, '');
+        $specs = array_values(array_filter([$technique, $year]));
+        $sameTitle = Artwork::where('id', '!=', $artwork->id)->where('title', $artwork->title)->exists();
+        $titleLabel = $artwork->title . ($sameTitle && $specs ? ' (' . implode(', ', $specs) . ')' : '');
+
+        // Açıklama yoksa teknik, ölçü, yıl ve kategoriden üretilir
+        $details = implode(', ', array_unique(array_filter([$technique, $artwork->dimensions, $year, $category])));
+        // Açıklama alanı bazen "." gibi yer tutucu: 20 karakterden kısa ise yok sayılır
+        $plain = trim(preg_replace('/\s+/u', ' ', strip_tags(html_entity_decode((string) $artwork->description, ENT_QUOTES, 'UTF-8'))), " 	
+.,;:-–");
+        $description = mb_strlen($plain) >= 20
+            ? Str::limit($plain, 160)
+            : Str::limit("{$artistName} – {$artwork->title}" . ($details ? " ({$details})" : '')
+                . '. BeArtShare online sanat galerisinde orijinal eser; güvenli alışveriş, ArtPuan kazancı.', 160);
 
         $price = $artwork->price_tl ? number_format($artwork->price_tl, 0, ',', '.') . ' ₺' : '';
-        $category = $artwork->category ? $artwork->category->name : '';
         // Paylaşım görseli: ilk görsel 1200px genişlikte; görsel yoksa site varsayılanı
         $imageUrl = $artwork->imageUrl(1200) ?? asset('images/og-default.jpg');
         $images = $artwork->images
@@ -177,6 +192,10 @@ class ArtworkDetail extends Component
             'name' => $artwork->title,
             'description' => $description,
             'image' => $images,
+            'sku' => (string) $artwork->id,
+            'material' => $artwork->technique ?: null,
+            'size' => $artwork->dimensions ?: null,
+            'productionDate' => $year,
             'brand' => [
                 '@type' => 'Brand',
                 'name' => $artistName,
@@ -184,6 +203,7 @@ class ArtworkDetail extends Component
             // Satılmış eserin satış fiyatı yalnızca üyelere gösterilir; yapısal veride de yer almaz
             'offers' => $artwork->is_sold ? null : [
                 '@type' => 'Offer',
+                'url' => url()->current(),
                 'price' => $artwork->price_tl ?? 0,
                 'priceCurrency' => 'TRY',
                 'availability' => $artwork->is_sold
@@ -201,11 +221,11 @@ class ArtworkDetail extends Component
         return view('livewire.artwork-detail', [
             'relatedArtworks' => $relatedArtworks,
         ])->layoutData([
-            'title' => "{$artwork->title} - {$artistName} | BeArtShare",
+            'title' => "{$titleLabel} - {$artistName} | BeArtShare",
             'metaDescription' => $description,
             'metaKeywords' => implode(', ', array_filter([$artwork->title, $artistName, $category, 'orijinal eser', 'sanat eseri', 'tablo'])),
             'ogType' => 'product',
-            'ogTitle' => "{$artwork->title} - {$artistName}",
+            'ogTitle' => "{$titleLabel} - {$artistName}",
             'ogDescription' => $description,
             'ogImage' => $imageUrl,
             'jsonLd' => $jsonLd,

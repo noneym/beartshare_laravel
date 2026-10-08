@@ -48,6 +48,13 @@ return [
         'base_url' => env('PARASUT_BASE_URL', 'https://api.parasut.com'),
     ],
 
+    // Google tag (gtag.js): Google Ads dönüşüm etiketi ve GA4 ölçüm kimlikleri (virgülle ayrılır).
+    // Google Ads: AW-16638939279 (eski Nuxt sitesinden), GA4: G-GTXDEVZHHJ
+    'gtag' => [
+        'ids' => env('GTAG_IDS', 'AW-16638939279,G-GTXDEVZHHJ'),
+        'enabled' => (bool) env('GTAG_ENABLED', env('APP_ENV') === 'production'),
+    ],
+
     'netgsm' => [
         'username' => env('NETGSM_USERNAME'),
         'password' => env('NETGSM_PASSWORD'),

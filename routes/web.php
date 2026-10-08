@@ -71,13 +71,32 @@ Route::view('/mesafeli-satis-sozlesmesi', 'pages.mesafeli-satis-sozlesmesi')->na
 Route::get('/sanat-terimleri', [App\Http\Controllers\ArtTermController::class, 'index'])->name('art-terms');
 Route::get('/sanat-terimleri/{slug}', [App\Http\Controllers\ArtTermController::class, 'show'])->name('art-terms.show');
 Route::get('/sitemap.xml', App\Http\Controllers\SitemapController::class)->name('sitemap');
-Route::get('/robots.txt', fn () => response("User-agent: *
-Disallow: /admin
-Disallow: /hesabim
-Disallow: /odeme
-
-Sitemap: " . route('sitemap') . "
-", 200, ['Content-Type' => 'text/plain']));
+// Taranmaması gerekenler: yönetim, hesap/sepet/ödeme akışları, API, 3D görsel vekili ve arama sorguları
+Route::get('/robots.txt', fn () => response(implode("\n", [
+    'User-agent: *',
+    'Disallow: /admin',
+    'Disallow: /hesabim',
+    'Disallow: /odeme',
+    'Disallow: /payment',
+    'Disallow: /sepet',
+    'Disallow: /favorilerim',
+    'Disallow: /adreslerim',
+    'Disallow: /giris',
+    'Disallow: /kayit',
+    'Disallow: /sifremi-unuttum',
+    'Disallow: /sifre-sifirla',
+    'Disallow: /cikis',
+    'Disallow: /passkeys',
+    'Disallow: /api/',
+    'Disallow: /livewire/',
+    'Disallow: /3d-gorsel/',
+    'Disallow: /3d-sanatci/',
+    'Disallow: /*?search=',
+    'Disallow: /*?ara=',
+    '',
+    'Sitemap: ' . route('sitemap'),
+    '',
+]), 200, ['Content-Type' => 'text/plain']));
 
 // Eski siteden (Nuxt) kalan adresler: kalıcı (301) yönlendirmeler
 require __DIR__ . '/redirects.php';

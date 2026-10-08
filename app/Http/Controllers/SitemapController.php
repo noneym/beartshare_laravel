@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Cache;
 
 /**
  * /sitemap.xml: sabit sayfalar, eserler, sanatçılar, blog yazıları ve sanat terimleri. 1 saat önbellekte.
+ * Sanal sergi (noindex) bilerek dışarıda.
  */
 class SitemapController extends Controller
 {
@@ -24,7 +25,6 @@ class SitemapController extends Controller
             $add(route('home'), null, 'daily', '1.0');
             $add(route('artworks'), null, 'daily', '0.9');
             $add(route('artists'), null, 'weekly', '0.8');
-            $add(route('exhibition.3d'), null, 'weekly', '0.6');
             $add(route('blog'), null, 'weekly', '0.6');
             $add(route('art-terms'), null, 'monthly', '0.5');
             foreach (['about', 'artpuan', 'eser-kabulu', 'contact', 'faq', 'banka-hesaplari', 'teslimat-iade',

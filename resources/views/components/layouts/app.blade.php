@@ -46,6 +46,20 @@
     <!-- Favicon -->
     @include('partials.favicon')
 
+    @php($gtagIds = array_values(array_filter(array_map('trim', explode(',', (string) config('services.gtag.ids'))))))
+    @if($gtagIds && config('services.gtag.enabled'))
+    <!-- Google tag (gtag.js): Google Ads + GA4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ $gtagIds[0] }}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        @foreach($gtagIds as $gtagId)
+        gtag('config', '{{ $gtagId }}');
+        @endforeach
+    </script>
+    @endif
+
     <!-- JSON-LD Structured Data -->
     @if(isset($jsonLd))
         <script type="application/ld+json">{!! $jsonLd !!}</script>
@@ -65,6 +79,32 @@
         }
         </script>
     @endif
+    {{-- Kuruluş bilgisi: her sayfada (Google bilgi paneli / logo / iletişim) --}}
+    <script type="application/ld+json">{!! json_encode([
+        '@context' => 'https://schema.org',
+        '@type' => 'Organization',
+        'name' => 'BeArtShare',
+        'legalName' => 'BeArtShare Online Sanat Galerisi A.Ş.',
+        'url' => config('app.url'),
+        'logo' => asset('images/logo.svg'),
+        'image' => asset('images/og-default.jpg'),
+        'email' => 'info@beartshare.com',
+        'telephone' => '+905102216413',
+        'address' => [
+            '@type' => 'PostalAddress',
+            'streetAddress' => 'Harmancı Giz Plaza, Harman Sok. No:5 K:21 D:118',
+            'addressLocality' => 'Esentepe, Şişli',
+            'addressRegion' => 'İstanbul',
+            'addressCountry' => 'TR',
+        ],
+        'contactPoint' => [[
+            '@type' => 'ContactPoint',
+            'telephone' => '+905102216413',
+            'contactType' => 'customer service',
+            'availableLanguage' => 'Turkish',
+        ]],
+        'sameAs' => ['https://www.instagram.com/beartshare'],
+    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
 
     @vite('resources/css/app.css')
 

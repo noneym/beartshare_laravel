@@ -104,9 +104,10 @@
                                     <span class="inline-block bg-white text-brand-black100 text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full">YENİ</span>
                                     Sanal Sergi
                                 </p>
-                                <h2 class="slide-title text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-[0.98] tracking-tight" style="text-shadow: 0 4px 24px rgba(0,0,0,0.25);">
+                                {{-- Sayfanın tek h1'i: ilk slayt --}}
+                                <h1 class="slide-title text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-[0.98] tracking-tight" style="text-shadow: 0 4px 24px rgba(0,0,0,0.25);">
                                     Galeriyi<br>Evinizden Gezin
-                                </h2>
+                                </h1>
                                 <p class="slide-desc text-white/80 text-sm md:text-[15px] leading-[1.8] mt-5 max-w-md">
                                     Satıştaki tüm eserler 3D sergi salonunda. Duvarlar arasında dolaşın, eserlere yaklaşıp detaylarını inceleyin.
                                 </p>

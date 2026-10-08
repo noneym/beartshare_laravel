@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Artist;
+use App\Models\SlugRedirect;
 use Illuminate\Support\Str;
 use App\Livewire\Concerns\PaginatedSeo;
 use Livewire\Component;
@@ -16,7 +17,9 @@ class ArtistDetail extends Component
 
     public function mount($slug)
     {
-        $this->artist = Artist::where('slug', $slug)->firstOrFail();
+        // Slug değiştiyse eski adres 301 ile yenisine gider
+        $this->artist = Artist::where('slug', $slug)->first()
+            ?? SlugRedirect::redirectOr404(Artist::class, $slug, 'artist.detail');
     }
 
     public function render()

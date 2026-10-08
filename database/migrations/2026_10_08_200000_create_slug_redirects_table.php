@@ -1,0 +1,31 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+/**
+ * Slug'ı değişen eser / sanatçı / blog yazılarının eski adresleri (301 için).
+ * Veri düzeltmesi: php artisan slugs:fix
+ */
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('slug_redirects', function (Blueprint $table) {
+            $table->id();
+            $table->string('model', 32);      // artwork | artist | blog_post
+            $table->string('old_slug');
+            $table->unsignedBigInteger('model_id');
+            $table->timestamps();
+
+            $table->unique(['model', 'old_slug']);
+            $table->index(['model', 'model_id']);
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('slug_redirects');
+    }
+};

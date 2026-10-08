@@ -141,7 +141,6 @@ class ArtworkController extends Controller
             'cover' => 'nullable|image|max:4096',
         ]);
 
-        $validated['slug'] = Str::slug($validated['title'] . '-' . uniqid());
         $validated['allow_credit_card'] = $request->boolean('allow_credit_card');
         foreach (['is_active', 'is_featured', 'is_sold', 'hide_from_gallery'] as $flag) {
             $validated[$flag] = $request->boolean($flag);

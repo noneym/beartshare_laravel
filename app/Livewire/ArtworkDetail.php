@@ -6,6 +6,7 @@ use App\Models\Artwork;
 use App\Models\ArtworkView;
 use App\Models\CartItem;
 use App\Models\Favorite;
+use App\Models\SlugRedirect;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Livewire\Component;
@@ -21,9 +22,9 @@ class ArtworkDetail extends Component
 
     public function mount($slug)
     {
-        $this->artwork = Artwork::with('artist', 'category')
-            ->where('slug', $slug)
-            ->firstOrFail();
+        // Slug değiştiyse eski adres 301 ile yenisine gider
+        $this->artwork = Artwork::with('artist', 'category')->where('slug', $slug)->first()
+            ?? SlugRedirect::redirectOr404(Artwork::class, $slug, 'artwork.detail');
 
         if (auth()->check()) {
             $this->isFavorited = auth()->user()->hasFavorited($this->artwork->id);

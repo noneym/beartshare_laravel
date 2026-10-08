@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
+use App\Models\Concerns\HasSlugRedirects;
+use App\Support\Slugger;
 
 class Artist extends Model
 {
-    use HasFactory;
+    use HasFactory, HasSlugRedirects;
 
     protected $fillable = [
         'name',
@@ -33,9 +34,18 @@ class Artist extends Model
 
         static::creating(function ($artist) {
             if (empty($artist->slug)) {
-                $artist->slug = Str::slug($artist->name);
+                $artist->slug = static::generateSlug($artist->name);
             }
         });
+    }
+
+    /** Addan slug: "nuri-iyem"; doluysa -2, -3 ... */
+    public static function generateSlug(?string $name, ?int $ignoreId = null, array $reserved = []): string
+    {
+        return Slugger::unique(
+            Slugger::base($name) ?: 'sanatci',
+            fn (string $s) => in_array($s, $reserved, true) || static::slugTaken($s, $ignoreId),
+        );
     }
 
     public function artworks()

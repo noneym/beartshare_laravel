@@ -29,7 +29,9 @@ Route::permanentRedirect('/shared-artworks', '/eserler');
 Route::permanentRedirect('/artists', '/sanatcilar');
 Route::get('/artists/{slug}', function (string $slug) {
     $slug = \Illuminate\Support\Str::before($slug, '/');
-    $target = Artist::where('slug', $slug)->value('slug') ?? Artist::where('legacy_slug', $slug)->value('slug');
+    $target = Artist::where('slug', $slug)->value('slug')
+        ?? Artist::where('legacy_slug', $slug)->value('slug')
+        ?? \App\Models\SlugRedirect::target(Artist::class, $slug)?->slug;
     return $target
         ? redirect()->route('artist.detail', $target, 301)
         : redirect()->route('artists', [], 301);

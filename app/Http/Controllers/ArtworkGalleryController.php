@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Artist;
 use App\Models\Artwork;
+use App\Models\SlugRedirect;
 use App\Support\ArtworkDimensions;
 use App\Support\ImageUrl;
 use Illuminate\Http\Request;
@@ -20,8 +21,8 @@ class ArtworkGalleryController extends Controller
         $artwork = Artwork::with('artist')
             ->active()
             ->inGallery()
-            ->where('slug', $slug)
-            ->firstOrFail();
+            ->where('slug', $slug)->first()
+            ?? SlugRedirect::redirectOr404(Artwork::class, $slug, 'artwork.3d');
 
         $others = $this->artistWorks($artwork->artist_id)
             ->where('id', '!=', $artwork->id)
@@ -40,7 +41,8 @@ class ArtworkGalleryController extends Controller
      */
     public function showArtist(string $slug)
     {
-        $artist = Artist::where('slug', $slug)->firstOrFail();
+        $artist = Artist::where('slug', $slug)->first()
+            ?? SlugRedirect::redirectOr404(Artist::class, $slug, 'artist.3d');
         $works = $this->artistWorks($artist->id)->take(11)->get();
         abort_if($works->isEmpty(), 404);
 

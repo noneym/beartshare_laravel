@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\BlogPost;
+use App\Models\SlugRedirect;
 use Illuminate\Support\Str;
 use Livewire\Component;
 
@@ -12,10 +13,9 @@ class BlogDetail extends Component
 
     public function mount($slug)
     {
-        $this->post = BlogPost::active()
-            ->where('slug', $slug)
-            ->with('category')
-            ->firstOrFail();
+        // Slug değiştiyse eski adres 301 ile yenisine gider
+        $this->post = BlogPost::active()->where('slug', $slug)->with('category')->first()
+            ?? SlugRedirect::redirectOr404(BlogPost::class, $slug, 'blog.detail');
     }
 
     public function render()

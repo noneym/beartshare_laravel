@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
+use App\Models\Concerns\HasSlugRedirects;
+use App\Support\Slugger;
 
 class Artwork extends Model
 {
-    use HasFactory;
+    use HasFactory, HasSlugRedirects;
 
     protected $fillable = [
         'artist_id',
@@ -62,7 +63,8 @@ class Artwork extends Model
 
         static::creating(function ($artwork) {
             if (empty($artwork->slug)) {
-                $artwork->slug = Str::slug($artwork->title . '-' . uniqid());
+                $artist = $artwork->artist_id ? Artist::find($artwork->artist_id) : null;
+                $artwork->slug = static::generateSlug($artwork->title, $artist?->name);
             }
         });
 
@@ -106,6 +108,29 @@ class Artwork extends Model
     public function getSalePriceVisibleAttribute(): bool
     {
         return !$this->is_sold || auth()->check();
+    }
+
+    /**
+     * Başlıktan slug: "isimsiz". Aynı başlık başka eserde de varsa sanatçı adı eklenir:
+     * "isimsiz-nasip-iyem"; o da doluysa -2, -3 ...
+     */
+    public static function generateSlug(?string $title, ?string $artistName, ?int $ignoreId = null, array $reserved = []): string
+    {
+        $base = Slugger::base($title) ?: 'eser';
+        $withArtist = $artistName ? Slugger::base(Slugger::base($title, 50) . ' ' . $artistName, 90) : null;
+
+        $shared = static::query()
+            ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
+            ->pluck('title')
+            ->contains(fn ($t) => Slugger::base($t) === $base);
+
+        $preferred = ($shared && $withArtist) ? $withArtist : $base;
+
+        return Slugger::unique(
+            $preferred,
+            fn (string $s) => in_array($s, $reserved, true) || static::slugTaken($s, $ignoreId),
+            $withArtist !== $preferred ? $withArtist : null,
+        );
     }
 
     public function artist()

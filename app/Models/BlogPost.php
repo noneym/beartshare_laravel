@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Concerns\HasSlugRedirects;
+use App\Support\Slugger;
 use Illuminate\Support\Str;
 
 class BlogPost extends Model
 {
-    use HasFactory;
+    use HasFactory, HasSlugRedirects;
 
     protected $fillable = [
         'title',
@@ -30,9 +32,18 @@ class BlogPost extends Model
 
         static::creating(function ($post) {
             if (empty($post->slug)) {
-                $post->slug = Str::slug($post->title);
+                $post->slug = static::generateSlug($post->title);
             }
         });
+    }
+
+    /** Başlıktan slug; doluysa -2, -3 ... */
+    public static function generateSlug(?string $title, ?int $ignoreId = null, array $reserved = []): string
+    {
+        return Slugger::unique(
+            Slugger::base($title) ?: 'yazi',
+            fn (string $s) => in_array($s, $reserved, true) || static::slugTaken($s, $ignoreId),
+        );
     }
 
     public function category()

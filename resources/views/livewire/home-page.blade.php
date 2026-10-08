@@ -574,7 +574,7 @@
                 <p class="text-gray-400 text-sm mt-2">Sanat yolculuğunuzda yanınızdayız</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
                 {{-- Güvenli Alışveriş --}}
                 <div class="bg-white border border-gray-100 p-8 text-center group hover:shadow-xl hover:border-gray-200 hover:-translate-y-1 transition-all duration-300">
                     <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100 flex items-center justify-center group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-green-100/50 transition-all duration-300">
@@ -619,24 +619,44 @@
 
                 {{-- ArtPuan Kazanın --}}
                 <div class="bg-white border border-gray-100 p-8 text-center group hover:shadow-xl hover:border-gray-200 hover:-translate-y-1 transition-all duration-300">
-                    <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100 flex items-center justify-center group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-amber-100/50 transition-all duration-300">
-                        <svg class="w-7 h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-gradient-to-br from-artpuan-soft to-white border border-artpuan/40 flex items-center justify-center group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-artpuan/20 transition-all duration-300">
+                        <svg class="w-7 h-7 text-artpuan-ink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
                         </svg>
                     </div>
                     <h3 class="text-base font-semibold text-brand-black100 mb-2">ArtPuan&reg; Kazanın</h3>
                     <p class="text-gray-400 text-xs leading-relaxed mb-4">Her alışverişinizde ArtPuan&reg; kazanın, sonraki alışverişlerinizde indirim olarak kullanın.</p>
                     <div class="flex items-center justify-center gap-2 flex-wrap">
-                        <span class="inline-flex items-center gap-1 text-[10px] text-primary bg-amber-50 px-2.5 py-1 font-medium">
+                        <span class="inline-flex items-center gap-1 text-[10px] text-artpuan-ink bg-artpuan-soft px-2.5 py-1 font-medium">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                             %1 Geri Kazanım
                         </span>
-                        <span class="inline-flex items-center gap-1 text-[10px] text-primary bg-amber-50 px-2.5 py-1 font-medium">
+                        <span class="inline-flex items-center gap-1 text-[10px] text-artpuan-ink bg-artpuan-soft px-2.5 py-1 font-medium">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                             Referans Bonusu
                         </span>
                     </div>
                 </div>
+
+                {{-- Sanal Sergi --}}
+                <a href="{{ route('exhibition.3d') }}" class="block bg-white border border-gray-100 p-8 text-center group hover:shadow-xl hover:border-gray-200 hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-gradient-to-br from-stone-50 to-stone-100 border border-stone-200 flex items-center justify-center group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-stone-200/60 transition-all duration-300">
+                        <svg class="w-7 h-7 text-brand-black100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 21V8l9-5 9 5v13M3 21h18M8 21v-8h8v8"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-base font-semibold text-brand-black100 mb-2">Galeriyi Evinizden Gezin</h3>
+                    <p class="text-gray-400 text-xs leading-relaxed mb-4">Satıştaki tüm eserler 3D sanal sergi salonunda. Duvarlar arasında dolaşın, eserlere yaklaşıp detaylarını inceleyin.</p>
+                    <div class="flex items-center justify-center gap-2 flex-wrap">
+                        <span class="inline-flex items-center gap-1 text-[10px] text-brand-black100 bg-stone-100 px-2.5 py-1 font-medium">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            3D Sanal Sergi
+                        </span>
+                        <span class="inline-flex items-center gap-1 text-[10px] text-brand-black100 bg-stone-100 px-2.5 py-1 font-medium">
+                            Sergiyi Gez &rarr;
+                        </span>
+                    </div>
+                </a>
             </div>
         </div>
     </section>

@@ -600,6 +600,7 @@ class ImportLegacy extends Command
                 'is_sold' => (bool) $p->sold_out,
                 'is_reserved' => (bool) $p->reserved,
                 'allow_credit_card' => (bool) ($c['allow_credit_card'] ?? false),
+                'hide_from_gallery' => (bool) ($c['hide_from_gallery'] ?? false),
                 'owner_name' => $c['owner_name'] ?? null,
                 'admin_notes' => $c['admin_notes'] ?? null,
                 'is_active' => !$p->passive,
@@ -607,6 +608,7 @@ class ImportLegacy extends Command
                 'type' => $p->type === 'shared' ? 'shared' : 'wholesale',
                 'sort_order' => (int) $p->sort_index,
                 'images' => json_encode($images, JSON_UNESCAPED_SLASHES),
+                'cover_image' => $c['cover_image'] ?? null,
                 'created_at' => $created,
                 'updated_at' => $this->date($p->updated_at) ?? $created,
             ];

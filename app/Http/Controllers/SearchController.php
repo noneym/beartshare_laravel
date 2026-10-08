@@ -37,7 +37,7 @@ class SearchController extends Controller
                     'title' => $artwork->title,
                     'artist' => $artwork->artist->name ?? '',
                     'price' => number_format($artwork->price_tl, 0, ',', '.') . ' TL',
-                    'image' => $artwork->first_image_url,
+                    'image' => $artwork->list_image_url,
                     'url' => route('artwork.detail', $artwork->slug),
                 ];
             });

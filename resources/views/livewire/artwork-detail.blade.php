@@ -224,7 +224,7 @@
                     @endif
                 </div>
 
-                @if($artwork->image_urls && count($artwork->image_urls) > 0)
+                @if(!$artwork->hide_from_gallery && $artwork->image_urls && count($artwork->image_urls) > 0)
                     <a href="{{ route('artwork.3d', $artwork->slug) }}" class="inline-flex items-center gap-2 text-sm text-brand-black100 border border-gray-200 hover:border-brand-black100 px-4 py-2 mb-4 transition">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 21V8l9-5 9 5v13M3 21h18M8 21v-8h8v8"/></svg>
                         3D Galeride Gör
@@ -270,12 +270,6 @@
                         <span class="text-gray-400">Tarih</span>
                         <span class="text-brand-black100">{{ $artwork->year }}</span>
                     </div>
-                    @if($artwork->category)
-                    <div class="flex justify-between">
-                        <span class="text-gray-400">Kategori</span>
-                        <span class="text-brand-black100">{{ $artwork->category->name }}</span>
-                    </div>
-                    @endif
                 </div>
 
                 @if($artwork->description)
@@ -298,7 +292,7 @@
                     @endif
 
                     @if(!$artwork->is_sold && $artpuanEarn > 0)
-                        <div class="flex items-center gap-2 text-xs text-primary bg-primary/5 border border-primary/20 px-3 py-2 mb-4">
+                        <div class="flex items-center gap-2 text-xs text-artpuan-ink bg-artpuan-soft border border-artpuan/40 px-3 py-2 mb-4">
                             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
                             </svg>
@@ -472,8 +466,8 @@
                                     @elseif($related->is_reserved)
                                         <span class="absolute top-2 left-2 bg-amber-500 text-white text-[9px] px-2 py-0.5 z-10 uppercase tracking-wider">Rezerve</span>
                                     @endif
-                                    @if($related->first_image)
-                                        <img src="{{ $related->first_image_url }}" alt="{{ $related->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                    @if($related->list_image)
+                                        <img src="{{ $related->list_image_url }}" alt="{{ $related->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                                     @else
                                         <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
                                             <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">

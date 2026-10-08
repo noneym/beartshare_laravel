@@ -22,7 +22,7 @@
                     </nav>
                     <h1 class="text-3xl md:text-4xl font-light text-white">{{ $artist->name }}</h1>
                     <p class="text-white/40 text-sm mt-1">{{ $artist->life_span }}</p>
-                    @if($artist->artworks()->where('is_active', true)->whereNotNull('images')->where('images', '!=', '[]')->exists())
+                    @if($artist->artworks()->where('is_active', true)->inGallery()->whereNotNull('images')->where('images', '!=', '[]')->exists())
                         <a href="{{ route('artist.3d', $artist->slug) }}"
                            class="group inline-flex items-center gap-3 mt-5 pl-4 pr-5 py-2.5 border border-white/25 text-white text-sm hover:bg-white hover:text-brand-black100 transition">
                             <svg class="w-5 h-5 transition group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 21V8l9-5 9 5v13M3 21h18M8 21v-8h8v8"/></svg>
@@ -61,8 +61,8 @@
                             @elseif($artwork->is_reserved)
                                 <span class="absolute top-3 left-3 bg-amber-500 text-white text-[10px] px-3 py-1 z-10 uppercase tracking-wider">Rezerve</span>
                             @endif
-                            @if($artwork->first_image)
-                                <img src="{{ $artwork->first_image_url }}" alt="{{ $artwork->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            @if($artwork->list_image)
+                                <img src="{{ $artwork->list_image_url }}" alt="{{ $artwork->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                             @else
                                 <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
                                     <svg class="w-16 h-16 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">

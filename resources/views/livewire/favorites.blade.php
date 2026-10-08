@@ -73,8 +73,8 @@
                                 @elseif($fav->artwork->is_reserved)
                                     <span class="absolute top-2 left-2 bg-amber-500 text-white text-[9px] px-2 py-0.5 z-10 uppercase tracking-wider">Rezerve</span>
                                 @endif
-                                @if($fav->artwork->first_image)
-                                    <img src="{{ $fav->artwork->first_image_url }}" alt="{{ $fav->artwork->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                @if($fav->artwork->list_image)
+                                    <img src="{{ $fav->artwork->list_image_url }}" alt="{{ $fav->artwork->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                                 @else
                                     <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
                                         <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -1,5 +1,7 @@
 @props([
     'title' => null,
+    // Sayfa koyu bir bölümle bitiyorsa footer üstündeki boşluk kaldırılır
+    'flushFooter' => false,
     'metaDescription' => null,
     'metaKeywords' => null,
     'metaRobots' => null,
@@ -72,6 +74,10 @@
                 extend: {
                     colors: {
                         primary: '#D4A017',
+                        artpuan: '#88bd6a',
+                        // Açık zeminde küçük yazı / buton için koyu ton (beyaz yazıyla AA kontrast)
+                        'artpuan-ink': '#47732f',
+                        'artpuan-soft': '#eef5e8',
                         'primary-dark': '#B8860B',
                         'brand-black100': '#14171c',
                         'brand-grey250': '#e5e5e5',
@@ -155,7 +161,7 @@
                     </a>
                 </div>
                 <div class="flex items-center gap-5">
-                    <a href="{{ route('artpuan') }}" class="text-primary hover:text-white transition-colors font-medium">ArtPuan&reg;</a>
+                    <a href="{{ route('artpuan') }}" class="text-artpuan hover:text-white transition-colors font-medium">ArtPuan&reg;</a>
                     <span class="w-px h-3 bg-white/20"></span>
                     <a href="{{ route('contact') }}" class="text-white/60 hover:text-primary transition-colors">İletişim</a>
                     <span class="w-px h-3 bg-white/20"></span>
@@ -497,8 +503,8 @@
                         Hakkımızda
                     </a>
                     <a href="{{ route('artpuan') }}" class="flex items-center gap-3 px-5 py-3 text-sm hover:bg-gray-50 transition-all" @click="mobileMenu = false">
-                        <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
-                        <span class="text-primary font-medium">ArtPuan&reg;</span>
+                        <svg class="w-4 h-4 text-artpuan" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                        <span class="text-artpuan font-medium">ArtPuan&reg;</span>
                     </a>
                     <a href="{{ route('blog') }}" class="flex items-center gap-3 px-5 py-3 text-sm text-brand-black100 hover:bg-gray-50 hover:text-primary transition-all" @click="mobileMenu = false">
                         <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
@@ -522,7 +528,7 @@
                         <svg class="w-3.5 h-3.5 text-red-400" fill="currentColor" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
                         Favorilerim
                     </a>
-                    <a href="{{ route('profile', 'artpuan') }}" class="flex items-center gap-3 px-5 py-3 text-sm text-brand-black100 hover:bg-gray-50 hover:text-primary transition-all pl-12" @click="mobileMenu = false">
+                    <a href="{{ route('profile', 'artpuan') }}" class="flex items-center gap-3 px-5 py-3 text-sm text-artpuan hover:bg-gray-50 transition-all pl-12" @click="mobileMenu = false">
                         <svg class="w-3.5 h-3.5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
                         ArtPuan&reg;
                     </a>
@@ -596,7 +602,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-12 mt-16">
+    <footer class="bg-gray-900 text-white py-12 {{ $flushFooter ? '' : 'mt-16' }}">
         <div class="container mx-auto px-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div>
@@ -614,7 +620,7 @@
                         <li><a href="{{ route('artists') }}" class="hover:text-white transition">Sanatçılar</a></li>
                         <li><a href="{{ route('about') }}" class="hover:text-white transition">Hakkımızda</a></li>
                         <li><a href="{{ route('blog') }}" class="hover:text-white transition">Sanat Haberleri</a></li>
-                        <li><a href="{{ route('artpuan') }}" class="hover:text-white transition">ArtPuan&reg;</a></li>
+                        <li><a href="{{ route('artpuan') }}" class="text-artpuan hover:text-white transition">ArtPuan&reg;</a></li>
                         <li><a href="{{ route('eser-kabulu') }}" class="hover:text-white transition">Eser Kabulü</a></li>
                     </ul>
                 </div>

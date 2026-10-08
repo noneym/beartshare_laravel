@@ -85,6 +85,13 @@
                     @error('images.*') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                 </div>
 
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Kapak Fotoğrafı <span class="text-gray-400 font-normal">(isteğe bağlı)</span></label>
+                    <input type="file" name="cover" accept="image/*" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary">
+                    <p class="text-sm text-gray-500 mt-1">Yüklenirse eser listelerinde (ana sayfa, eserler, sanatçı, favoriler) ilk görselin yerine bu gösterilir. Eser sayfasındaki görseller değişmez.</p>
+                    @error('cover') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+                </div>
+
                 <div class="space-y-2">
                     <label class="flex items-center">
                         <input type="checkbox" name="is_active" value="1" checked class="rounded border-gray-300 text-primary focus:ring-primary">
@@ -101,6 +108,11 @@
                     <label class="flex items-center">
                         <input type="checkbox" name="allow_credit_card" value="1" checked class="rounded border-gray-300 text-primary focus:ring-primary">
                         <span class="ml-2 text-gray-700">Kredi Kartı ile Alınabilir</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="hide_from_gallery" value="1" class="rounded border-gray-300 text-primary focus:ring-primary">
+                        <span class="ml-2 text-gray-700">Sanal Galeri Dışı Bırak</span>
+                        <span class="ml-2 text-xs text-gray-400">(3D sergilerde gösterilmez)</span>
                     </label>
                 </div>
 

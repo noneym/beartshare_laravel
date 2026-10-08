@@ -5,7 +5,7 @@
             .hero-slider-wrapper {
                 position: relative;
                 width: 100%;
-                height: 340px;
+                height: 450px;
                 overflow: hidden;
             }
             @media(min-width: 768px) { .hero-slider-wrapper { height: 400px; } }
@@ -85,53 +85,57 @@
 
         <div class="hero-slider-wrapper">
 
-            <!-- ==================== SLIDE 1: BeArtShare - Dark ==================== -->
+            <!-- ==================== SLIDE 1: Sanal Sergi ==================== -->
             <div class="hero-slide" :class="{ 'active': currentSlide === 0 }">
-                <div class="w-full h-full relative" style="background: linear-gradient(160deg, #14171c 0%, #1a1e25 40%, #1f242d 70%, #14171c 100%);">
-                    <!-- Background Typography Layer -->
-                    <div class="absolute inset-0 overflow-hidden">
-                        <span class="bg-typo bg-typo-xl absolute -left-[3%] -top-[5%]" style="color: rgba(255,255,255,0.03);">ART</span>
-                        <span class="bg-typo bg-typo-lg absolute right-[-6%] top-[0%]" style="color: rgba(255,255,255,0.025);">SHARE</span>
-                        <span class="bg-typo bg-typo-xl absolute left-[10%] bottom-[-25%]" style="color: rgba(255,255,255,0.02);">BE</span>
-                    </div>
+                <div class="w-full h-full relative bg-[#d9d6d0]">
+                    <img src="{{ asset('images/hero/sanal-sergi.webp') }}?v=2"
+                         srcset="{{ asset('images/hero/sanal-sergi-1440.webp') }}?v=2 1440w, {{ asset('images/hero/sanal-sergi.webp') }}?v=2 2880w"
+                         sizes="100vw" alt="BeArtShare 3D sanal sergi salonu"
+                         class="absolute inset-0 w-full h-full object-cover object-[62%_center]" fetchpriority="high">
+                    <!-- Okunabilirlik için soldan koyulaşan örtü -->
+                    <div class="absolute inset-0" style="background: linear-gradient(90deg, rgba(20,23,28,0.88) 0%, rgba(20,23,28,0.70) 35%, rgba(20,23,28,0.15) 70%, rgba(20,23,28,0) 100%);"></div>
+                    <div class="absolute inset-0 md:hidden" style="background: rgba(20,23,28,0.35);"></div>
 
-                    <!-- Subtle decorative accent line -->
-                    <div class="absolute top-0 left-0 w-full h-[2px]" style="background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 30%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.08) 70%, transparent 100%);"></div>
-
-                    <!-- Content Layer - Centered -->
                     <div class="relative z-10 h-full">
-                        <div class="container mx-auto px-6 lg:px-8 h-full flex items-center justify-center">
-                            <div class="text-center max-w-2xl">
-                                <p class="slide-desc text-white/40 text-[10px] md:text-xs tracking-[0.35em] uppercase mb-5">Yeni Çağın Sanat Galerisi</p>
-                                <h2 class="slide-title text-5xl md:text-6xl lg:text-[5.5rem] font-bold text-white leading-[0.95] tracking-tight">
-                                    BeArtShare
-                                </h2>
-                                <p class="slide-desc text-white/55 text-sm md:text-[15px] leading-[1.9] mt-6 max-w-lg mx-auto">
-                                    Ülkemizin kıymetli sanatçılarına ve uluslararası Blue Chip sanatçılara güvenle ve kazançla ulaşmanın yolu.
+                        <div class="container mx-auto px-6 lg:px-8 h-full flex items-center">
+                            <div class="max-w-xl">
+                                <p class="slide-desc inline-flex items-center gap-2 text-white/70 text-[10px] md:text-xs tracking-[0.3em] uppercase mb-4">
+                                    <span class="inline-block bg-white text-brand-black100 text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full">YENİ</span>
+                                    Sanal Sergi
                                 </p>
-                                <div class="slide-btn mt-8 flex items-center justify-center gap-4">
-                                    <a href="{{ route('artworks') }}" class="inline-flex items-center bg-white text-brand-black100 pl-7 pr-5 py-3 rounded-full text-sm font-semibold hover:shadow-xl hover:scale-[1.02] transition-all duration-300 shadow-lg group">
-                                        Hemen Başla
+                                <h2 class="slide-title text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-[0.98] tracking-tight" style="text-shadow: 0 4px 24px rgba(0,0,0,0.25);">
+                                    Galeriyi<br>Evinizden Gezin
+                                </h2>
+                                <p class="slide-desc text-white/80 text-sm md:text-[15px] leading-[1.8] mt-5 max-w-md">
+                                    Satıştaki tüm eserler 3D sergi salonunda. Duvarlar arasında dolaşın, eserlere yaklaşıp detaylarını inceleyin.
+                                </p>
+                                <div class="slide-btn mt-7 flex flex-wrap items-center gap-3">
+                                    <a href="{{ route('exhibition.3d') }}" class="inline-flex items-center bg-white text-brand-black100 pl-7 pr-5 py-3 rounded-full text-sm font-semibold hover:shadow-xl hover:scale-[1.02] transition-all duration-300 shadow-lg group">
+                                        Sergiyi Gez
                                         <svg class="w-4 h-4 ml-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
                                     </a>
-                                    <a href="{{ route('artists') }}" class="inline-flex items-center border border-white/20 text-white pl-7 pr-5 py-3 rounded-full text-sm font-medium hover:bg-white/10 transition-all duration-300 group">
-                                        Sanatçılar
+                                    <a href="{{ route('artworks') }}" class="hidden sm:inline-flex items-center border border-white/30 text-white pl-7 pr-5 py-3 rounded-full text-sm font-medium hover:bg-white/10 transition-all duration-300 group">
+                                        Tüm Eserler
                                         <svg class="w-4 h-4 ml-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
                                     </a>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Bottom Bar: Dots + Hashtag -->
+                        <!-- Bottom Bar: Dots -->
                         <div class="absolute bottom-5 left-0 right-0">
-                            <div class="container mx-auto px-6 lg:px-8 flex items-center justify-center">
-                                <div class="flex items-center gap-2.5">
-                                    <template x-for="(s, i) in 3" :key="i">
-                                        <button @click="goToSlide(i)"
-                                            class="dot-progress rounded-full transition-all duration-300"
-                                            :class="currentSlide === i ? 'active w-8 h-2.5 bg-white' : 'w-2.5 h-2.5 bg-white/35 hover:bg-white/55'"
-                                        ></button>
-                                    </template>
+                            <div class="container mx-auto px-6 lg:px-8 flex items-center justify-between">
+                                <div></div>
+                                <div class="flex items-center gap-6">
+                                    <div class="flex items-center gap-2.5">
+                                        <template x-for="(s, i) in totalSlides" :key="i">
+                                            <button @click="goToSlide(i)"
+                                                class="dot-progress rounded-full transition-all duration-300"
+                                                :class="currentSlide === i ? 'active w-8 h-2.5 bg-white' : 'w-2.5 h-2.5 bg-white/35 hover:bg-white/55'"
+                                            ></button>
+                                        </template>
+                                    </div>
+                                    <span class="text-white/50 text-[11px] font-medium tracking-wide hidden md:block">#YeniÇağınSanatGalerisi</span>
                                 </div>
                             </div>
                         </div>
@@ -172,7 +176,7 @@
                                 <!-- Right: Description -->
                                 <div class="lg:col-span-6 lg:col-start-7">
                                     <p class="slide-desc text-white/85 text-sm md:text-[15px] leading-[1.8] max-w-md">
-                                        Eserlerinizi çok düşük komisyonla, şeffaf ve güvenli şekilde koleksiyonerlere ulaştırın. Fotoğraflama ve kataloglama bizden.
+                                        Koleksiyonunuzdaki eserleri BeArtShare aracılığıyla, düşük komisyon oranlarıyla güvenli ve şeffaf bir şekilde yeni koleksiyonerlerle buluşturun. Profesyonel fotoğraflama ve uzman desteğiyle eser satış süreci artık çok daha hızlı ve kolay!
                                     </p>
                                 </div>
                             </div>
@@ -184,7 +188,7 @@
                                 <div></div>
                                 <div class="flex items-center gap-6">
                                     <div class="flex items-center gap-2.5">
-                                        <template x-for="(s, i) in 3" :key="i">
+                                        <template x-for="(s, i) in totalSlides" :key="i">
                                             <button @click="goToSlide(i)"
                                                 class="dot-progress rounded-full transition-all duration-300"
                                                 :class="currentSlide === i ? 'active w-8 h-2.5 bg-white' : 'w-2.5 h-2.5 bg-white/35 hover:bg-white/55'"
@@ -199,14 +203,14 @@
                 </div>
             </div>
 
-            <!-- ==================== SLIDE 3: ArtPuan - Gold ==================== -->
+            <!-- ==================== SLIDE 3: ArtPuan - Yeşil ==================== -->
             <div class="hero-slide" :class="{ 'active': currentSlide === 2 }">
-                <div class="w-full h-full relative" style="background: linear-gradient(135deg, #A57E12 0%, #C39516 25%, #D4A017 60%, #C39516 100%);">
+                <div class="w-full h-full relative" style="background: linear-gradient(135deg, #4a7533 0%, #5a8a40 30%, #6c9e4f 65%, #5a8a40 100%);">
                     <!-- Background Typography Layer -->
                     <div class="absolute inset-0 overflow-hidden">
-                        <span class="bg-typo bg-typo-xl absolute -left-[3%] -top-[5%]" style="color: rgba(133,98,11,0.17);">ART</span>
-                        <span class="bg-typo bg-typo-lg absolute right-[-6%] top-[0%]" style="color: rgba(133,98,11,0.13);">SHARE</span>
-                        <span class="bg-typo bg-typo-xl absolute left-[10%] bottom-[-25%]" style="color: rgba(110,80,8,0.10);">ART</span>
+                        <span class="bg-typo bg-typo-xl absolute -left-[3%] -top-[5%]" style="color: rgba(136,189,106,0.22);">ART</span>
+                        <span class="bg-typo bg-typo-lg absolute right-[-6%] top-[0%]" style="color: rgba(136,189,106,0.18);">SHARE</span>
+                        <span class="bg-typo bg-typo-xl absolute left-[10%] bottom-[-25%]" style="color: rgba(40,70,25,0.14);">ART</span>
                     </div>
 
                     <!-- Content Layer -->
@@ -222,7 +226,7 @@
                                         </h2>
                                     </div>
                                     <div class="slide-btn mt-8">
-                                        <a href="{{ route('artpuan') }}" class="inline-flex items-center bg-white text-gray-800 pl-7 pr-5 py-3 rounded-full text-sm font-semibold hover:shadow-xl hover:scale-[1.02] transition-all duration-300 shadow-lg group">
+                                        <a href="{{ route('artpuan') }}" class="inline-flex items-center bg-white text-artpuan-ink pl-7 pr-5 py-3 rounded-full text-sm font-semibold hover:shadow-xl hover:scale-[1.02] transition-all duration-300 shadow-lg group">
                                             ArtPuan&reg;
                                             <svg class="w-4 h-4 ml-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
                                         </a>
@@ -231,9 +235,9 @@
                                 <!-- Right: Description + Feature Tags -->
                                 <div class="lg:col-span-6 lg:col-start-7">
                                     <p class="slide-desc text-white/85 text-sm md:text-[15px] leading-[1.8] max-w-md">
-                                        Satın aldığınız her eserden tutarın %1'i oranında ArtPuan&reg; kazanın. Üstelik çevrenize referans olarak onların da satın alımlarından %1 kazanmaya devam edin.
+                                        Türkiye’de bir ilk olan ArtPuan&reg; kazanç sistemi sayesinde BeArtShare üyeleri gerçekleştirdikleri sanat eseri alımlarından, satışlarından ve referans kodlarıyla davet ettikleri üyelerin alımlarından %1 ArtPuan&reg; kazanır. Biriken ArtPuan&reg;'lar, sonraki sanat eseri alımlarında kullanılabilir.
                                     </p>
-                                    <div class="slide-btn flex flex-wrap gap-2 mt-5">
+                                    <div class="slide-btn hidden sm:flex flex-wrap gap-2 mt-5">
                                         <span class="inline-block border border-white/25 text-white/70 text-[10px] px-3 py-1 rounded-full">%1 Kazanç</span>
                                         <span class="inline-block border border-white/25 text-white/70 text-[10px] px-3 py-1 rounded-full">Referans Bonusu</span>
                                         <span class="inline-block border border-white/25 text-white/70 text-[10px] px-3 py-1 rounded-full">Anında Kullanım</span>
@@ -248,7 +252,7 @@
                                 <div></div>
                                 <div class="flex items-center gap-6">
                                     <div class="flex items-center gap-2.5">
-                                        <template x-for="(s, i) in 3" :key="i">
+                                        <template x-for="(s, i) in totalSlides" :key="i">
                                             <button @click="goToSlide(i)"
                                                 class="dot-progress rounded-full transition-all duration-300"
                                                 :class="currentSlide === i ? 'active w-8 h-2.5 bg-white' : 'w-2.5 h-2.5 bg-white/35 hover:bg-white/55'"
@@ -302,8 +306,7 @@
         <div class="container mx-auto px-4">
             <div class="flex items-center justify-between mb-8">
                 <div>
-                    <h2 class="text-2xl font-semibold text-brand-black100">Öne Çıkan Eserler</h2>
-                    <p class="text-gray-400 text-sm mt-1">Koleksiyonumuzdaki seçkin eserler</p>
+                    <h2 class="text-2xl font-semibold text-brand-black100"><a href="{{ route('artworks') }}" class="hover:text-primary transition-colors">Öne Çıkan Eserler</a></h2>
                 </div>
                 <a href="{{ route('artworks') }}" class="text-xs text-gray-400 hover:text-brand-black100 transition link-underline pb-1 hidden md:block">Tümünü Gör</a>
             </div>
@@ -318,8 +321,8 @@
                                 @elseif($artwork->is_reserved)
                                     <span class="absolute top-3 left-3 bg-amber-500 text-white text-[10px] px-3 py-1 z-10 uppercase tracking-wider">Rezerve</span>
                                 @endif
-                                @if($artwork->first_image)
-                                    <img src="{{ $artwork->first_image_url }}" alt="{{ $artwork->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                @if($artwork->list_image)
+                                    <img src="{{ $artwork->list_image_url }}" alt="{{ $artwork->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                                 @else
                                     <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
                                         <svg class="w-16 h-16 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -356,8 +359,7 @@
         <div class="container mx-auto px-4">
             <div class="flex items-center justify-between mb-8">
                 <div>
-                    <h2 class="text-2xl font-semibold text-brand-black100">Son Eklenen Eserler</h2>
-                    <p class="text-gray-400 text-sm mt-1">Koleksiyonumuza yeni eklenen eserler</p>
+                    <h2 class="text-2xl font-semibold text-brand-black100"><a href="{{ route('artworks') }}" class="hover:text-primary transition-colors">Son Eklenen Eserler</a></h2>
                 </div>
                 <a href="{{ route('artworks') }}" class="text-xs text-gray-400 hover:text-brand-black100 transition link-underline pb-1 hidden md:block">Tümünü Gör</a>
             </div>
@@ -372,8 +374,8 @@
                                 @elseif($artwork->is_reserved)
                                     <span class="absolute top-2 left-2 bg-amber-500 text-white text-[9px] px-2 py-0.5 z-10 uppercase tracking-wider">Rezerve</span>
                                 @endif
-                                @if($artwork->first_image)
-                                    <img src="{{ $artwork->first_image_url }}" alt="{{ $artwork->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                @if($artwork->list_image)
+                                    <img src="{{ $artwork->list_image_url }}" alt="{{ $artwork->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                                 @else
                                     <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
                                         <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -405,8 +407,7 @@
         <div class="container mx-auto px-4">
             <div class="flex items-end justify-between mb-8">
                 <div>
-                    <h2 class="text-2xl font-semibold text-brand-black100">Sanatçılar</h2>
-                    <p class="text-gray-400 text-xs mt-1">Koleksiyonumuzdaki seçkin sanatçılar</p>
+                    <h2 class="text-2xl font-semibold text-brand-black100"><a href="{{ route('artists') }}" class="hover:text-primary transition-colors">Sanatçılar</a></h2>
                 </div>
                 <a href="{{ route('artists') }}" class="text-xs text-brand-black100 hover:text-primary transition flex items-center gap-1 font-medium">
                     Tümünü Gör
@@ -460,7 +461,7 @@
         <div class="container mx-auto px-4">
             <div class="flex items-end justify-between mb-8">
                 <div>
-                    <h2 class="text-2xl font-semibold text-brand-black100">Satılan Eserler</h2>
+                    <h2 class="text-2xl font-semibold text-brand-black100"><a href="{{ route('artworks', ['satilanlar' => 'only']) }}" class="hover:text-primary transition-colors">Satılan Eserler</a></h2>
                     <p class="text-gray-400 text-xs mt-1">Koleksiyonerlerimize ulaşan eserler</p>
                 </div>
                 <a href="{{ route('artworks', ['satilanlar' => 'only']) }}" class="text-xs text-brand-black100 hover:text-primary transition flex items-center gap-1 font-medium">
@@ -482,8 +483,8 @@
                         <a href="{{ route('artwork.detail', $artwork->slug) }}" class="flex-shrink-0 group w-[200px]" wire:key="sold-{{ $artwork->id }}">
                             <div class="relative bg-white border border-gray-100 overflow-hidden aspect-square mb-3">
                                 <span class="absolute top-2 left-2 bg-red-500 text-white text-[9px] px-2 py-0.5 z-10 uppercase tracking-wider">Satıldı</span>
-                                @if($artwork->first_image)
-                                    <img src="{{ $artwork->first_image_url }}" alt="{{ $artwork->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-90">
+                                @if($artwork->list_image)
+                                    <img src="{{ $artwork->list_image_url }}" alt="{{ $artwork->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-90">
                                 @else
                                     <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
                                         <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -515,7 +516,7 @@
         <div class="container mx-auto px-4">
             <div class="flex items-center justify-between mb-8">
                 <div>
-                    <h2 class="text-2xl font-semibold text-brand-black100">Haberler</h2>
+                    <h2 class="text-2xl font-semibold text-brand-black100"><a href="{{ route('blog') }}" class="hover:text-primary transition-colors">Haberler</a></h2>
                     <p class="text-gray-400 text-sm mt-1">Sanat dünyasından haberler ve yazılar</p>
                 </div>
                 <a href="{{ route('blog') }}" class="text-xs text-gray-400 hover:text-brand-black100 transition link-underline pb-1 hidden md:block">Tümünü Gör</a>

@@ -77,7 +77,7 @@
                     wire:model.live="soldFilter"
                     class="w-full border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:border-brand-black100 bg-white transition"
                 >
-                    <option value="">Tüm Eserler</option>
+                    <option value="all">Tüm Eserler</option>
                     <option value="hide">Satılanları Gösterme</option>
                     <option value="only">Sadece Satılanlar</option>
                 </select>
@@ -110,8 +110,8 @@
                             @elseif($artwork->is_reserved)
                                 <span class="absolute top-3 left-3 bg-amber-500 text-white text-[10px] px-3 py-1 z-10 uppercase tracking-wider">Rezerve</span>
                             @endif
-                            @if($artwork->first_image)
-                                <img src="{{ $artwork->first_image_url }}" alt="{{ $artwork->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            @if($artwork->list_image)
+                                <img src="{{ $artwork->list_image_url }}" alt="{{ $artwork->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                             @else
                                 <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
                                     <svg class="w-16 h-16 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">

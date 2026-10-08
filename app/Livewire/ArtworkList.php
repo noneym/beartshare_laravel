@@ -16,14 +16,15 @@ class ArtworkList extends Component
     public $artistId = '';
     public $categoryId = '';
     public $sortBy = 'latest';
-    public $soldFilter = '';
+    // Varsayılan: satılanlar gizli. 'all' = tümü, 'only' = yalnızca satılanlar
+    public $soldFilter = 'hide';
 
     protected $queryString = [
         'search' => ['except' => ''],
         'artistId' => ['except' => ''],
         'categoryId' => ['except' => ''],
         'sortBy' => ['except' => 'latest'],
-        'soldFilter' => ['except' => '', 'as' => 'satilanlar'],
+        'soldFilter' => ['except' => 'hide', 'as' => 'satilanlar'],
     ];
 
     /**
@@ -42,7 +43,7 @@ class ArtworkList extends Component
 
         if ($this->soldFilter === 'only' || $this->soldFilter === '1') {
             $query->where('is_sold', true);
-        } elseif ($this->soldFilter === 'hide') {
+        } elseif ($this->soldFilter !== 'all') {
             $query->where('is_sold', false);
         }
 

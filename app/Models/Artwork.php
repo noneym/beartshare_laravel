@@ -36,6 +36,8 @@ class Artwork extends Model
         'sort_order',
         'old_id',
         'images',
+        'cover_image',
+        'hide_from_gallery',
     ];
 
     protected $casts = [
@@ -45,6 +47,7 @@ class Artwork extends Model
         'is_featured' => 'boolean',
         'is_reserved' => 'boolean',
         'allow_credit_card' => 'boolean',
+        'hide_from_gallery' => 'boolean',
         'images' => 'array',
         'price_tl' => 'decimal:2',
         'price_usd' => 'decimal:2',
@@ -121,6 +124,19 @@ class Artwork extends Model
     }
 
     /**
+     * Listeleme sayfalarındaki görsel: kapak fotoğrafı yüklüyse o, yoksa ilk görsel.
+     */
+    public function getListImageAttribute()
+    {
+        return $this->cover_image ?: $this->first_image;
+    }
+
+    public function getListImageUrlAttribute()
+    {
+        return \App\Support\ImageUrl::make($this->list_image, 'card');
+    }
+
+    /**
      * Get the first image as a full URL (handles both external URLs and local storage paths).
      */
     public function getFirstImageUrlAttribute()
@@ -165,6 +181,12 @@ class Artwork extends Model
     public function scopeAvailable($query)
     {
         return $query->where('is_sold', false)->where('is_reserved', false)->where('is_active', true);
+    }
+
+    /** Sanal galeriye (3D sergi) dahil edilen eserler */
+    public function scopeInGallery($query)
+    {
+        return $query->where('hide_from_gallery', false);
     }
 
     public function scopeFeatured($query)

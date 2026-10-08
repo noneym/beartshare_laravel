@@ -112,7 +112,7 @@
                                      :class="drag === i ? 'opacity-40' : ''">
                                     <input type="hidden" name="existing_images[]" :value="item.path">
                                     <img :src="item.url" alt="" class="w-28 h-28 object-cover rounded-lg border border-gray-200 cursor-move bg-gray-100">
-                                    <span class="absolute top-1 left-1 bg-black/70 text-white text-[10px] px-1.5 py-0.5 rounded" x-text="i === 0 ? 'Kapak' : (i + 1)"></span>
+                                    <span class="absolute top-1 left-1 bg-black/70 text-white text-[10px] px-1.5 py-0.5 rounded" x-text="i === 0 ? 'Ana' : (i + 1)"></span>
                                     <button type="button" @click="items.splice(i, 1)" title="Kaldır"
                                             class="absolute top-1 right-1 bg-white/90 text-red-600 w-6 h-6 rounded-full text-sm leading-none shadow hover:bg-red-600 hover:text-white transition">&times;</button>
                                     <div class="flex justify-between mt-1">
@@ -124,13 +124,29 @@
                                 </div>
                             </template>
                         </div>
-                        <p class="text-xs text-gray-500 mt-2">Sürükleyip bırakarak ya da oklarla sıralayın. İlk görsel kapak olarak kullanılır. Değişiklikler "Güncelle" ile kaydedilir.</p>
+                        <p class="text-xs text-gray-500 mt-2">Sürükleyip bırakarak ya da oklarla sıralayın. İlk görsel ana görseldir (kapak fotoğrafı yoksa listelerde de o görünür). Değişiklikler "Güncelle" ile kaydedilir.</p>
                     </div>
 
                     <label class="block text-sm font-medium text-gray-700 mb-2">Yeni Gorsel Ekle</label>
                     <input type="file" name="images[]" multiple accept="image/*" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary">
                     <p class="text-sm text-gray-500 mt-1">Birden fazla gorsel secebilirsiniz</p>
                     @error('images.*') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div x-data="{ remove: false }">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Kapak Fotoğrafı <span class="text-gray-400 font-normal">(isteğe bağlı)</span></label>
+                    @if($artwork->cover_image)
+                        <div class="flex items-start gap-4 mb-3" :class="remove ? 'opacity-40' : ''">
+                            <img src="{{ \App\Support\ImageUrl::make($artwork->cover_image, 'thumb') }}" alt="" class="w-28 h-28 object-cover rounded-lg border border-gray-200 bg-gray-100">
+                            <label class="flex items-center text-sm text-red-600 mt-1">
+                                <input type="checkbox" name="remove_cover" value="1" x-model="remove" class="rounded border-gray-300 text-red-600 focus:ring-red-500">
+                                <span class="ml-2">Kapak fotoğrafını kaldır</span>
+                            </label>
+                        </div>
+                    @endif
+                    <input type="file" name="cover" accept="image/*" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary">
+                    <p class="text-sm text-gray-500 mt-1">Yüklenirse eser listelerinde (ana sayfa, eserler, sanatçı, favoriler) ilk görselin yerine bu gösterilir. Eser sayfasındaki görseller değişmez.</p>
+                    @error('cover') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <div class="space-y-2">
@@ -149,6 +165,11 @@
                     <label class="flex items-center">
                         <input type="checkbox" name="allow_credit_card" value="1" {{ $artwork->allow_credit_card ? 'checked' : '' }} class="rounded border-gray-300 text-primary focus:ring-primary">
                         <span class="ml-2 text-gray-700">Kredi Kartı ile Alınabilir</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="hide_from_gallery" value="1" {{ $artwork->hide_from_gallery ? 'checked' : '' }} class="rounded border-gray-300 text-primary focus:ring-primary">
+                        <span class="ml-2 text-gray-700">Sanal Galeri Dışı Bırak</span>
+                        <span class="ml-2 text-xs text-gray-400">(3D sergilerde gösterilmez)</span>
                     </label>
                 </div>
 

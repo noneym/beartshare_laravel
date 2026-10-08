@@ -19,6 +19,7 @@ class ArtworkGalleryController extends Controller
     {
         $artwork = Artwork::with('artist')
             ->active()
+            ->inGallery()
             ->where('slug', $slug)
             ->firstOrFail();
 
@@ -58,6 +59,7 @@ class ArtworkGalleryController extends Controller
     {
         $works = Artwork::with('artist')
             ->available()
+            ->inGallery()
             ->whereNotNull('images')
             ->where('images', '!=', '[]')
             ->get()
@@ -90,6 +92,7 @@ class ArtworkGalleryController extends Controller
     {
         return Artwork::with('artist')
             ->active()
+            ->inGallery()
             ->where('artist_id', $artistId)
             ->whereNotNull('images')
             ->where('images', '!=', '[]')
@@ -122,7 +125,7 @@ class ArtworkGalleryController extends Controller
     public function image(Request $request, Artwork $artwork)
     {
         $path = $artwork->first_image;
-        abort_unless($artwork->is_active && $path, 404);
+        abort_unless($artwork->is_active && !$artwork->hide_from_gallery && $path, 404);
 
         $headers = ['Cache-Control' => 'public, max-age=86400'];
 

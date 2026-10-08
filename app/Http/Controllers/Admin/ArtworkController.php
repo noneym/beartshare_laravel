@@ -112,15 +112,17 @@ class ArtworkController extends Controller
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
             'allow_credit_card' => 'boolean',
+            'hide_from_gallery' => 'boolean',
             'owner_name' => 'nullable|string|max:255',
             'admin_notes' => 'nullable|string|max:5000',
             'sale_note' => 'nullable|string|max:5000',
             'images.*' => 'nullable|image|max:4096',
+            'cover' => 'nullable|image|max:4096',
         ]);
 
         $validated['slug'] = Str::slug($validated['title'] . '-' . uniqid());
         $validated['allow_credit_card'] = $request->boolean('allow_credit_card');
-        foreach (['is_active', 'is_featured', 'is_sold'] as $flag) {
+        foreach (['is_active', 'is_featured', 'is_sold', 'hide_from_gallery'] as $flag) {
             $validated[$flag] = $request->boolean($flag);
         }
         $validated['price_usd'] = $this->usdPrice($validated);
@@ -131,6 +133,10 @@ class ArtworkController extends Controller
                 $images[] = $image->store('artworks', config('filesystems.uploads'));
             }
             $validated['images'] = $images;
+        }
+
+        if ($request->hasFile('cover')) {
+            $validated['cover_image'] = $request->file('cover')->store('artworks/covers', config('filesystems.uploads'));
         }
 
         Artwork::create($validated);
@@ -165,15 +171,17 @@ class ArtworkController extends Controller
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
             'allow_credit_card' => 'boolean',
+            'hide_from_gallery' => 'boolean',
             'owner_name' => 'nullable|string|max:255',
             'admin_notes' => 'nullable|string|max:5000',
             'sale_note' => 'nullable|string|max:5000',
             'images.*' => 'nullable|image|max:4096',
+            'cover' => 'nullable|image|max:4096',
         ]);
 
         $validated['allow_credit_card'] = $request->boolean('allow_credit_card');
         // İşaretsiz kutular forma gelmez; yoksa kaldırılan işaret kaydedilmezdi
-        foreach (['is_active', 'is_featured', 'is_sold'] as $flag) {
+        foreach (['is_active', 'is_featured', 'is_sold', 'hide_from_gallery'] as $flag) {
             $validated[$flag] = $request->boolean($flag);
         }
         // Satılmış eserin USD fiyatı satış anındaki kurla sabit kalır (TL değişmediyse)
@@ -192,6 +200,13 @@ class ArtworkController extends Controller
                 $images[] = $image->store('artworks', config('filesystems.uploads'));
             }
             $validated['images'] = $images;
+        }
+
+        // Kapak fotoğrafı (isteğe bağlı): yeni yükleme değiştirir, işaretlenirse kaldırılır
+        if ($request->hasFile('cover')) {
+            $validated['cover_image'] = $request->file('cover')->store('artworks/covers', config('filesystems.uploads'));
+        } elseif ($request->boolean('remove_cover')) {
+            $validated['cover_image'] = null;
         }
 
         $artwork->update($validated);

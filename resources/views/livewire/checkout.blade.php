@@ -50,7 +50,7 @@
                             </div>
                             <div class="flex justify-between text-sm">
                                 <span class="text-gray-500">ArtPuan&reg; İndirimi ({{ number_format($completedOrder->artpuan_used, 2, ',', '.') }} AP):</span>
-                                <span class="font-medium text-green-600">-{{ number_format($completedOrder->discount_tl, 0, ',', '.') }} TL</span>
+                                <span class="font-medium text-artpuan-ink">-{{ number_format($completedOrder->discount_tl, 0, ',', '.') }} TL</span>
                             </div>
                             <div class="border-t border-gray-200 pt-2"></div>
                             @endif
@@ -125,9 +125,9 @@
                 @endif
 
                 @if($completedOrder->artpuan_used > 0)
-                <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-                    <div class="flex items-center gap-2 text-sm text-green-700">
-                        <svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="bg-artpuan-soft border border-artpuan/40 rounded-lg p-4 mb-6">
+                    <div class="flex items-center gap-2 text-sm text-artpuan-ink">
+                        <svg class="w-5 h-5 text-artpuan flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
                         </svg>
                         <span><strong>{{ number_format($completedOrder->artpuan_used, 2, ',', '.') }} ArtPuan&reg;</strong> kullanıldı ve <strong>{{ number_format($completedOrder->discount_tl, 0, ',', '.') }} TL</strong> indirim uygulandı.</span>
@@ -438,22 +438,22 @@
 
                         {{-- ArtPuan Kullan --}}
                         @if($userArtPuan > 0)
-                        <div class="border border-primary/30 bg-amber-50/50 p-4 mb-4">
+                        <div class="border border-artpuan/40 bg-artpuan-soft p-4 mb-4">
                             <label class="flex items-start gap-3 cursor-pointer">
                                 <input type="checkbox" wire:model.live="useArtPuan"
-                                       class="rounded border-primary/50 text-primary focus:ring-primary mt-0.5">
+                                       class="rounded border-artpuan text-artpuan-ink focus:ring-artpuan mt-0.5">
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center gap-2">
-                                        <svg class="w-4 h-4 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-4 h-4 text-artpuan-ink flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
                                         </svg>
                                         <span class="text-sm font-medium text-brand-black100">ArtPuan&reg; Kullan</span>
                                     </div>
                                     <p class="text-[11px] text-gray-500 mt-1">
-                                        Bakiyeniz: <strong class="text-primary">{{ number_format($userArtPuan, 2, ',', '.') }} AP</strong>
+                                        Bakiyeniz: <strong class="text-artpuan-ink">{{ number_format($userArtPuan, 2, ',', '.') }} AP</strong>
                                     </p>
                                     @if($useArtPuan)
-                                        <p class="text-[11px] text-green-600 mt-1 font-medium">
+                                        <p class="text-[11px] text-artpuan-ink mt-1 font-medium">
                                             -{{ number_format($artpuanDiscount, 2, ',', '.') }} TL indirim uygulanacak
                                         </p>
                                     @endif
@@ -466,13 +466,13 @@
                         @if($useArtPuan && $artpuanDiscount > 0)
                         <div class="border-t border-gray-200 pt-3 mb-3">
                             <div class="flex items-center justify-between text-sm">
-                                <span class="text-green-600 flex items-center gap-1.5">
+                                <span class="text-artpuan-ink flex items-center gap-1.5">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                                     </svg>
                                     ArtPuan&reg; İndirimi
                                 </span>
-                                <span class="font-medium text-green-600">-{{ number_format($artpuanDiscount, 2, ',', '.') }} TL</span>
+                                <span class="font-medium text-artpuan-ink">-{{ number_format($artpuanDiscount, 2, ',', '.') }} TL</span>
                             </div>
                         </div>
                         @endif

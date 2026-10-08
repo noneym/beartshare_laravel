@@ -32,7 +32,7 @@
                 {{-- ArtPuan Badge --}}
                 <div class="bg-white/5 border border-white/10 px-6 py-4 text-center">
                     <p class="text-[10px] text-white/40 uppercase tracking-widest mb-1">ArtPuan</p>
-                    <p class="text-2xl font-bold text-primary">{{ number_format($stats['total_artpuan'], 0, ',', '.') }}</p>
+                    <p class="text-2xl font-bold text-artpuan">{{ number_format($stats['total_artpuan'], 0, ',', '.') }}</p>
                     <p class="text-[10px] text-white/30 mt-0.5">AP</p>
                 </div>
             </div>
@@ -57,9 +57,11 @@
                 @foreach($tabs as $key => $tab)
                     <button wire:click="setTab('{{ $key }}')"
                             class="flex items-center gap-2 px-5 py-4 text-sm whitespace-nowrap border-b-2 transition-colors
-                                {{ $activeTab === $key
-                                    ? 'border-brand-black100 text-brand-black100 font-medium'
-                                    : 'border-transparent text-gray-400 hover:text-gray-600' }}">
+                                {{ $key === 'artpuan'
+                                    ? ($activeTab === $key ? 'border-artpuan text-artpuan font-medium' : 'border-transparent text-artpuan hover:opacity-80')
+                                    : ($activeTab === $key
+                                        ? 'border-brand-black100 text-brand-black100 font-medium'
+                                        : 'border-transparent text-gray-400 hover:text-gray-600') }}">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $tab['icon'] !!}</svg>
                         {{ $tab['label'] }}
                     </button>
@@ -111,9 +113,9 @@
                 <div class="bg-white border border-gray-100 p-5">
                     <div class="flex items-center justify-between mb-3">
                         <span class="text-[10px] text-gray-400 uppercase tracking-wider">ArtPuan</span>
-                        <svg class="w-5 h-5 text-primary/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V7m0 1v8m0 0v1"/></svg>
+                        <svg class="w-5 h-5 text-artpuan/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V7m0 1v8m0 0v1"/></svg>
                     </div>
-                    <p class="text-2xl font-bold text-primary">{{ number_format($stats['total_artpuan'], 0, ',', '.') }}</p>
+                    <p class="text-2xl font-bold text-artpuan-ink">{{ number_format($stats['total_artpuan'], 0, ',', '.') }}</p>
                     <p class="text-[10px] text-gray-400 mt-1">AP</p>
                 </div>
             </div>
@@ -175,8 +177,8 @@
                             @if($fav->artwork)
                             <a href="{{ route('artwork.detail', $fav->artwork->slug) }}" class="group bg-white border border-gray-100 overflow-hidden hover:shadow-md transition">
                                 <div class="aspect-square overflow-hidden bg-gray-50">
-                                    @if($fav->artwork->first_image_url)
-                                        <img src="{{ $fav->artwork->first_image_url }}" alt="{{ $fav->artwork->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                    @if($fav->artwork->list_image_url)
+                                        <img src="{{ $fav->artwork->list_image_url }}" alt="{{ $fav->artwork->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                                     @else
                                         <div class="w-full h-full flex items-center justify-center">
                                             <svg class="w-10 h-10 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14"/></svg>
@@ -207,7 +209,7 @@
             <div class="mb-10">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-sm font-semibold text-brand-black100 uppercase tracking-wider">ArtPuan&reg; Hareketleri</h2>
-                    <button wire:click="setTab('artpuan')" class="text-xs text-primary hover:underline">Tümünü Gör &rarr;</button>
+                    <button wire:click="setTab('artpuan')" class="text-xs text-artpuan hover:underline">Tümünü Gör &rarr;</button>
                 </div>
                 <div class="bg-white border border-gray-100 divide-y divide-gray-50">
                     @foreach($artPuanLogs as $log)
@@ -239,7 +241,7 @@
                         <div x-data="{ copied: false }" class="flex items-center gap-2">
                             <input type="text" value="{{ $user->referral_link }}" readonly class="bg-white/10 text-white/80 text-xs px-4 py-2.5 border border-white/10 w-full md:w-72 focus:outline-none">
                             <button @click="navigator.clipboard.writeText('{{ $user->referral_link }}'); copied = true; setTimeout(() => copied = false, 2000)"
-                                    class="bg-primary hover:bg-primary-dark text-white px-4 py-2.5 text-xs font-medium transition flex-shrink-0">
+                                    class="bg-artpuan-ink hover:bg-[#3b6127] text-white px-4 py-2.5 text-xs font-medium transition flex-shrink-0">
                                 <span x-show="!copied">Kopyala</span>
                                 <span x-show="copied" x-cloak>Kopyalandı!</span>
                             </button>
@@ -353,8 +355,8 @@
                         @if($fav->artwork)
                         <a href="{{ route('artwork.detail', $fav->artwork->slug) }}" class="group bg-white border border-gray-100 overflow-hidden hover:shadow-md transition">
                             <div class="aspect-square overflow-hidden bg-gray-50 relative">
-                                @if($fav->artwork->first_image_url)
-                                    <img src="{{ $fav->artwork->first_image_url }}" alt="{{ $fav->artwork->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                @if($fav->artwork->list_image_url)
+                                    <img src="{{ $fav->artwork->list_image_url }}" alt="{{ $fav->artwork->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                                 @endif
                                 @if($fav->artwork->is_sold)
                                     <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
@@ -391,10 +393,10 @@
         @if($activeTab === 'artpuan')
             {{-- ArtPuan Özet --}}
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                <div class="bg-gradient-to-br from-primary/10 to-amber-50 border border-primary/20 p-6 text-center">
-                    <p class="text-xs text-primary/60 uppercase tracking-wider mb-2">Toplam ArtPuan&reg;</p>
-                    <p class="text-4xl font-bold text-primary">{{ number_format($stats['total_artpuan'], 0, ',', '.') }}</p>
-                    <p class="text-xs text-primary/40 mt-1">AP</p>
+                <div class="bg-gradient-to-br from-artpuan-soft to-white border border-artpuan/40 p-6 text-center">
+                    <p class="text-xs text-artpuan-ink/70 uppercase tracking-wider mb-2">Toplam ArtPuan&reg;</p>
+                    <p class="text-4xl font-bold text-artpuan-ink">{{ number_format($stats['total_artpuan'], 0, ',', '.') }}</p>
+                    <p class="text-xs text-artpuan-ink/50 mt-1">AP</p>
                 </div>
                 <div class="bg-white border border-gray-100 p-6 text-center">
                     <p class="text-xs text-gray-400 uppercase tracking-wider mb-2">Referanslarım</p>
@@ -428,7 +430,7 @@
                             <p class="text-[11px] text-gray-400">Seni davet eden arkadaşının referans kodunu gir</p>
                         </div>
                     </div>
-                    <p class="text-xs text-gray-500 mb-4">Bir arkadaşın seni BeArtShare'e davet ettiyse, referans kodunu aşağıya girerek hesabınızı bağlayabilirsiniz. Bağlandıktan sonra yaptığınız alışverişlerde her ikiniz de <strong class="text-primary">%1 ArtPuan&reg;</strong> kazanırsınız!</p>
+                    <p class="text-xs text-gray-500 mb-4">Bir arkadaşın seni BeArtShare'e davet ettiyse, referans kodunu aşağıya girerek hesabınızı bağlayabilirsiniz. Bağlandıktan sonra yaptığınız alışverişlerde her ikiniz de <strong class="text-artpuan-ink">%1 ArtPuan&reg;</strong> kazanırsınız!</p>
                     <div class="flex items-start gap-2">
                         <div class="flex-1">
                             <input type="text" wire:model="referral_code_input" placeholder="Referans kodunu gir..."
@@ -471,15 +473,15 @@
                 {{-- Davet Et & Paylaş --}}
                 <div class="bg-white border border-gray-100 p-6" x-data="{ copied: false }">
                     <div class="flex items-center gap-3 mb-3">
-                        <div class="w-10 h-10 bg-primary/10 flex items-center justify-center flex-shrink-0">
-                            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                        <div class="w-10 h-10 bg-artpuan-soft flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5 text-artpuan-ink" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
                         </div>
                         <div>
                             <h4 class="text-sm font-semibold text-brand-black100">Arkadaşlarını Davet Et</h4>
                             <p class="text-[11px] text-gray-400">Referans linkinle arkadaşlarını BeArtShare'e davet et</p>
                         </div>
                     </div>
-                    <p class="text-xs text-gray-500 mb-4">Referans linkini paylaş, arkadaşların üye olup eser satın aldığında <strong class="text-primary">%1 ArtPuan&reg;</strong> kazan! Kodun: <strong class="font-mono text-primary">{{ $user->referral_code }}</strong></p>
+                    <p class="text-xs text-gray-500 mb-4">Referans linkini paylaş, arkadaşların üye olup eser satın aldığında <strong class="text-artpuan-ink">%1 ArtPuan&reg;</strong> kazan! Kodun: <strong class="font-mono text-artpuan-ink">{{ $user->referral_code }}</strong></p>
 
                     {{-- Referans linki kopyalama --}}
                     <div class="flex items-center gap-2 mb-4">

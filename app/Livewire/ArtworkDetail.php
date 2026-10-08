@@ -164,14 +164,16 @@ class ArtworkDetail extends Component
 
         $price = $artwork->price_tl ? number_format($artwork->price_tl, 0, ',', '.') . ' ₺' : '';
         $category = $artwork->category ? $artwork->category->name : '';
-        $imageUrl = $artwork->image_url;
+        // Paylaşım görseli: ilk görsel 1200px genişlikte; görsel yoksa site varsayılanı
+        $imageUrl = $artwork->imageUrl(1200) ?? asset('images/og-default.jpg');
+        $images = $artwork->image_urls ?: [$imageUrl];
 
         $jsonLd = json_encode(array_filter([
             '@context' => 'https://schema.org',
             '@type' => 'Product',
             'name' => $artwork->title,
             'description' => $description,
-            'image' => $imageUrl,
+            'image' => $images,
             'brand' => [
                 '@type' => 'Brand',
                 'name' => $artistName,

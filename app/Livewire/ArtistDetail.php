@@ -32,6 +32,8 @@ class ArtistDetail extends Component
             : "{$artist->name} sanatçısının orijinal eserleri BeArtShare'de. {$artworkCount} eser mevcut.";
 
         $imageUrl = $artist->avatar_url ?? asset('images/og-default.jpg');
+        // Paylaşım görseli: 320px avatar yerine 1200x630 akıllı kırpım; fotoğraf yoksa site varsayılanı
+        $ogImage = \App\Support\ImageUrl::make($artist->avatar ?: $artist->image, 1200, 630) ?? asset('images/og-default.jpg');
 
         $jsonLd = json_encode([
             '@context' => 'https://schema.org',
@@ -56,7 +58,7 @@ class ArtistDetail extends Component
             'ogType' => 'profile',
             'ogTitle' => "{$artist->name} | BeArtShare Sanatçı",
             'ogDescription' => $biography,
-            'ogImage' => $imageUrl,
+            'ogImage' => $ogImage,
             'jsonLd' => $jsonLd,
         ]);
     }

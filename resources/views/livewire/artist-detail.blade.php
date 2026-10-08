@@ -78,6 +78,7 @@
                             <h3 class="font-medium text-brand-black100 text-sm truncate">{{ $artwork->title }}</h3>
                             <p class="text-gray-400 text-xs mt-1">{{ $artwork->technique }}, {{ $artwork->year }}</p>
                             <p class="text-gray-300 text-[10px]">{{ $artwork->dimensions }}</p>
+                                @if($artwork->extra_note)<p class="text-gray-400 text-[10px] leading-snug mt-0.5 line-clamp-2" title="{{ $artwork->extra_note }}">{{ $artwork->extra_note }}</p>@endif
                         </div>
                         <div class="text-right flex-shrink-0">
                             <x-artwork-price :artwork="$artwork" />

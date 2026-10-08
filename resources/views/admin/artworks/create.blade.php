@@ -53,6 +53,13 @@
                 </div>
 
                 <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Ek Not <span class="text-gray-400 font-normal">(isteğe bağlı)</span></label>
+                    <input type="text" name="extra_note" value="{{ old('extra_note') }}" placeholder="Ör. Eserin Evin Sanat Galerisi tarafından sertifikası mevcuttur" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary">
+                    <p class="text-xs text-gray-500 mt-1">Boyut alanına yalnızca ölçü yazın; sertifika, literatür, edisyon gibi bilgiler buraya. Eser listelerinde ve eser sayfasında boyutun altında görünür.</p>
+                    @error('extra_note') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Yil</label>
                     <input type="number" name="year" value="{{ old('year') }}" min="1800" max="{{ date('Y') }}" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary">
                     @error('year') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror

@@ -266,6 +266,12 @@
                         <span class="text-gray-400">Boyut</span>
                         <span class="text-brand-black100">{{ $artwork->dimensions }}</span>
                     </div>
+                    @if($artwork->extra_note)
+                    <div class="flex justify-between gap-6">
+                        <span class="text-gray-400 flex-shrink-0">Ek Not</span>
+                        <span class="text-brand-black100 text-right">{{ $artwork->extra_note }}</span>
+                    </div>
+                    @endif
                     <div class="flex justify-between">
                         <span class="text-gray-400">Tarih</span>
                         <span class="text-brand-black100">{{ $artwork->year }}</span>

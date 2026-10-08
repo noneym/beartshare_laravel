@@ -21,6 +21,7 @@ class Artwork extends Model
         'tags',
         'technique',
         'dimensions',
+        'extra_note',
         'year',
         'price_tl',
         'price_usd',

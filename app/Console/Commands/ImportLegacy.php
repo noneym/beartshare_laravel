@@ -586,6 +586,8 @@ class ImportLegacy extends Command
                 json_decode((string) $p->image, true) ?: ($p->image ? [$p->image] : [])
             )));
             $created = $this->date($p->created_at);
+            // Eski sistemde boyut alanına not (sertifika, literatür...) yazılmış: ayrılır
+            [$dims, $dimsNote] = \App\Support\ArtworkDimensions::splitNote($p->canvas_size);
 
             $rows[] = [
                 'id' => $p->id,
@@ -598,7 +600,8 @@ class ImportLegacy extends Command
                 'sale_note' => trim(strip_tags((string) ($tr->basket_description ?? ''))) !== '' ? trim($tr->basket_description) : null,
                 'tags' => trim((string) ($tr->tags ?? '')) ?: null,
                 'technique' => $technique ?: null,
-                'dimensions' => trim((string) $p->canvas_size) ?: null,
+                'dimensions' => $dims,
+                'extra_note' => ($c['extra_note'] ?? null) ?: $dimsNote,
                 'year' => $p->year > 0 ? $p->year : null,
                 'price_tl' => $price,
                 'price_usd' => $this->usd($price, $rate),

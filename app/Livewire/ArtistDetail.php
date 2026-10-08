@@ -4,12 +4,13 @@ namespace App\Livewire;
 
 use App\Models\Artist;
 use Illuminate\Support\Str;
+use App\Livewire\Concerns\PaginatedSeo;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class ArtistDetail extends Component
 {
-    use WithPagination;
+    use WithPagination, PaginatedSeo;
 
     public Artist $artist;
 
@@ -23,7 +24,8 @@ class ArtistDetail extends Component
         $artworks = $this->artist->artworks()
             ->where('is_active', true)
             ->latest()
-            ->paginate(12);
+            ->paginate(12)
+            ->withQueryString();
 
         $artist = $this->artist;
         $artworkCount = $this->artist->artworks()->where('is_active', true)->count();
@@ -52,7 +54,8 @@ class ArtistDetail extends Component
         return view('livewire.artist-detail', [
             'artworks' => $artworks,
         ])->layoutData([
-            'title' => "{$artist->name} - Sanatçı Profili | BeArtShare",
+            'title' => $this->paginatedTitle("{$artist->name} - Sanatçı Profili | BeArtShare"),
+            'canonical' => $this->paginatedCanonical(),
             'metaDescription' => $biography,
             'metaKeywords' => implode(', ', [$artist->name, 'sanatçı', 'eserler', 'orijinal tablo', 'beartshare']),
             'ogType' => 'profile',

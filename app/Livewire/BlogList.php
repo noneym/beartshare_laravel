@@ -4,12 +4,13 @@ namespace App\Livewire;
 
 use App\Models\BlogPost;
 use App\Models\BlogCategory;
+use App\Livewire\Concerns\PaginatedSeo;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class BlogList extends Component
 {
-    use WithPagination;
+    use WithPagination, PaginatedSeo;
 
     public $selectedCategory = '';
     public $search = '';
@@ -46,7 +47,8 @@ class BlogList extends Component
             })
             ->orderByDesc('created_at')
             ->orderByDesc('id')
-            ->paginate(12);
+            ->paginate(12)
+            ->withQueryString();
 
         $categories = BlogCategory::active()
             ->withCount(['posts' => function ($q) {
@@ -59,7 +61,8 @@ class BlogList extends Component
             'posts' => $posts,
             'categories' => $categories,
         ])->layoutData([
-            'title' => 'Haberler | BeArtShare - Sanat Haberleri ve Yazıları',
+            'title' => $this->paginatedTitle('Haberler | BeArtShare - Sanat Haberleri ve Yazıları'),
+            'canonical' => $this->paginatedCanonical(),
             'metaDescription' => 'BeArtShare sanat blogunda güncel sanat haberleri, sanatçı röportajları, koleksiyon tavsiyeleri ve sanat dünyasından son gelişmeleri okuyun.',
             'metaKeywords' => 'sanat blogu, sanat haberleri, sanat yazıları, sanatçı röportajları, sanat dünyası, koleksiyon, sanat piyasası',
             'ogType' => 'blog',

@@ -5,12 +5,13 @@ namespace App\Livewire;
 use App\Models\Artwork;
 use App\Models\Artist;
 use App\Models\Category;
+use App\Livewire\Concerns\PaginatedSeo;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class ArtworkList extends Component
 {
-    use WithPagination;
+    use WithPagination, PaginatedSeo;
 
     public $search = '';
     public $artistId = '';
@@ -72,7 +73,8 @@ class ArtworkList extends Component
                     default => $query->latest(),
                 };
             })
-            ->paginate(12);
+            ->paginate(12)
+            ->withQueryString();
 
         $artists = Artist::active()->orderBy('name')->get();
         $categories = Category::active()->orderBy('name')->get();
@@ -82,7 +84,8 @@ class ArtworkList extends Component
             'artists' => $artists,
             'categories' => $categories,
         ])->layoutData([
-            'title' => 'Sanat Eserleri | BeArtShare - Online Sanat Galerisi',
+            'title' => $this->paginatedTitle('Sanat Eserleri | BeArtShare - Online Sanat Galerisi'),
+            'canonical' => $this->paginatedCanonical(),
             'metaDescription' => 'BeArtShare online sanat galerisinde yağlı boya tablolar, heykeller, baskılar ve daha fazlasını keşfedin. Orijinal sanat eserlerini güvenle satın alın.',
             'metaKeywords' => 'sanat eserleri, tablo satın al, yağlı boya, akrilik, heykel, baskı, orijinal eser, sanat galerisi',
             'ogType' => 'website',

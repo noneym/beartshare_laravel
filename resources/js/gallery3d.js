@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
+import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js';
 
 /*
  * Deneysel 3D galeri. İki düzen var:
@@ -20,8 +21,9 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.05;
+// Neutral ton eşleme eserin renklerini ACES gibi kaydırmaz
+renderer.toneMapping = THREE.NeutralToneMapping;
+renderer.toneMappingExposure = 0.88;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 stage.appendChild(renderer.domElement);
@@ -34,6 +36,11 @@ scene.environmentIntensity = 0.35;
 
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.05, 100);
 camera.rotation.order = 'YXZ';
+
+RectAreaLightUniformsLib.init();
+
+// galerilerde yaygın 3000K sıcak beyaz
+const SPOT_COLOR = '#fff0de';
 
 // ---------------------------------------------------------------- yardımcılar
 
@@ -181,7 +188,7 @@ function matchSwitchesToWall() {
     switchBezelMat.color.set(dark ? '#d9d7d1' : '#3d3f42');
 }
 // genel aydınlatma (sol üstteki buton) ve ortamla birlikte kısılan, ışıktan bağımsız malzemeler
-const lighting = { level: 1, target: 1, hemi: null, basics: [] };
+const lighting = { level: 1, target: 1, hemi: null, basics: [], panels: [] };
 const arts = [];      // { art, mesh, label, center, normal, size }
 const clickables = [];
 const occluders = []; // duvarlar: arkalarındaki eserlere tıklanmasın
@@ -374,7 +381,8 @@ async function buildHallScene(items) {
     progress.start();
     await nextFrame();
     const laneX = plan.PT / 2 + 1.3;
-    buildRoom(W, D, H, [-W / 2 + 1.3, -laneX, laneX, W / 2 - 1.3]);
+    const laneMidX = W / 4 + plan.PT / 4;
+    buildRoom(W, D, H, [-W / 2 + 1.3, -laneX, laneX, W / 2 - 1.3], [-laneMidX, laneMidX]);
     for (const z of plan.partitions) buildPartition(z, plan);
     progress.finish(1, `Salon (${plan.partitions.length} ara duvar)`);
 
@@ -472,6 +480,8 @@ function buildPartition(z, { PH, PL, PT }) {
     );
     base.position.set(0, 0.045, z);
     scene.add(base);
+    cornerShade(PT / 2, z, Math.PI / 2, PL, PH + 1, PH);
+    cornerShade(-PT / 2, z, -Math.PI / 2, PL, PH + 1, PH);
     rects.push({ x: 0, z, hx: PT / 2 + 0.4, hz: PL / 2 + 0.4 });
 }
 
@@ -483,10 +493,11 @@ let haloTexture = null;
 function getHaloTexture() {
     // tavandan vuran spotun duvarda bıraktığı, üstü daha parlak ışık lekesi
     haloTexture ??= canvasTexture(256, 256, (g, w, h) => {
-        const grad = g.createRadialGradient(w / 2, h * 0.42, 0, w / 2, h * 0.5, w / 2);
-        grad.addColorStop(0, 'rgba(255,244,226,0.9)');
-        grad.addColorStop(0.55, 'rgba(255,240,220,0.45)');
-        grad.addColorStop(1, 'rgba(255,240,220,0)');
+        const grad = g.createRadialGradient(w / 2, h * 0.46, 0, w / 2, h * 0.5, w / 2);
+        grad.addColorStop(0, 'rgba(255,232,200,0.75)');
+        grad.addColorStop(0.45, 'rgba(255,232,200,0.4)');
+        grad.addColorStop(0.8, 'rgba(255,232,200,0.08)');
+        grad.addColorStop(1, 'rgba(255,232,200,0)');
         g.fillStyle = grad;
         g.fillRect(0, 0, w, h);
     });
@@ -495,12 +506,14 @@ function getHaloTexture() {
 
 function createSpotPool(count, shadowCount) {
     for (let i = 0; i < count; i++) {
-        const light = new THREE.SpotLight('#fff4e5', 0, 0, 0.5, 0.65, 1.6);
+        const light = new THREE.SpotLight(SPOT_COLOR, 0, 0, 0.5, 0.95, 2);
         if (i < shadowCount) {
             light.castShadow = true;
             light.shadow.mapSize.set(1024, 1024);
             light.shadow.bias = -0.0004;
-            light.shadow.radius = 4;
+            light.shadow.normalBias = 0.02;
+            light.shadow.radius = 6;
+            light.shadow.blurSamples = 16;
         }
         scene.add(light, light.target);
         spotPool.push({ light, entry: null, fade: 0 });
@@ -534,7 +547,7 @@ function updatePool(now, force = false) {
         e.poolSlot = slot;
         slot.light.position.copy(e.spotPos);
         slot.light.angle = e.spotAngle;
-        slot.light.target.position.copy(e.center);
+        slot.light.target.position.copy(e.aim);
         slot.light.target.updateMatrixWorld();
     }
 
@@ -559,12 +572,89 @@ function updatePool(now, force = false) {
     }
 }
 
-function buildRoom(W, D, H, railXs = null) {
+/**
+ * Tavana gömülü, opal camlı ışık paneli. Duvarlarda üstten aşağı yumuşak bir geçiş verir;
+ * genel ışık butonu bunları da kısar.
+ */
+function addCeilingPanel(x, z, H, width, length) {
+    const light = new THREE.RectAreaLight('#fff8f0', 0, width, length);
+    light.position.set(x, H - 0.01, z);
+    light.rotation.x = -Math.PI / 2;
+    scene.add(light);
+
+    // ışık tek parça hesaplanır, görünen opal camlar ise aralıklı panellere bölünür
+    const mat = new THREE.MeshBasicMaterial({ color: '#fffaf2', toneMapped: false });
+    const frameMat = new THREE.MeshStandardMaterial({ color: '#e9e7e2', roughness: 0.6 });
+    const count = Math.max(1, Math.round(length / 4));
+    const pl = Math.min(2.2, length / count - 0.8), pw = Math.min(width, 0.9);
+    for (let i = 0; i < count; i++) {
+        const pz = z - length / 2 + (i + 0.5) * (length / count);
+        const diffuser = new THREE.Mesh(new THREE.PlaneGeometry(pw, pl), mat);
+        diffuser.position.set(x, H - 0.008, pz);
+        diffuser.rotation.x = Math.PI / 2;
+        scene.add(diffuser);
+        for (const [fw, fl, fx, fz] of [[pw + 0.06, 0.03, 0, pl / 2 + 0.015], [pw + 0.06, 0.03, 0, -pl / 2 - 0.015],
+            [0.03, pl, pw / 2 + 0.015, 0], [0.03, pl, -pw / 2 - 0.015, 0]]) {
+            const f = new THREE.Mesh(new THREE.BoxGeometry(fw, 0.02, fl), frameMat);
+            f.position.set(x + fx, H - 0.01, pz + fz);
+            scene.add(f);
+        }
+    }
+
+    lighting.panels.push({ light, mat, max: 7 });
+}
+
+let aoTexture = null;
+
+/** Köşelerde ışığın azalmasını taklit eden, kenardan içeri sönen koyu şerit. */
+function aoStrip(length, width, opacity) {
+    aoTexture ??= canvasTexture(4, 128, (g, w, h) => {
+        const grad = g.createLinearGradient(0, 0, 0, h);
+        grad.addColorStop(0, 'rgba(0,0,0,1)');
+        grad.addColorStop(0.35, 'rgba(0,0,0,0.35)');
+        grad.addColorStop(1, 'rgba(0,0,0,0)');
+        g.fillStyle = grad;
+        g.fillRect(0, 0, w, h);
+    });
+    return new THREE.Mesh(
+        new THREE.PlaneGeometry(length, width),
+        new THREE.MeshBasicMaterial({ map: aoTexture, transparent: true, opacity, depthWrite: false }),
+    );
+}
+
+/**
+ * Bir duvarın dibi (duvar ve zemin tarafı) ile tavan birleşimi için gölge şeritleri.
+ * (x, z) duvar yüzeyinin ortası, rotY duvarın odaya bakan yönü.
+ */
+function cornerShade(x, z, rotY, length, H, wallHeight = H) {
+    const g = new THREE.Group();
+    g.position.set(x, 0, z);
+    g.rotation.y = rotY;
+
+    const wallBase = aoStrip(length, 0.45, 0.22);
+    wallBase.rotation.z = Math.PI;
+    wallBase.position.set(0, 0.225, 0.004);
+    g.add(wallBase);
+
+    const floorEdge = aoStrip(length, 0.5, 0.28);
+    floorEdge.rotation.x = -Math.PI / 2;
+    floorEdge.position.set(0, 0.003, 0.25);
+    g.add(floorEdge);
+
+    if (wallHeight >= H - 0.01) {
+        const top = aoStrip(length, 0.6, 0.16);
+        top.position.set(0, H - 0.3, 0.004);
+        g.add(top);
+    }
+    scene.add(g);
+}
+
+function buildRoom(W, D, H, railXs = null, panelXs = null) {
     const wood = woodTexture();
     wood.repeat.set(W / 2.4, D / 4.8);
     floor = new THREE.Mesh(
         new THREE.PlaneGeometry(W, D),
-        new THREE.MeshStandardMaterial({ map: wood, roughness: 0.5, metalness: 0 }),
+        new THREE.MeshStandardMaterial({ map: wood, roughness: 0.38, metalness: 0 }),
     );
     floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
@@ -572,8 +662,9 @@ function buildRoom(W, D, H, railXs = null) {
 
     const ceiling = new THREE.Mesh(
         new THREE.PlaneGeometry(W, D),
-        new THREE.MeshStandardMaterial({ color: '#fafafa', roughness: 1 }),
+        new THREE.MeshStandardMaterial({ color: '#fafafa', roughness: 1, emissive: '#f4f1ec', emissiveIntensity: 0.35 }),
     );
+    lighting.ceiling = ceiling.material;
     ceiling.rotation.x = Math.PI / 2;
     ceiling.position.y = H;
     scene.add(ceiling);
@@ -599,10 +690,12 @@ function buildRoom(W, D, H, railXs = null) {
         base.rotation.y = def.rot;
         base.translateZ(0.0075);
         scene.add(base);
+        cornerShade(def.pos[0], def.pos[2], def.rot, def.w, H);
     }
 
-    lighting.hemi = new THREE.HemisphereLight('#ffffff', '#cbbca8', 1.7);
+    lighting.hemi = new THREE.HemisphereLight('#ffffff', '#cbbca8', 1.1);
     scene.add(lighting.hemi);
+    for (const x of panelXs ?? [0]) addCeilingPanel(x, 0, H, 1.2, Math.max(2, D - 4));
 
     // tavan rayları
     const railMat = new THREE.MeshStandardMaterial({ color: '#222', roughness: 0.4, metalness: 0.6 });
@@ -669,31 +762,39 @@ function placeOnWall(it, wallPoint, normal, H, shadows, realSpot = true) {
 
     const center = new THREE.Vector3(wallPoint.x, cy, wallPoint.z).addScaledVector(normal, d);
 
-    // eseri tavandan aydınlatan spot (salonda havuzdan atanır)
-    const spotPos = center.clone().addScaledVector(normal, 1.3).setY(H - 0.06);
-    const dist = spotPos.distanceTo(center);
-    const spotAngle = Math.min(1.1, Math.atan((Math.max(w, h) * 0.62 + 0.15) / dist));
-    const spotMax = 10 + dist * dist * 4;
+    // eseri tavandan aydınlatan spot (salonda havuzdan atanır). Aydınlatma tasarımındaki
+    // 30° kuralı: armatür, eserin merkezine dikeyle ~30° açı yapacak kadar duvardan uzakta.
+    const drop = H - 0.06 - cy;
+    const offset = THREE.MathUtils.clamp(drop * Math.tan(THREE.MathUtils.degToRad(30)), 0.9, 1.7);
+    const spotPos = center.clone().addScaledVector(normal, offset).setY(H - 0.06);
+    // ışığa yakın üst kenar daha parlak kalmasın diye nişan ortanın biraz altında
+    const aim = center.clone().setY(cy - h * 0.12);
+    const dist = spotPos.distanceTo(aim);
+    // yumuşak kenarlı, eseri bir pay ile saran hüzme; küçük eserde dar, büyükte geniş
+    const spotAngle = Math.min(1.15, Math.atan((Math.max(w, h) * 0.72 + 0.18) / dist));
+    const spotMax = 6 + dist * dist * 2.9;
     let spot = null, halo = null;
     if (realSpot) {
-        spot = new THREE.SpotLight('#fff4e5', spotMax, 0, spotAngle, 0.65, 1.6);
+        spot = new THREE.SpotLight(SPOT_COLOR, spotMax, 0, spotAngle, 0.95, 2);
         spot.position.copy(spotPos);
-        spot.target.position.copy(center);
+        spot.target.position.copy(aim);
         if (shadows) {
             spot.castShadow = true;
             spot.shadow.mapSize.set(1024, 1024);
             spot.shadow.bias = -0.0004;
-            spot.shadow.radius = 4;
+            spot.shadow.normalBias = 0.02;
+            spot.shadow.radius = 6;
+            spot.shadow.blurSamples = 16;
         }
         scene.add(spot, spot.target);
     } else {
         halo = new THREE.Mesh(
-            new THREE.PlaneGeometry(Math.max(w, h) * 1.1 + 1.0, h * 1.3 + 1.3),
+            new THREE.PlaneGeometry(Math.max(w, h) * 1.5 + 0.7, h * 1.6 + 0.9),
             new THREE.MeshBasicMaterial({
                 map: getHaloTexture(), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0,
             }),
         );
-        halo.position.set(0, 0.15, 0.002);
+        halo.position.set(0, 0.05, 0.002);
         group.add(halo);
         front.emissive = new THREE.Color('#ffffff');
         front.emissiveMap = it.tex;
@@ -705,7 +806,7 @@ function placeOnWall(it, wallPoint, normal, H, shadows, realSpot = true) {
         new THREE.MeshStandardMaterial({ color: '#1d1d1d', roughness: 0.4, metalness: 0.5 }),
     );
     fixture.position.copy(spotPos).setY(H - 0.1);
-    fixture.lookAt(center);
+    fixture.lookAt(aim);
     fixture.rotateX(Math.PI / 2);
     scene.add(fixture);
 
@@ -720,7 +821,7 @@ function placeOnWall(it, wallPoint, normal, H, shadows, realSpot = true) {
 
     const entry = {
         art: it.art, mesh, label, front, center, normal: normal.clone(), size: it.size, full: false,
-        spot, spotMax, spotPos, spotAngle, lens, halo, on: true, level: 1,
+        spot, spotMax, spotPos, spotAngle, aim, lens, halo, on: true, level: 1,
         poolSlot: null, poolLevel: 0, labelMat: label.material[4], labelReady: realSpot,
     };
     entry.switch = buildSwitch(entry, group, -(w / 2 + 0.28), 1.1 - cy);
@@ -804,8 +905,14 @@ function setRoomLights(on) {
 function updateLights(dt) {
     lighting.level += (lighting.target - lighting.level) * Math.min(1, dt * 7);
     const a = lighting.level;
-    if (lighting.hemi) lighting.hemi.intensity = 0.06 + 1.64 * a;
-    scene.environmentIntensity = 0.03 + 0.32 * a;
+    if (lighting.hemi) lighting.hemi.intensity = 0.05 + 1.05 * a;
+    scene.environmentIntensity = 0.03 + 0.27 * a;
+    if (lighting.ceiling) lighting.ceiling.emissiveIntensity = 0.03 + 0.32 * a;
+    for (const p of lighting.panels) {
+        p.light.intensity = p.max * a;
+        // kapalı opal cam koyu griye döner (renk doğrusal uzayda, küçük değer yeterince koyu)
+        p.mat.color.setRGB(1, 0.98, 0.95).multiplyScalar(0.012 + 0.988 * a * a);
+    }
     for (const m of lighting.basics) m.color.setScalar(0.3 + 0.7 * a);
 
     for (const slot of spotPool) {
@@ -975,7 +1082,7 @@ function buildEntranceSign(W, D, H, photoTex) {
     photo.position.set(0, cy, 0.031);
     group.add(photo);
 
-    const spot = new THREE.SpotLight('#fff4e5', 0, 0, 0.6, 0.7, 1.6);
+    const spot = new THREE.SpotLight(SPOT_COLOR, 0, 0, 0.65, 0.95, 2);
     const center = new THREE.Vector3(0, cy, D / 2 - 0.05);
     spot.position.set(0, H - 0.06, D / 2 - 1.3);
     spot.intensity = 10 + spot.position.distanceToSquared(center) * 4;

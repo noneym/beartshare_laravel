@@ -1,6 +1,6 @@
 <x-layouts.app
     title="Hakkımızda | BeArtShare - Yeni Çağın Sanat Galerisi"
-    metaDescription="BeArtShare, koleksiyonerleri seçkin sanat eserleriyle güvenilir ve şeffaf bir ortamda buluşturan online sanat platformudur. Misyonumuz, vizyonumuz ve ekibimiz."
+    metaDescription="BeArtShare, özenle seçilen değerli eserleri koleksiyonerden koleksiyonere güven ve şeffaflıkla ulaştıran online bir sanat galerisidir."
     metaKeywords="beartshare hakkında, online sanat galerisi, sanat platformu, misyon, vizyon, türk sanat galerisi"
     :flush-footer="true"
 >
@@ -59,7 +59,7 @@
                         Koleksiyonerler için güvenilir bir sanat platformu
                     </h1>
                     <p class="about-rise text-lg md:text-xl text-[#e6dfd3] leading-relaxed mt-7 max-w-[46ch]" style="animation-delay:.2s">
-                        BeArtShare, koleksiyonerleri seçkin sanat eserleriyle güvenilir ve şeffaf bir ortamda buluşturan online sanat platformudur.
+                        BeArtShare, özenle seçilen değerli eserleri koleksiyonerden koleksiyonere güven ve şeffaflıkla ulaştıran online bir sanat galerisidir.
                     </p>
                 </div>
 
@@ -83,35 +83,19 @@
             </div>
         </section>
 
-        <!-- Seçki ve değerlendirme + Misyon / Vizyon -->
+        <!-- Hakkımızda metni -->
         <section class="container mx-auto px-4 pb-16 lg:pb-24">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
-                <div class="lg:col-span-7 space-y-5 text-[15px] leading-relaxed text-[#cfc6b8] max-w-[65ch]">
-                    <p>Türkiye'nin önde gelen sanatçılarından uluslararası Blue Chip sanatçılara uzanan, özenle oluşturulmuş seçkimiz; yıllara dayanan galericilik deneyimi ve sanat piyasası uzmanlığıyla bir araya getirilmektedir.</p>
-                    <p>Platformumuzda yer alan her eser, mevcut bilgi ve belgeler doğrultusunda titizlikle değerlendirilir. Gerekli görülen durumlarda bağımsız uzman görüşlerinden yararlanılarak güvenilir ve şeffaf bir koleksiyon deneyimi sağlanır.</p>
-                </div>
-            </div>
-
-            <div class="mt-14 pt-12 border-t border-[#f1ece3]/10 grid grid-cols-1 md:grid-cols-2 md:divide-x divide-[#f1ece3]/10">
-                @foreach([
-                    ['icon' => 'ph-target', 'title' => 'Misyonumuz', 'text' => 'Koleksiyonerleri nitelikli sanat eserleriyle güvenilir bir ortamda buluştururken, sanatçılar ve eserleri için uzun vadeli değer yaratan sürdürülebilir bir platform oluşturmak.'],
-                    ['icon' => 'ph-eye', 'title' => 'Vizyonumuz', 'text' => "Türkiye'nin referans gösterilen online sanat platformlarından biri olarak, yerel ve uluslararası sanatçıları koleksiyonerlerle buluşturan güvenilir bir ekosistem oluşturmak."],
-                ] as $i => $block)
-                    <div class="flex gap-6 {{ $i === 0 ? 'md:pr-12 pb-10 md:pb-0' : 'md:pl-12 pt-10 md:pt-0 border-t md:border-t-0 border-[#f1ece3]/10' }}">
-                        <span class="flex-shrink-0 w-16 h-16 rounded-full border border-primary/60 text-primary flex items-center justify-center">
-                            <i class="ph-light {{ $block['icon'] }} text-3xl"></i>
-                        </span>
-                        <div>
-                            <h2 class="text-lg font-semibold tracking-wide">{{ $block['title'] }}</h2>
-                            <p class="text-sm text-[#cfc6b8] leading-relaxed mt-2 max-w-[52ch]">{{ $block['text'] }}</p>
-                        </div>
-                    </div>
-                @endforeach
+            <div class="pt-12 border-t border-[#f1ece3]/10 space-y-5 text-[15px] md:text-base leading-relaxed text-[#cfc6b8] max-w-[70ch]">
+                <p>Türkiye’nin önemli sanatçılarından uluslararası ölçekte tanınan sanatçıların eserlerine uzanan geniş bir seçkiyi sanatseverlerle buluşturan BeArtShare, sanat eseri alımını dijital dünyada herkes için erişilebilir kılmayı ve yeni nesil bir galeri deneyimi sunmayı amaçlar.</p>
+                <p>Sanat hukuku uzmanı ve koleksiyoner Sinan Aydın ve galerist Osman Nuri İyem tarafından 2023 yılında kurulan BeArtShare, koleksiyonerlerin güvenle ve düşük komisyon oranlarıyla sanat eseri alıp satabileceği yeni bir paylaşım alanı açar. BeArtShare, çağdaş galericilik anlayışına yenilikçi bir boyut kazandırarak sanatı daha geniş kitlelerle buluşturmayı hedefler.</p>
+                <p>Türkiye’de bir ilk olan <a href="{{ route('artpuan') }}" class="text-artpuan hover:underline">ArtPuan&reg;</a> kazanç sistemi sayesinde BeArtShare üyeleri gerçekleştirdikleri sanat eseri alımlarından, satışlarından ve referans kodlarıyla davet ettikleri üyelerin alımlarından %1 ArtPuan&reg; kazanır. Biriken ArtPuan&reg;’lar, sonraki sanat eseri alımlarında kullanılabilir.</p>
             </div>
         </section>
     </div>
 
-    <!-- Biz Kimiz -->
+    {{-- Biz Kimiz (ekip fotoğrafları): profesyonel çekimler gelene kadar gizli; açmak için $showTeam = true --}}
+    @php $showTeam = false; @endphp
+    @if($showTeam)
     <section class="bg-[#2f2b25] text-[#f1ece3] py-16 lg:py-24">
         <div class="container mx-auto px-4">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-10 items-start">
@@ -162,6 +146,7 @@
             </div>
         </div>
     </section>
+    @endif
 
     <!-- Neden BeArtShare -->
     <section class="about-wall text-[#f1ece3] py-16 lg:py-24">

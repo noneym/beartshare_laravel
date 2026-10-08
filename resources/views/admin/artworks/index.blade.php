@@ -116,6 +116,19 @@
                 </select>
             </div>
 
+            <!-- Gizleme seçenekleri (varsayılan işaretli) -->
+            <input type="hidden" name="filtered" value="1">
+            <div class="flex items-center gap-4 text-sm text-gray-700">
+                <label class="inline-flex items-center gap-2 whitespace-nowrap">
+                    <input type="checkbox" name="hide_sold" value="1" {{ $hideSold ? 'checked' : '' }} onchange="this.form.submit()" class="rounded border-gray-300 text-primary focus:ring-primary">
+                    Satılanları gizle
+                </label>
+                <label class="inline-flex items-center gap-2 whitespace-nowrap">
+                    <input type="checkbox" name="hide_passive" value="1" {{ $hidePassive ? 'checked' : '' }} onchange="this.form.submit()" class="rounded border-gray-300 text-primary focus:ring-primary">
+                    Pasifleri gizle
+                </label>
+            </div>
+
             <!-- Buttons -->
             <div class="flex items-center gap-2">
                 <button type="submit" class="bg-gray-800 text-white px-4 py-2 rounded text-sm hover:bg-gray-700 transition">
@@ -227,9 +240,28 @@
                                         <span class="inline-block px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-800">Pasif</span>
                                     @endif
                                     @if($artwork->is_featured)
-                                        <span class="inline-block px-2 py-0.5 text-xs rounded-full bg-yellow-100 text-yellow-800" title="Sıra ağırlığı">Öne Çıkan{{ $artwork->featured_weight ? ' · ' . $artwork->featured_weight : '' }}</span>
+                                        <span class="inline-block px-2 py-0.5 text-xs rounded-full bg-yellow-100 text-yellow-800">Öne Çıkan</span>
                                     @endif
                                 </div>
+                                @if($artwork->is_featured)
+                                    {{-- Sıra ağırlığı: listeden düzenlenir, değişince kaydedilir --}}
+                                    <div class="flex items-center gap-1.5 mt-2"
+                                         x-data="{ value: {{ (int) $artwork->featured_weight }}, state: '' }">
+                                        <label class="text-[11px] text-gray-500" for="fw-{{ $artwork->id }}">Sıra ağırlığı</label>
+                                        <input id="fw-{{ $artwork->id }}" type="number" min="0" max="100000" x-model.number="value"
+                                               @change="state = 'saving';
+                                                   fetch(@js(route('admin.artworks.featured-weight', $artwork)), {
+                                                       method: 'PATCH',
+                                                       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': @js(csrf_token()) },
+                                                       body: JSON.stringify({ featured_weight: value || 0 })
+                                                   }).then(r => { state = r.ok ? 'saved' : 'error'; if (r.ok) setTimeout(() => state = '', 1500); })
+                                                     .catch(() => state = 'error')"
+                                               class="w-16 border border-gray-300 rounded px-1.5 py-0.5 text-xs focus:outline-none focus:border-primary">
+                                        <span x-show="state === 'saving'" class="text-[11px] text-gray-400">…</span>
+                                        <span x-show="state === 'saved'" x-cloak class="text-[11px] text-green-600">Kaydedildi</span>
+                                        <span x-show="state === 'error'" x-cloak class="text-[11px] text-red-600">Hata</span>
+                                    </div>
+                                @endif
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center justify-end gap-2">

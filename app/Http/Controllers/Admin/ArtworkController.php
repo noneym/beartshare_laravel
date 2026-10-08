@@ -29,7 +29,15 @@ class ArtworkController extends Controller
             'status' => fn ($q, $dir) => $q->orderBy('is_sold', $dir)->orderBy('is_reserved', $dir)->orderBy('is_active', $dir),
         ]);
 
+        // "Satılanları gizle" / "Pasifleri gizle": ilk açılışta işaretli; form gönderilince (filtered=1) kutulara göre
+        $filtered = $request->boolean('filtered');
+        $hideSold = $filtered ? $request->boolean('hide_sold') : true;
+        $hidePassive = $filtered ? $request->boolean('hide_passive') : true;
+        $status = $request->input('status');
+
         $artworks = $query
+            ->when($hideSold && $status !== 'sold', fn ($q) => $q->where('is_sold', false))
+            ->when($hidePassive && $status !== 'passive', fn ($q) => $q->where('is_active', true))
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->input('search');
                 $query->where(function ($q) use ($search) {
@@ -85,7 +93,18 @@ class ArtworkController extends Controller
         $artists = Artist::active()->orderBy('name')->get();
         $categories = Category::active()->orderBy('name')->get();
 
-        return view('admin.artworks.index', compact('artworks', 'artists', 'categories'));
+        return view('admin.artworks.index', compact('artworks', 'artists', 'categories', 'hideSold', 'hidePassive'));
+    }
+
+    /**
+     * Listeden öne çıkan sıra ağırlığını günceller (AJAX).
+     */
+    public function updateFeaturedWeight(Request $request, Artwork $artwork)
+    {
+        $data = $request->validate(['featured_weight' => 'required|integer|min:0|max:100000']);
+        $artwork->update($data);
+
+        return response()->json(['ok' => true, 'featured_weight' => $artwork->featured_weight]);
     }
 
     public function create()

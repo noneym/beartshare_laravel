@@ -63,7 +63,10 @@ class ProductFeedController extends Controller
             ->map(function (Artwork $a) {
                 $price = number_format((float) ($a->price_tl ?? 0), 2, '.', '');
                 $availability = $a->is_sold ? 'out of stock' : ($a->is_reserved ? 'preorder' : 'in stock');
-                $description = trim(strip_tags($a->description ?? '')) ?: ($a->title . ' - ' . ($a->artist->name ?? ''));
+                // HTML açıklamadan düz metin: etiketler atılır, &nbsp; / &amp; gibi kodlar karaktere çevrilir
+                $plain = html_entity_decode(strip_tags((string) $a->description), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                $plain = trim(preg_replace('/[\s\x{00A0}]+/u', ' ', $plain));
+                $description = $plain ?: ($a->title . ' - ' . ($a->artist->name ?? ''));
 
                 return [
                     'id' => $a->id,

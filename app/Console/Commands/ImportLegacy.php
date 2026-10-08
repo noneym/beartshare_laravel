@@ -506,7 +506,8 @@ class ImportLegacy extends Command
                 'legacy_slug' => trim((string) $a->slug) ?: null,
                 'birth_year' => $year($a->born_date),
                 'death_year' => $year($a->death_date),
-                'biography' => $a->detail ?: null,
+                // Biyografi düz metin olarak gösterilir: eski sistemdeki &#39; gibi HTML kodları karaktere çevrilir
+                'biography' => $a->detail ? html_entity_decode($a->detail, ENT_QUOTES | ENT_HTML5, 'UTF-8') : null,
                 'image' => $c['image'] ?? null,
                 'avatar' => $this->mapImage($a->avatar),
                 'is_active' => (bool) $a->active,

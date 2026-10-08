@@ -107,6 +107,7 @@ class ImportLegacy extends Command
             $this->line('  Satış tarihi doldurulan eser: ' . \App\Models\Artwork::backfillSaleData());
             $this->importBlog();
             $this->importArtPuan($voidOrders);
+            $this->remapInvoiceLinks();
             $this->pruneInvoiceLinks();
         } finally {
             Schema::enableForeignKeyConstraints();
@@ -779,6 +780,8 @@ class ImportLegacy extends Command
             ];
         }
 
+        [$orders, $transactions] = $this->restoreNativeOrderDetails($orders, $transactions);
+
         foreach (array_chunk($orders, 100) as $chunk) DB::table('orders')->insert($chunk);
         foreach (array_chunk($orderItems, 200) as $chunk) DB::table('order_items')->insert($chunk);
         foreach (array_chunk($transactions, 200) as $chunk) DB::table('payment_transactions')->insert($chunk);
@@ -789,6 +792,67 @@ class ImportLegacy extends Command
         $this->info('Siparişler: ' . count($orders) . ', kalemler: ' . count($orderItems) . ', ödemeler: ' . count($transactions));
 
         return $void;
+    }
+
+    /**
+     * Yeni sistemde (Laravel) açılıp eski sisteme sonradan işlenen siparişler: kodu "ORD-" ile başlar.
+     * Eski sistemde olmayan bilgiler (kart işlem kaydı, adres/müşteri bilgisi, notlar) ön yedekten alınır.
+     */
+    protected function restoreNativeOrderDetails(array $orders, array $transactions): array
+    {
+        $backupOrders = $this->backupRows('orders')->keyBy('order_number');
+        $backupTx = $this->backupRows('payment_transactions')->groupBy('order_id');
+        $keep = ['payment_method', 'paid_at', 'confirmed_at', 'customer_name', 'customer_email', 'customer_phone', 'tc_no',
+                 'shipping_address', 'billing_address', 'city', 'district', 'notes', 'total_usd', 'created_at'];
+
+        foreach ($orders as $i => $o) {
+            if (!str_starts_with((string) $o['order_number'], 'ORD-') || str_starts_with($o['order_number'], 'ORD-LEGACY-')) continue;
+            $b = $backupOrders[$o['order_number']] ?? null;
+            if (!$b) continue;
+
+            foreach ($keep as $f) {
+                if (array_key_exists($f, $b) && $b[$f] !== null && $b[$f] !== '') $orders[$i][$f] = $b[$f];
+            }
+            $orders[$i]['admin_notes'] = trim(($b['admin_notes'] ? $b['admin_notes'] . "\n" : '')
+                . "Yeni sistemde #{$b['id']} olarak oluşturuldu, eski sisteme #{$o['id']} olarak işlendi");
+
+            $native = collect($backupTx[$b['id']] ?? [])->map(function ($t) use ($o) {
+                unset($t['id']);
+                $t['order_id'] = $o['id'];
+                return $t;
+            })->all();
+            if ($native) {
+                $transactions = array_values(array_filter($transactions, fn ($t) => $t['order_id'] !== $o['id']));
+                array_push($transactions, ...$native);
+            }
+            $this->line("  Yeni sistem siparişi korundu: {$o['order_number']} (#{$b['id']} -> #{$o['id']})");
+        }
+
+        return [$orders, $transactions];
+    }
+
+    /**
+     * Geri yüklenen fatura-sipariş bağlantıları ön yedekteki sipariş id'sini taşır; sipariş numarası
+     * değiştiyse (ör. yeni sistem siparişi eski sisteme farklı id ile işlendi) sipariş koduna göre düzeltilir.
+     */
+    protected function remapInvoiceLinks(): void
+    {
+        $oldNumbers = $this->backupRows('orders')->pluck('order_number', 'id');
+        $newIds = DB::table('orders')->pluck('id', 'order_number');
+        $moved = 0;
+
+        foreach (DB::table('invoice_order')->get() as $link) {
+            $number = $oldNumbers[$link->order_id] ?? null;
+            $newId = $number ? ($newIds[$number] ?? null) : null;
+            if (!$newId || (int) $newId === (int) $link->order_id) continue;
+
+            DB::table('invoice_order')->where('invoice_id', $link->invoice_id)->where('order_id', $link->order_id)->delete();
+            DB::table('invoice_order')->insertOrIgnore(['invoice_id' => $link->invoice_id, 'order_id' => $newId]);
+            $moved++;
+        }
+        if ($moved) {
+            $this->line("  Fatura bağlantısı sipariş koduna göre taşındı: {$moved}");
+        }
     }
 
     protected function translateNote(string $note): string

@@ -79,7 +79,7 @@
                             @endforeach
                         </div>
                     @else
-                        <img src="{{ asset('images/hero/sanal-sergi-1440.webp') }}?v=2" alt="BeArtShare sanal sergi salonu" class="w-full h-[320px] md:h-[400px] object-cover rounded-2xl">
+                        <img src="{{ \App\Support\ImageUrl::make('site/hero/sanal-sergi.webp', 1440) }}" alt="BeArtShare sanal sergi salonu" class="w-full h-[320px] md:h-[400px] object-cover rounded-2xl">
                     @endif
 
                     <div class="mt-4 md:mt-5 md:ml-auto bg-white rounded-2xl shadow-[0_20px_50px_-20px_rgba(71,115,47,0.5)] px-5 py-4 flex items-center gap-4 md:max-w-sm">
@@ -249,7 +249,7 @@
         <div class="container mx-auto px-4">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center max-w-6xl mx-auto">
                 <div class="lg:col-span-7 order-2 lg:order-1">
-                    <img src="{{ asset('images/hero/sanal-sergi-1440.webp') }}?v=2" alt="BeArtShare sanal sergi salonunda satıştaki eserler"
+                    <img src="{{ \App\Support\ImageUrl::make('site/hero/sanal-sergi.webp', 1440) }}" alt="BeArtShare sanal sergi salonunda satıştaki eserler"
                          class="w-full aspect-[16/10] object-cover rounded-2xl" loading="lazy">
                 </div>
                 <div class="lg:col-span-5 order-1 lg:order-2">

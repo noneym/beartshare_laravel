@@ -192,6 +192,15 @@ class Artwork extends Model
         return $query->where('hide_from_gallery', false);
     }
 
+    /**
+     * Vitrin sırası: öne çıkanlar önce, aralarında sıra ağırlığı yüksek olan, eşitlerde en yeni.
+     * (ArtPuan kolajı 1-3, Hakkımızda duvarı 4-5. eserleri bu sıradan alır)
+     */
+    public function scopeShowcaseOrder($query)
+    {
+        return $query->orderByDesc('is_featured')->orderByDesc('featured_weight')->latest();
+    }
+
     public function scopeFeatured($query)
     {
         return $query->where('is_featured', true);

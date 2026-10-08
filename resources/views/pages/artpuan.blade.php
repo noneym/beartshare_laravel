@@ -4,13 +4,12 @@
     metaKeywords="artpuan, sadakat programı, sanat alışverişi puan, beartshare puan, sanat indirimi, referans programı"
 >
     @php
-        // Hero kolajı: satıştaki, görseli olan eserlerden (öne çıkanlar önce)
+        // Hero kolajı: vitrin sırasındaki (öne çıkan + sıra ağırlığı) ilk 3 eser
         $heroWorks = \App\Models\Artwork::with('artist')
             ->available()
             ->whereNotNull('images')
             ->where('images', '!=', '[]')
-            ->orderByDesc('is_featured')
-            ->latest()
+            ->showcaseOrder()
             ->take(3)
             ->get();
     @endphp

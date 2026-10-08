@@ -5,12 +5,13 @@
     :flush-footer="true"
 >
     @php
-        // Hero duvarı: sitedeki gerçek eserler (öne çıkanlar önce)
-        $wallWorks = \App\Models\Artwork::active()
+        // Duvardaki eserler: vitrin sırasının 4. ve 5. eserleri (ilk 3'ü ArtPuan sayfasında)
+        $wallWorks = \App\Models\Artwork::with('artist')
+            ->available()
             ->whereNotNull('images')
             ->where('images', '!=', '[]')
-            ->orderByDesc('is_featured')
-            ->latest()
+            ->showcaseOrder()
+            ->skip(3)
             ->take(2)
             ->get();
 

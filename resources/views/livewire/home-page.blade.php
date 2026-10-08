@@ -575,48 +575,6 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-                {{-- Güvenli Alışveriş --}}
-                <div class="bg-white border border-gray-100 p-8 text-center group hover:shadow-xl hover:border-gray-200 hover:-translate-y-1 transition-all duration-300">
-                    <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100 flex items-center justify-center group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-green-100/50 transition-all duration-300">
-                        <svg class="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-base font-semibold text-brand-black100 mb-2">Güvenli Alışveriş</h3>
-                    <p class="text-gray-400 text-xs leading-relaxed mb-4">Tüm eserler orijinallik garantisi ile teslim edilir. Uzman ekibimiz her eseri titizlikle incelemektedir.</p>
-                    <div class="flex items-center justify-center gap-2 flex-wrap">
-                        <span class="inline-flex items-center gap-1 text-[10px] text-green-600 bg-green-50 px-2.5 py-1 font-medium">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                            Orijinallik Garantisi
-                        </span>
-                        <span class="inline-flex items-center gap-1 text-[10px] text-green-600 bg-green-50 px-2.5 py-1 font-medium">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                            Uzman İnceleme
-                        </span>
-                    </div>
-                </div>
-
-                {{-- Özel Paketleme & Kargo --}}
-                <div class="bg-white border border-gray-100 p-8 text-center group hover:shadow-xl hover:border-gray-200 hover:-translate-y-1 transition-all duration-300">
-                    <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 flex items-center justify-center group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-blue-100/50 transition-all duration-300">
-                        <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-base font-semibold text-brand-black100 mb-2">Özel Paketleme & Kargo</h3>
-                    <p class="text-gray-400 text-xs leading-relaxed mb-4">Eserler profesyonel sanat paketleme yöntemleri ile özel olarak hazırlanır ve sigortalı kargo ile teslim edilir.</p>
-                    <div class="flex items-center justify-center gap-2 flex-wrap">
-                        <span class="inline-flex items-center gap-1 text-[10px] text-blue-600 bg-blue-50 px-2.5 py-1 font-medium">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                            Sigortalı Kargo
-                        </span>
-                        <span class="inline-flex items-center gap-1 text-[10px] text-blue-600 bg-blue-50 px-2.5 py-1 font-medium">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                            Profesyonel Ambalaj
-                        </span>
-                    </div>
-                </div>
-
                 {{-- ArtPuan Kazanın --}}
                 <a href="{{ route('artpuan') }}" class="block bg-white border border-gray-100 p-8 text-center group hover:shadow-xl hover:border-gray-200 hover:-translate-y-1 transition-all duration-300">
                     <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-gradient-to-br from-artpuan-soft to-white border border-artpuan/40 flex items-center justify-center group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-artpuan/20 transition-all duration-300">
@@ -660,6 +618,48 @@
                         </span>
                     </div>
                 </a>
+
+                {{-- Güvenli Alışveriş --}}
+                <div class="bg-white border border-gray-100 p-8 text-center group hover:shadow-xl hover:border-gray-200 hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100 flex items-center justify-center group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-green-100/50 transition-all duration-300">
+                        <svg class="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-base font-semibold text-brand-black100 mb-2">Güvenli Alışveriş</h3>
+                    <p class="text-gray-400 text-xs leading-relaxed mb-4">Tüm eserler orijinallik garantisi ile teslim edilir. Uzman ekibimiz her eseri titizlikle incelemektedir.</p>
+                    <div class="flex items-center justify-center gap-2 flex-wrap">
+                        <span class="inline-flex items-center gap-1 text-[10px] text-green-600 bg-green-50 px-2.5 py-1 font-medium">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Orijinallik Garantisi
+                        </span>
+                        <span class="inline-flex items-center gap-1 text-[10px] text-green-600 bg-green-50 px-2.5 py-1 font-medium">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Uzman İnceleme
+                        </span>
+                    </div>
+                </div>
+
+                {{-- Özel Paketleme & Kargo --}}
+                <div class="bg-white border border-gray-100 p-8 text-center group hover:shadow-xl hover:border-gray-200 hover:-translate-y-1 transition-all duration-300">
+                    <div class="w-16 h-16 mx-auto mb-5 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 flex items-center justify-center group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-blue-100/50 transition-all duration-300">
+                        <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-base font-semibold text-brand-black100 mb-2">Özel Paketleme & Kargo</h3>
+                    <p class="text-gray-400 text-xs leading-relaxed mb-4">Eserler profesyonel sanat paketleme yöntemleri ile özel olarak hazırlanır ve sigortalı kargo ile teslim edilir.</p>
+                    <div class="flex items-center justify-center gap-2 flex-wrap">
+                        <span class="inline-flex items-center gap-1 text-[10px] text-blue-600 bg-blue-50 px-2.5 py-1 font-medium">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Sigortalı Kargo
+                        </span>
+                        <span class="inline-flex items-center gap-1 text-[10px] text-blue-600 bg-blue-50 px-2.5 py-1 font-medium">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            Profesyonel Ambalaj
+                        </span>
+                    </div>
+                </div>
             </div>
         </div>
     </section>

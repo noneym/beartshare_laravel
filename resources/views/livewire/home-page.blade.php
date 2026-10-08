@@ -89,8 +89,8 @@
             <div class="hero-slide" :class="{ 'active': currentSlide === 0 }">
                 <div class="w-full h-full relative bg-[#d9d6d0]">
                     {{-- Görsel R2'de (site/hero/), Thumbor ile boyutlandırılır --}}
-                    <img src="{{ \App\Support\ImageUrl::make('site/hero/sanal-sergi.webp', 2880) }}"
-                         srcset="{{ \App\Support\ImageUrl::make('site/hero/sanal-sergi.webp', 1440) }} 1440w, {{ \App\Support\ImageUrl::make('site/hero/sanal-sergi.webp', 2880) }} 2880w"
+                    <img src="{{ \App\Support\ImageUrl::make('site/hero/sanal-sergi-v2.webp', 2880) }}"
+                         srcset="{{ \App\Support\ImageUrl::make('site/hero/sanal-sergi-v2.webp', 1440) }} 1440w, {{ \App\Support\ImageUrl::make('site/hero/sanal-sergi-v2.webp', 2880) }} 2880w"
                          sizes="100vw" alt="BeArtShare 3D sanal sergi salonu"
                          class="absolute inset-0 w-full h-full object-cover object-[62%_center]" fetchpriority="high">
                     <!-- Okunabilirlik için soldan koyulaşan örtü -->

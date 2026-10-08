@@ -34,7 +34,7 @@
                     src="{{ $post->image_url }}"
                     alt="{{ $post->title }}"
                     class="w-full h-full object-cover"
-                    onerror="this.style.display='none'"
+                    fetchpriority="high"
                 >
             </div>
         @endif
@@ -88,7 +88,7 @@
                                     src="{{ $related->image_url }}"
                                     alt="{{ $related->title }}"
                                     class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                                    onerror="this.src='https://via.placeholder.com/400x250/f3f4f6/9ca3af?text=BeArtShare'"
+                                    loading="lazy" decoding="async"
                                 >
                             </div>
                             <h4 class="text-sm font-semibold text-brand-black100 group-hover:text-primary transition line-clamp-2">

@@ -31,7 +31,7 @@ class ArtTerm extends Model
 
     public function imageUrl(int|string $size = 'card'): ?string
     {
-        return $this->image ? ImageUrl::make($this->image, $size) : null;
+        return $this->image ? ImageUrl::web($this->image, $size) : null;
     }
 
     /**

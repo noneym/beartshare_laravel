@@ -58,7 +58,7 @@ class BlogPost extends Model
 
     public function getImageUrlAttribute()
     {
-        return \App\Support\ImageUrl::make($this->image, 'blog') ?? asset('images/og-default.jpg');
+        return \App\Support\ImageUrl::web($this->image, 'blog') ?? asset('images/og-default.jpg');
     }
 
     /**

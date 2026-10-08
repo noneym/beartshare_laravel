@@ -65,7 +65,7 @@ class Artist extends Model
 
     public function getAvatarUrlAttribute()
     {
-        return \App\Support\ImageUrl::make($this->avatar ?: $this->image, 'avatar');
+        return \App\Support\ImageUrl::web($this->avatar ?: $this->image, 'avatar');
     }
 
     public function scopeActive($query)

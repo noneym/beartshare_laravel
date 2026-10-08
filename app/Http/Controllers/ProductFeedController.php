@@ -73,7 +73,7 @@ class ProductFeedController extends Controller
                     'condition' => 'new',
                     'price' => $price . ' TRY',
                     'link' => route('artwork.detail', $a->slug),
-                    'image_link' => $a->first_image_url ?? '',
+                    'image_link' => \App\Support\ImageUrl::make($a->first_image, 'card') ?? '',
                     'brand' => $this->clean($a->artist->name ?? 'BeArtShare'),
                 ];
             })

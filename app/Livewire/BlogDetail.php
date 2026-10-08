@@ -35,7 +35,8 @@ class BlogDetail extends Component
             160
         );
         $categoryName = $post->category ? $post->category->title : 'Blog';
-        $imageUrl = $post->image_url;
+        // Paylaşım görseli webp olmasın (WhatsApp / Facebook desteği sınırlı)
+        $imageUrl = \App\Support\ImageUrl::make($post->image, 'blog') ?? asset('images/og-default.jpg');
         $publishDate = $post->created_at?->toIso8601String();
 
         $jsonLd = json_encode([

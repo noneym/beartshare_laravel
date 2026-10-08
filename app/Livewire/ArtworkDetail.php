@@ -167,7 +167,9 @@ class ArtworkDetail extends Component
         $category = $artwork->category ? $artwork->category->name : '';
         // Paylaşım görseli: ilk görsel 1200px genişlikte; görsel yoksa site varsayılanı
         $imageUrl = $artwork->imageUrl(1200) ?? asset('images/og-default.jpg');
-        $images = $artwork->image_urls ?: [$imageUrl];
+        $images = $artwork->images
+            ? array_map(fn ($i) => \App\Support\ImageUrl::make($i, 'detail'), $artwork->images)
+            : [$imageUrl];
 
         $jsonLd = json_encode(array_filter([
             '@context' => 'https://schema.org',

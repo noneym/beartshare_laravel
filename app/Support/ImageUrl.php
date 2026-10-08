@@ -60,6 +60,15 @@ class ImageUrl
     }
 
     /**
+     * Tarayıcıda <img> ile gösterilecek görsel: make() + config('images.web_filters') (ör. webp).
+     * E-posta, Open Graph ve feed için make() kullanılır.
+     */
+    public static function web(?string $path, int|string $width = 0, int $height = 0): ?string
+    {
+        return static::make($path, $width, $height, config('images.web_filters', []));
+    }
+
+    /**
      * Bir Thumbor URL'inden depo yolunu geri çıkarır (imza/boyut/filtre segmentlerini atar).
      * Thumbor URL'i değilse null döner.
      */

@@ -178,7 +178,7 @@
                             <a href="{{ route('artwork.detail', $fav->artwork->slug) }}" class="group bg-white border border-gray-100 overflow-hidden hover:shadow-md transition">
                                 <div class="aspect-square overflow-hidden bg-gray-50">
                                     @if($fav->artwork->list_image_url)
-                                        <img src="{{ $fav->artwork->list_image_url }}" alt="{{ $fav->artwork->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                        <img src="{{ $fav->artwork->list_image_url }}" srcset="{{ $fav->artwork->list_image_srcset }}" sizes="(min-width: 768px) 25vw, 50vw" alt="{{ $fav->artwork->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" decoding="async">
                                     @else
                                         <div class="w-full h-full flex items-center justify-center">
                                             <svg class="w-10 h-10 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14"/></svg>
@@ -356,7 +356,7 @@
                         <a href="{{ route('artwork.detail', $fav->artwork->slug) }}" class="group bg-white border border-gray-100 overflow-hidden hover:shadow-md transition">
                             <div class="aspect-square overflow-hidden bg-gray-50 relative">
                                 @if($fav->artwork->list_image_url)
-                                    <img src="{{ $fav->artwork->list_image_url }}" alt="{{ $fav->artwork->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                    <img src="{{ $fav->artwork->list_image_url }}" srcset="{{ $fav->artwork->list_image_srcset }}" sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw" alt="{{ $fav->artwork->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy" decoding="async">
                                 @endif
                                 @if($fav->artwork->is_sold)
                                     <div class="absolute inset-0 bg-black/40 flex items-center justify-center">

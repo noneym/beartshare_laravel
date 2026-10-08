@@ -30,7 +30,7 @@
                 <a href="{{ route('artist.detail', $artist->slug) }}" class="text-center group" wire:key="artist-{{ $artist->id }}">
                     <div class="w-28 h-28 md:w-32 md:h-32 rounded-full overflow-hidden border border-gray-200 group-hover:border-brand-black100 transition-all mx-auto mb-3">
                         @if($artist->avatar_url)
-                            <img src="{{ $artist->avatar_url }}" alt="{{ $artist->name }}" class="w-full h-full object-cover">
+                            <img src="{{ $artist->avatar_url }}" alt="{{ $artist->name }}" class="w-full h-full object-cover" loading="lazy" decoding="async">
                         @else
                             <div class="w-full h-full bg-gray-50 flex items-center justify-center text-3xl font-light text-gray-300">
                                 {{ mb_substr($artist->name, 0, 1) }}

@@ -57,7 +57,7 @@
                                     src="{{ $post->image_url }}"
                                     alt="{{ $post->title }}"
                                     class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                                    onerror="this.src='https://via.placeholder.com/600x400/f3f4f6/9ca3af?text=BeArtShare'"
+                                    loading="lazy" decoding="async"
                                 >
                             </div>
 

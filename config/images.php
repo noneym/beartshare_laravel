@@ -13,8 +13,12 @@ return [
     // true ise /unsafe/ URL'leri üretilir (Thumbor'da ALLOW_UNSAFE_URL=True olmalı).
     'thumbor_unsafe' => (bool) env('THUMBOR_UNSAFE', false),
 
-    // Varsayılan filtreler (ör. kalite ve format)
-    'default_filters' => ['quality(95)'],
+    // Varsayılan filtreler (ör. kalite). 85: görünür kayıp yok, dosya boyutu ~%50 küçülür
+    'default_filters' => ['quality(85)'],
+
+    // Tarayıcıda <img> ile gösterilen görseller için ek filtreler (ImageUrl::web).
+    // E-posta, Open Graph ve ürün feed'i bu filtreyi almaz (webp desteği sınırlı).
+    'web_filters' => ['format(webp)'],
 
     // Önceden tanımlı boyutlar: [genişlik, yükseklik] (0 = oranı koru)
     'presets' => [

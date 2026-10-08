@@ -161,7 +161,18 @@ class Artwork extends Model
 
     public function getListImageUrlAttribute()
     {
-        return \App\Support\ImageUrl::make($this->list_image, 'card');
+        return \App\Support\ImageUrl::web($this->list_image, 'card');
+    }
+
+    /** Kart görseli için srcset: 450w (mobil / küçük kart) ve 900w (retina). */
+    public function getListImageSrcsetAttribute(): ?string
+    {
+        if (! $this->list_image) {
+            return null;
+        }
+
+        return \App\Support\ImageUrl::web($this->list_image, 450) . ' 450w, '
+            . \App\Support\ImageUrl::web($this->list_image, 900) . ' 900w';
     }
 
     /**
@@ -169,7 +180,7 @@ class Artwork extends Model
      */
     public function getFirstImageUrlAttribute()
     {
-        return \App\Support\ImageUrl::make($this->first_image, 'card');
+        return \App\Support\ImageUrl::web($this->first_image, 'card');
     }
 
     /**
@@ -188,7 +199,7 @@ class Artwork extends Model
         if (!$this->images || count($this->images) === 0) {
             return [];
         }
-        return array_map(fn ($image) => \App\Support\ImageUrl::make($image, 'detail'), $this->images);
+        return array_map(fn ($image) => \App\Support\ImageUrl::web($image, 'detail'), $this->images);
     }
 
     public function getFormattedPriceTlAttribute()

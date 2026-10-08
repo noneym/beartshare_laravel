@@ -1,0 +1,25 @@
+/* Yönetim paneline özel stiller; Tailwind app.css'ten gelir */
+
+/* Masaüstünde menü gizlenebilir (tercih localStorage'da) */
+@media (min-width: 1024px) {
+    html.sidebar-collapsed #admin-sidebar {
+        display: none;
+    }
+}
+
+/* Mobil: tablolar kendi kutusunda yatay kayar, sayfa taşmaz; hücre boşlukları daralır */
+@media (max-width: 1023px) {
+    main .overflow-x-auto > table {
+        min-width: 720px;
+    }
+
+    main table th,
+    main table td {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+
+    main table th {
+        white-space: nowrap;
+    }
+}

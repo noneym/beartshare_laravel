@@ -66,78 +66,13 @@
         </script>
     @endif
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#D4A017',
-                        artpuan: '#88bd6a',
-                        // Açık zeminde küçük yazı / buton için koyu ton (beyaz yazıyla AA kontrast)
-                        'artpuan-ink': '#47732f',
-                        'artpuan-soft': '#eef5e8',
-                        'primary-dark': '#B8860B',
-                        'brand-black100': '#14171c',
-                        'brand-grey250': '#e5e5e5',
-                        'brand-grey300': '#d1d5db',
-                    },
-                    fontFamily: {
-                        sans: ['Prompt', 'Helvetica', 'Arial', 'ui-sans-serif', 'system-ui', 'sans-serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'],
-                    },
-                    fontSize: {
-                        'xsm': '0.65rem',
-                    }
-                }
-            }
-        }
-    </script>
+    @vite('resources/css/app.css')
 
     <!-- Google Fonts: Prompt -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <style>
-        [x-cloak] { display: none !important; }
-        .link-underline {
-            position: relative;
-        }
-        .link-underline::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 1px;
-            bottom: 0;
-            left: 50%;
-            background-color: currentColor;
-            transition: all 0.3s ease;
-        }
-        .link-underline:hover::after {
-            width: 100%;
-            left: 0;
-        }
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-        }
-        .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        .line-clamp-3 {
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-    </style>
 
     @livewireStyles
 </head>

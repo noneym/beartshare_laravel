@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Site geneli yardımcı stiller (eskiden layout içinde inline <style> idi) */
+@layer components {
+    [x-cloak] {
+        display: none !important;
+    }
+
+    .link-underline {
+        position: relative;
+    }
+
+    .link-underline::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 1px;
+        bottom: 0;
+        left: 50%;
+        background-color: currentColor;
+        transition: all 0.3s ease;
+    }
+
+    .link-underline:hover::after {
+        width: 100%;
+        left: 0;
+    }
+
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+}

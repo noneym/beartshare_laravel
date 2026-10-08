@@ -5,31 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ?? 'Admin Panel' }} - BeArtShare</title>
     @include('partials.favicon', ['admin' => true])
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#D4A017',
-                    }
-                }
-            }
-        }
-    </script>
+    @vite(['resources/css/app.css', 'resources/css/admin.css'])
     <!-- Alpine.js (modal, dropdown vb. için) -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <style>
-        [x-cloak] { display: none !important; }
-        /* Masaüstünde menü gizlenebilir (tercih localStorage'da) */
-        @media (min-width: 1024px) { html.sidebar-collapsed #admin-sidebar { display: none; } }
-        /* Mobil: tablolar kendi kutusunda yatay kayar, sayfa taşmaz; hücre boşlukları daralır */
-        @media (max-width: 1023px) {
-            main .overflow-x-auto > table { min-width: 720px; }
-            main table th, main table td { padding-left: .75rem !important; padding-right: .75rem !important; }
-            main table th { white-space: nowrap; }
-        }
-    </style>
     <script>
         try { if (localStorage.getItem('admin-sidebar') === 'collapsed') document.documentElement.classList.add('sidebar-collapsed'); } catch (e) {}
     </script>

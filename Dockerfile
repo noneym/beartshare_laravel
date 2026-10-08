@@ -8,8 +8,10 @@ FROM node:20-alpine AS assets
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
-COPY vite.config.js ./
+COPY vite.config.js tailwind.config.js postcss.config.js ./
+# Tailwind sınıf taraması: Blade şablonları ve sınıf adı taşıyan PHP dosyaları
 COPY resources ./resources
+COPY app ./app
 RUN npm run build
 
 FROM dunglas/frankenphp:1.7-php8.2-alpine

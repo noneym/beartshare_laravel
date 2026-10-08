@@ -84,7 +84,7 @@ class ArtworkList extends Component
             'artists' => $artists,
             'categories' => $categories,
         ])->layoutData([
-            'title' => $this->paginatedTitle('Sanat Eserleri | BeArtShare - Online Sanat Galerisi'),
+            'title' => $this->paginatedTitle('Sanat Eserleri | BeArtShare Online Sanat Galerisi'),
             'canonical' => $this->paginatedCanonical(),
             'metaDescription' => 'BeArtShare online sanat galerisinde yağlı boya tablolar, heykeller, baskılar ve daha fazlasını keşfedin. Orijinal sanat eserlerini güvenle satın alın.',
             'metaKeywords' => 'sanat eserleri, tablo satın al, yağlı boya, akrilik, heykel, baskı, orijinal eser, sanat galerisi',

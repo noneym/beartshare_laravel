@@ -61,7 +61,7 @@ class BlogList extends Component
             'posts' => $posts,
             'categories' => $categories,
         ])->layoutData([
-            'title' => $this->paginatedTitle('Haberler | BeArtShare - Sanat Haberleri ve Yazıları'),
+            'title' => $this->paginatedTitle('Sanat Haberleri ve Yazıları | BeArtShare'),
             'canonical' => $this->paginatedCanonical(),
             'metaDescription' => 'BeArtShare sanat blogunda güncel sanat haberleri, sanatçı röportajları, koleksiyon tavsiyeleri ve sanat dünyasından son gelişmeleri okuyun.',
             'metaKeywords' => 'sanat blogu, sanat haberleri, sanat yazıları, sanatçı röportajları, sanat dünyası, koleksiyon, sanat piyasası',

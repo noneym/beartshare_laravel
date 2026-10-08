@@ -32,7 +32,7 @@ class ArtistList extends Component
         return view('livewire.artist-list', [
             'artists' => $artists,
         ])->layoutData([
-            'title' => $this->paginatedTitle('Sanatçılar | BeArtShare - Türk ve Uluslararası Sanatçılar'),
+            'title' => $this->paginatedTitle('Türk ve Uluslararası Sanatçılar | BeArtShare'),
             'canonical' => $this->paginatedCanonical(),
             'metaDescription' => 'BeArtShare\'de Türkiye\'nin ve dünyanın en değerli sanatçılarını keşfedin. Sanatçı profilleri, biyografileri ve orijinal eserleri.',
             'metaKeywords' => 'türk sanatçılar, çağdaş sanatçılar, ressam, heykeltıraş, sanatçı profilleri, sanat eserleri',

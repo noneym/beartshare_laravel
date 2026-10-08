@@ -38,7 +38,8 @@ class ArtworkDetail extends Component
     {
         $userId = auth()->id();
         $sessionId = session()->getId();
-        $cutoff = Carbon::now()->subHours(24);
+        // Aynı kişi 30 sn içinde yenilerse tek sayılır; 30 sn sonra yeniden görüntüleme olarak kaydedilir
+        $cutoff = Carbon::now()->subSeconds(30);
 
         $existing = ArtworkView::where('artwork_id', $this->artwork->id)
             ->where('viewed_at', '>=', $cutoff)
@@ -186,8 +187,7 @@ class ArtworkDetail extends Component
             ? array_map(fn ($i) => \App\Support\ImageUrl::make($i, 'detail'), $artwork->images)
             : [$imageUrl];
 
-        $jsonLd = json_encode(array_filter([
-            '@context' => 'https://schema.org',
+        $product = array_filter([
             '@type' => 'Product',
             'name' => $artwork->title,
             'description' => $description,
@@ -213,10 +213,44 @@ class ArtworkDetail extends Component
                     '@type' => 'Organization',
                     'name' => 'BeArtShare',
                 ],
+                // Teslimat ve iade şartları sayfasıyla uyumlu: Türkiye'ye sigortalı kargo (ücret siparişte),
+                // teslimden itibaren 14 gün cayma hakkı, iade kargo bedeli alıcıya ait
+                'shippingDetails' => [
+                    '@type' => 'OfferShippingDetails',
+                    'shippingDestination' => ['@type' => 'DefinedRegion', 'addressCountry' => 'TR'],
+                ],
+                'hasMerchantReturnPolicy' => [
+                    '@type' => 'MerchantReturnPolicy',
+                    'applicableCountry' => 'TR',
+                    'returnPolicyCategory' => 'https://schema.org/MerchantReturnFiniteReturnWindow',
+                    'merchantReturnDays' => 14,
+                    'returnMethod' => 'https://schema.org/ReturnByMail',
+                    'returnFees' => 'https://schema.org/ReturnShippingFees',
+                    'refundType' => 'https://schema.org/FullRefund',
+                    'merchantReturnLink' => route('teslimat-iade'),
+                ],
             ],
             'category' => $category,
             'url' => url()->current(),
-        ], fn ($v) => $v !== null), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        ], fn ($v) => $v !== null);
+
+        // Ekrandaki kırıntı yolu ile aynı: Ana Sayfa > Eserler > Sanatçı > Eser
+        $crumbs = [['Ana Sayfa', route('home')], ['Eserler', route('artworks')]];
+        if ($artwork->artist) {
+            $crumbs[] = [$artwork->artist->name, route('artist.detail', $artwork->artist->slug)];
+        }
+        $crumbs[] = [$artwork->title, url()->current()];
+        $breadcrumb = [
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => collect($crumbs)->map(fn ($c, $i) => [
+                '@type' => 'ListItem', 'position' => $i + 1, 'name' => $c[0], 'item' => $c[1],
+            ])->values()->all(),
+        ];
+
+        $jsonLd = json_encode([
+            '@context' => 'https://schema.org',
+            '@graph' => [$product, $breadcrumb],
+        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
         return view('livewire.artwork-detail', [
             'relatedArtworks' => $relatedArtworks,

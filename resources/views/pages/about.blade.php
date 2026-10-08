@@ -1,5 +1,5 @@
 <x-layouts.app
-    title="Hakkımızda | BeArtShare - Yeni Çağın Sanat Galerisi"
+    title="Hakkımızda | BeArtShare"
     metaDescription="BeArtShare, özenle seçilen değerli eserleri koleksiyonerden koleksiyonere güven ve şeffaflıkla ulaştıran online bir sanat galerisidir."
     metaKeywords="beartshare hakkında, online sanat galerisi, sanat platformu, misyon, vizyon, türk sanat galerisi"
     :flush-footer="true"

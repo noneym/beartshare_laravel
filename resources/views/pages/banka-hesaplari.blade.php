@@ -1,5 +1,5 @@
 <x-layouts.app
-    title="Banka Hesapları | BeArtShare - Havale / EFT Bilgileri"
+    title="Banka Hesapları (Havale / EFT) | BeArtShare"
     metaDescription="BeArtShare banka hesap bilgileri. Havale ve EFT ile güvenli ödeme yapın."
     metaKeywords="beartshare banka hesapları, havale, eft, iban, ödeme bilgileri"
 >

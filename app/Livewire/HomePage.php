@@ -45,7 +45,6 @@ class HomePage extends Component
             ->take(4)
             ->get();
 
-        $totalArtworks = Artwork::available()->count();
         $totalArtists = Artist::active()->count();
 
         return view('livewire.home-page', [
@@ -55,8 +54,14 @@ class HomePage extends Component
             'soldArtworks' => $soldArtworks,
             'blogPosts' => $blogPosts,
         ])->layoutData([
-            'title' => 'BeArtShare - Yeni Çağın Sanat Galerisi | Online Sanat Eseri Al',
-            'metaDescription' => "BeArtShare ile {$totalArtists} sanatçıdan {$totalArtworks}+ orijinal sanat eserine ulaşın. Türkiye'nin güvenilir online sanat galerisi. Tablo, heykel ve daha fazlası.",
+            'title' => 'BeArtShare | Yeni Çağın Online Sanat Galerisi',
+            'metaDescription' => "Türkiye'nin ve dünyanın değerli sanatçılarından orijinal eserler: {$totalArtists} sanatçı, yağlıboya, heykel, baskı. Güvenle satın alın, ArtPuan kazanın.",
+            // Hero görseli LCP: şablondaki src/srcset ile birebir aynı olmalı
+            'preloadImage' => [
+                'src' => \App\Support\ImageUrl::make('site/hero/sanal-sergi-v2.webp', 2880),
+                'srcset' => \App\Support\ImageUrl::make('site/hero/sanal-sergi-v2.webp', 1440) . ' 1440w, ' . \App\Support\ImageUrl::make('site/hero/sanal-sergi-v2.webp', 2880) . ' 2880w',
+                'sizes' => '100vw',
+            ],
             'metaKeywords' => 'online sanat galerisi, sanat eseri satın al, orijinal tablo, türk sanatçılar, yağlı boya tablo, sanat yatırımı, heykel, beartshare',
             'ogType' => 'website',
             'jsonLd' => json_encode([

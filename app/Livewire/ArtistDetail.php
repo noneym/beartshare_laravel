@@ -33,15 +33,14 @@ class ArtistDetail extends Component
         $artist = $this->artist;
         $artworkCount = $this->artist->artworks()->where('is_active', true)->count();
         $biography = $artist->biography
-            ? Str::limit(strip_tags(html_entity_decode($artist->biography, ENT_QUOTES, 'UTF-8')), 160)
+            ? Str::limit(trim(preg_replace('/\s+/u', ' ', strip_tags(html_entity_decode($artist->biography, ENT_QUOTES, 'UTF-8')))), 160)
             : "{$artist->name} sanatçısının orijinal eserleri BeArtShare'de. {$artworkCount} eser mevcut.";
 
         $imageUrl = $artist->avatar_url ?? asset('images/og-default.jpg');
         // Paylaşım görseli: 320px avatar yerine 1200x630 akıllı kırpım; fotoğraf yoksa site varsayılanı
         $ogImage = \App\Support\ImageUrl::make($artist->avatar ?: $artist->image, 1200, 630) ?? asset('images/og-default.jpg');
 
-        $jsonLd = json_encode([
-            '@context' => 'https://schema.org',
+        $person = [
             '@type' => 'Person',
             'name' => $artist->name,
             'description' => $biography,
@@ -52,6 +51,20 @@ class ArtistDetail extends Component
                 '@type' => 'Organization',
                 'name' => 'BeArtShare',
             ],
+        ];
+
+        $breadcrumb = [
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => [
+                ['@type' => 'ListItem', 'position' => 1, 'name' => 'Ana Sayfa', 'item' => route('home')],
+                ['@type' => 'ListItem', 'position' => 2, 'name' => 'Sanatçılar', 'item' => route('artists')],
+                ['@type' => 'ListItem', 'position' => 3, 'name' => $artist->name, 'item' => url()->current()],
+            ],
+        ];
+
+        $jsonLd = json_encode([
+            '@context' => 'https://schema.org',
+            '@graph' => [$person, $breadcrumb],
         ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
         return view('livewire.artist-detail', [

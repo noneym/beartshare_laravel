@@ -13,6 +13,8 @@
     'ogImage' => null,
     'twitterCard' => null,
     'jsonLd' => null,
+    // LCP görseli için <link rel=preload>: ['src' => ..., 'srcset' => ..., 'sizes' => ...]
+    'preloadImage' => null,
 ])
 <!DOCTYPE html>
 <html lang="tr">
@@ -45,6 +47,16 @@
 
     <!-- Favicon -->
     @include('partials.favicon')
+
+    @if(config('images.thumbor_url'))
+    {{-- Tüm eser görselleri bu sunucudan gelir: bağlantı erken kurulsun --}}
+    <link rel="preconnect" href="{{ config('images.thumbor_url') }}" crossorigin>
+    <link rel="dns-prefetch" href="{{ config('images.thumbor_url') }}">
+    @endif
+    @if($preloadImage)
+    <link rel="preload" as="image" href="{{ $preloadImage['src'] }}"
+          @if(!empty($preloadImage['srcset'])) imagesrcset="{{ $preloadImage['srcset'] }}" imagesizes="{{ $preloadImage['sizes'] ?? '100vw' }}" @endif fetchpriority="high">
+    @endif
 
     @php($gtagIds = array_values(array_filter(array_map('trim', explode(',', (string) config('services.gtag.ids'))))))
     @if($gtagIds && config('services.gtag.enabled'))

@@ -1,5 +1,5 @@
 <x-layouts.app
-    title="Teslimat ve İade Şartları | BeArtShare - Yeni Çağın Sanat Galerisi"
+    title="Teslimat ve İade Şartları | BeArtShare"
     metaDescription="BeArtShare teslimat ve iade şartları, mesafeli satış sözleşmesi, kargo bilgileri ve cayma hakkı hakkında detaylı bilgi."
     metaKeywords="teslimat şartları, iade politikası, mesafeli satış sözleşmesi, kargo, cayma hakkı, beartshare"
 >

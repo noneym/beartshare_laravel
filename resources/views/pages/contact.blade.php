@@ -1,5 +1,5 @@
 <x-layouts.app
-    title="İletişim | BeArtShare - Bize Ulaşın"
+    title="İletişim | BeArtShare"
     metaDescription="BeArtShare ile iletişime geçin. Harmancı Giz Plaza, Esentepe/İstanbul. Telefon: 0510 221 64 13, E-posta: info@beartshare.com"
     metaKeywords="beartshare iletişim, sanat galerisi iletişim, beartshare telefon, beartshare adres, esentepe sanat galerisi"
 >

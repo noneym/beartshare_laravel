@@ -111,26 +111,25 @@ class Artwork extends Model
     }
 
     /**
-     * Başlıktan slug: "isimsiz". Aynı başlık başka eserde de varsa sanatçı adı eklenir:
-     * "isimsiz-nasip-iyem"; o da doluysa -2, -3 ...
+     * Adres her zaman "eser-adi-sanatci-adi" ("kuslar-salih-acar"); sanatçı yoksa yalnızca başlık.
+     * Doluysa -2, -3 ... eki alır.
      */
     public static function generateSlug(?string $title, ?string $artistName, ?int $ignoreId = null, array $reserved = []): string
     {
-        $base = Slugger::base($title) ?: 'eser';
-        $withArtist = $artistName ? Slugger::base(Slugger::base($title, 50) . ' ' . $artistName, 90) : null;
-
-        $shared = static::query()
-            ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
-            ->pluck('title')
-            ->contains(fn ($t) => Slugger::base($t) === $base);
-
-        $preferred = ($shared && $withArtist) ? $withArtist : $base;
-
         return Slugger::unique(
-            $preferred,
+            static::expectedSlugBase($title, $artistName),
             fn (string $s) => in_array($s, $reserved, true) || static::slugTaken($s, $ignoreId),
-            $withArtist !== $preferred ? $withArtist : null,
         );
+    }
+
+    /** Ek almamış hali: "eser-adi-sanatci-adi" (slugs:fix bunu ölçüt alır) */
+    public static function expectedSlugBase(?string $title, ?string $artistName): string
+    {
+        if ($artistName) {
+            return Slugger::base(Slugger::base($title, 50) . ' ' . $artistName, 90) ?: 'eser';
+        }
+
+        return Slugger::base($title) ?: 'eser';
     }
 
     public function artist()

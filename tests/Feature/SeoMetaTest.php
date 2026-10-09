@@ -20,6 +20,8 @@ class SeoMetaTest extends TestCase
         $this->get('/hakkimizda')
             ->assertOk()
             ->assertSee('property="og:image" content="' . asset('images/og-default.jpg') . '"', false)
-            ->assertSee('name="twitter:image" content="' . asset('images/og-default.jpg') . '"', false);
+            ->assertSee('name="twitter:image" content="' . asset('images/og-default.jpg') . '"', false)
+            ->assertSee('property="og:image:width" content="1200"', false)
+            ->assertSee('property="og:image:height" content="630"', false);
     }
 }

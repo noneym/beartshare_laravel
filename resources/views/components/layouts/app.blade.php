@@ -36,6 +36,10 @@
     <meta property="og:title" content="{{ $ogTitle ?? $title ?? 'BeArtShare - Yeni Çağın Sanat Galerisi' }}">
     <meta property="og:description" content="{{ $ogDescription ?? $metaDescription ?? 'BeArtShare ile Türkiye\'nin en değerli sanatçılarının orijinal eserlerine güvenle ulaşın.' }}">
     <meta property="og:image" content="{{ $ogImage ?? asset('images/og-default.jpg') }}">
+    {{-- Tüm paylaşım görselleri 1200x630 üretilir (Thumbor fit-in / varsayılan dosya) --}}
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="{{ $ogTitle ?? $title ?? 'BeArtShare' }}">
     <meta property="og:site_name" content="BeArtShare">
     <meta property="og:locale" content="tr_TR">
 

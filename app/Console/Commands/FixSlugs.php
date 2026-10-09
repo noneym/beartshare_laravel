@@ -26,10 +26,10 @@ class FixSlugs extends Command
         // Dry-run'da kayıt yapılmadığı için yeni verilen slug'lar burada tutulur (çakışma kontrolü)
         $reserved = [];
 
-        // Eser: slug, başlığın slug'ı (+ isteğe bağlı sayısal ek) değilse yeniden üretilir
+        // Eser: slug "eser-adi-sanatci-adi" (+ isteğe bağlı sayısal ek) değilse yeniden üretilir
         foreach (Artwork::with('artist')->orderBy('id')->get() as $artwork) {
-            $base = Slugger::base($artwork->title);
-            if ($base !== '' && preg_match('/^' . preg_quote($base, '/') . '(-\d+)?$/', (string) $artwork->slug)) {
+            $base = Artwork::expectedSlugBase($artwork->title, $artwork->artist?->name);
+            if (preg_match('/^' . preg_quote($base, '/') . '(-\d+)?$/', (string) $artwork->slug)) {
                 continue;
             }
 

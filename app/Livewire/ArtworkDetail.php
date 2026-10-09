@@ -170,19 +170,35 @@ class ArtworkDetail extends Component
         $sameTitle = Artwork::where('id', '!=', $artwork->id)->where('title', $artwork->title)->exists();
         $titleLabel = $artwork->title . ($sameTitle && $specs ? ' (' . implode(', ', $specs) . ')' : '');
 
-        // Açıklama yoksa teknik, ölçü, yıl ve kategoriden üretilir
-        $details = implode(', ', array_unique(array_filter([$technique, $artwork->dimensions, $year, $category])));
+        // Meta açıklaması: 160 karakteri aşarsa kelime sınırından kesilir
+        $cut = fn (string $t) => mb_strlen($t) <= 160 ? $t : preg_replace('/\s+\S*$/u', '', mb_substr($t, 0, 157)) . '…';
         // Açıklama alanı bazen "." gibi yer tutucu: 20 karakterden kısa ise yok sayılır
         $plain = trim(preg_replace('/\s+/u', ' ', strip_tags(html_entity_decode((string) $artwork->description, ENT_QUOTES, 'UTF-8'))), " 	
 .,;:-–");
-        $description = mb_strlen($plain) >= 20
-            ? Str::limit($plain, 160)
-            : Str::limit("{$artistName} – {$artwork->title}" . ($details ? " ({$details})" : '')
-                . '. BeArtShare online sanat galerisinde orijinal eser; güvenli alışveriş, ArtPuan kazancı.', 160);
+        if (mb_strlen($plain) >= 20) {
+            $description = $cut($plain);
+        } else {
+            // Açıklama yoksa sanatçı, başlık, teknik, ölçü ve yıldan üretilir; kuyruk sığdığı kadar uzun seçilir
+            $details = implode(', ', array_filter([$technique, $artwork->dimensions, $year]));
+            $head = "{$artistName} – {$artwork->title}" . ($details ? ". {$details}" : '') . '.';
+            $description = null;
+            foreach ([
+                ' BeArtShare online sanat galerisinde orijinal eser; güvenli alışveriş, ArtPuan kazancı.',
+                ' BeArtShare online sanat galerisinde orijinal eser.',
+                " BeArtShare'de orijinal eser.",
+                '',
+            ] as $tail) {
+                if (mb_strlen($head . $tail) <= 160) {
+                    $description = $head . $tail;
+                    break;
+                }
+            }
+            $description ??= $cut($head);
+        }
 
         $price = $artwork->price_tl ? number_format($artwork->price_tl, 0, ',', '.') . ' ₺' : '';
-        // Paylaşım görseli: ilk görsel 1200px genişlikte; görsel yoksa site varsayılanı
-        $imageUrl = $artwork->imageUrl(1200) ?? asset('images/og-default.jpg');
+        // Paylaşım görseli: 1200x630, eser kırpılmadan (bulanık dolgu); görsel yoksa site varsayılanı
+        $imageUrl = \App\Support\ImageUrl::social($artwork->first_image) ?? asset('images/og-default.jpg');
         $images = $artwork->images
             ? array_map(fn ($i) => \App\Support\ImageUrl::make($i, 'detail'), $artwork->images)
             : [$imageUrl];

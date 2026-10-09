@@ -13,8 +13,9 @@ class ImageUrl
      * @param  int|string   $width   piksel ya da preset adı ('card', 'avatar' ...)
      * @param  int          $height  0 = oranı koru
      * @param  array        $filters ek Thumbor filtreleri, ör. ['format(webp)']
+     * @param  bool         $fitIn   true: kırpmadan sığdır (kalan alan fill filtresiyle dolar)
      */
-    public static function make(?string $path, int|string $width = 0, int $height = 0, array $filters = [], bool $smart = true): ?string
+    public static function make(?string $path, int|string $width = 0, int $height = 0, array $filters = [], bool $smart = true, bool $fitIn = false): ?string
     {
         if (!$path) {
             return null;
@@ -35,10 +36,13 @@ class ImageUrl
         }
 
         $parts = [];
+        if ($fitIn) {
+            $parts[] = 'fit-in';
+        }
         if ($width || $height) {
             $parts[] = (int) $width . 'x' . (int) $height;
         }
-        if ($smart && $width && $height) {
+        if ($smart && $width && $height && ! $fitIn) {
             $parts[] = 'smart';
         }
         $allFilters = array_merge(config('images.default_filters', []), $filters);
@@ -57,6 +61,15 @@ class ImageUrl
         }
 
         return "{$thumbor}/unsafe/{$operation}";
+    }
+
+    /**
+     * Sosyal paylaşım görseli (Open Graph / Twitter): 1200x630, eser kırpılmadan sığdırılır,
+     * kalan alan görselin bulanık haliyle dolar. JPEG kalır (WhatsApp / Facebook webp desteği zayıf).
+     */
+    public static function social(?string $path): ?string
+    {
+        return static::make($path, 1200, 630, ['fill(blur)', 'format(jpeg)'], smart: false, fitIn: true);
     }
 
     /**

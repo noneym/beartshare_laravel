@@ -50,6 +50,7 @@
                 <div>
                     <p class="text-gray-500 text-sm">Toplam Satis</p>
                     <p class="text-2xl font-bold text-gray-900">{{ number_format($stats['total_sales'], 0, ',', '.') }} TL</p>
+                    <p class="text-xs text-gray-500 mt-0.5" title="Her satış, satış tarihindeki dolar kuruyla">{{ number_format($stats['total_sales_usd'], 0, ',', '.') }} $ <span class="text-gray-400">(satış tarihi kuruyla)</span></p>
                 </div>
                 <div class="bg-purple-100 p-3 rounded-lg">
                     <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

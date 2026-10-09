@@ -20,6 +20,8 @@ class DashboardController extends Controller
             'orders' => Order::count(),
             'users' => User::count(),
             'total_sales' => Order::whereIn('status', ['confirmed', 'shipped', 'delivered'])->sum('total_tl'),
+            // Her siparişin satış anındaki kurla kaydedilmiş USD tutarlarının toplamı
+            'total_sales_usd' => Order::whereIn('status', ['confirmed', 'shipped', 'delivered'])->sum('total_usd'),
             'pending_orders' => Order::where('status', 'pending')->count(),
         ];
 

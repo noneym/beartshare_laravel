@@ -37,11 +37,22 @@ class OrderController extends Controller
             $query->has('invoices');
         }
 
-        // Arama
+        // Sanatçı: siparişte o sanatçının eseri olanlar (eser silinmiş/eşleşmemişse kalemdeki sanatçı adıyla)
+        if ($request->filled('artist_id') && ($artist = \App\Models\Artist::find($request->artist_id))) {
+            $query->whereHas('items', function ($q) use ($artist) {
+                $q->withTrashed()->where(function ($q) use ($artist) {
+                    $q->whereHas('artwork', fn ($w) => $w->where('artist_id', $artist->id))
+                      ->orWhere('artist_name', $artist->name);
+                });
+            });
+        }
+
+        // Arama (sipariş no, sipariş ID, müşteri adı / e-posta)
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('order_number', 'like', "%{$search}%")
+                  ->orWhere('orders.id', ctype_digit((string) $search) ? (int) $search : 0)
                   ->orWhereHas('user', function ($q) use ($search) {
                       $q->where('name', 'like', "%{$search}%")
                         ->orWhere('email', 'like', "%{$search}%");
@@ -51,6 +62,7 @@ class OrderController extends Controller
 
         // Başlık sıralaması (?sort=..&dir=..); yoksa en yeniler
         $this->applySort($query, $request, [
+            'id' => 'orders.id',
             'order_number' => 'orders.order_number',
             'customer' => 'orders.customer_name',
             'total' => 'orders.total_tl',
@@ -60,7 +72,9 @@ class OrderController extends Controller
 
         $orders = $query->paginate(20)->withQueryString();
 
-        return view('admin.orders.index', compact('orders'));
+        $artists = \App\Models\Artist::orderBy('name')->get(['id', 'name']);
+
+        return view('admin.orders.index', compact('orders', 'artists'));
     }
 
     public function show(Order $order)
@@ -189,6 +203,7 @@ class OrderController extends Controller
             // Önce siparişi iptal et (eserler serbest bırakılsın)
             if (!in_array($order->status, ['cancelled'])) {
                 $order->update(['status' => 'cancelled']);
+                $this->cancelPendingPayments($order);
 
                 // Eserleri serbest bırak
                 foreach ($order->items as $item) {
@@ -266,6 +281,15 @@ class OrderController extends Controller
     }
 
     /**
+     * İptal edilen siparişin beklemedeki ödemeleri (ör. gelmemiş havale) iptal olarak işaretlenir.
+     * Tamamlanmış ödemelere dokunulmaz: onlar para iadesi konusudur.
+     */
+    protected function cancelPendingPayments(Order $order): void
+    {
+        $order->paymentTransactions()->where('status', 'pending')->update(['status' => 'cancelled']);
+    }
+
+    /**
      * Siparişi iptal et - eserleri serbest bırak, ArtPuan iade et
      */
     protected function cancelOrder(Order $order)
@@ -275,6 +299,7 @@ class OrderController extends Controller
         try {
             $previousStatus = $order->status;
             $order->update(['status' => 'cancelled']);
+            $this->cancelPendingPayments($order);
 
             $messages = [];
 

@@ -29,6 +29,7 @@
                     <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Beklemede</option>
                     <option value="failed" {{ request('status') === 'failed' ? 'selected' : '' }}>Başarısız</option>
                     <option value="refunded" {{ request('status') === 'refunded' ? 'selected' : '' }}>İade</option>
+                    <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>İptal Edildi</option>
                 </select>
             </div>
             <div class="w-40">
@@ -96,6 +97,7 @@
                                     {{ $payment->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : '' }}
                                     {{ $payment->status === 'failed' ? 'bg-red-100 text-red-800' : '' }}
                                     {{ $payment->status === 'refunded' ? 'bg-blue-100 text-blue-800' : '' }}
+                                    {{ $payment->status === 'cancelled' ? 'bg-gray-100 text-gray-600' : '' }}
                                 ">
                                     {{ $payment->status_text }}
                                 </span>

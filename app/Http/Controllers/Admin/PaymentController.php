@@ -89,7 +89,7 @@ class PaymentController extends Controller
             'order_id' => 'required|exists:orders,id',
             'gateway' => 'required|string|max:50',
             'amount' => 'required|numeric|min:0',
-            'status' => 'required|in:pending,completed,failed,refunded',
+            'status' => 'required|in:pending,completed,failed,refunded,cancelled',
             'transaction_id' => 'nullable|string|max:255',
             'auth_code' => 'nullable|string|max:50',
             'host_ref_num' => 'nullable|string|max:100',

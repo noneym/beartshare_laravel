@@ -172,8 +172,14 @@ class ArtworkController extends Controller
         $artists = Artist::where(fn ($q) => $q->active()->orWhere('id', $artwork->artist_id))->orderBy('name')->get();
         $categories = Category::active()->orderBy('name')->get();
         $favoritedBy = $artwork->favoritedBy()->latest('favorites.created_at')->get();
+        // Bu eserin geçtiği siparişler (iptal / silinmiş olanlar dahil)
+        $relatedOrders = \App\Models\Order::withTrashed()
+            ->whereHas('items', fn ($q) => $q->withTrashed()->where('artwork_id', $artwork->id))
+            ->with('user')
+            ->latest()
+            ->get();
 
-        return view('admin.artworks.edit', compact('artwork', 'artists', 'categories', 'favoritedBy'));
+        return view('admin.artworks.edit', compact('artwork', 'artists', 'categories', 'favoritedBy', 'relatedOrders'));
     }
 
     public function update(Request $request, Artwork $artwork)

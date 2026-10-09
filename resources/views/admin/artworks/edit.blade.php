@@ -3,10 +3,11 @@
         <a href="{{ route('admin.artworks.index') }}" class="text-gray-600 hover:text-gray-900">&larr; Eserlere Don</a>
     </div>
 
-    <div class="max-w-2xl">
-        <h1 class="text-3xl font-bold text-gray-900 mb-8">Eser Duzenle: {{ $artwork->title }}</h1>
+    <h1 class="text-3xl font-bold text-gray-900 mb-8">Eser Duzenle: {{ $artwork->title }}</h1>
 
-        <form action="{{ route('admin.artworks.update', $artwork) }}" method="POST" enctype="multipart/form-data" class="bg-white rounded-xl shadow-sm p-6">
+    {{-- Solda form, sağda (geniş ekranda) favoriler ve bağlantılı siparişler --}}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        <form action="{{ route('admin.artworks.update', $artwork) }}" method="POST" enctype="multipart/form-data" class="lg:col-span-2 bg-white rounded-xl shadow-sm p-6">
             @csrf
             @method('PUT')
 
@@ -216,8 +217,9 @@
             </div>
         </form>
 
+        <div class="space-y-6 lg:sticky lg:top-6">
         <!-- Favoriye Ekleyenler -->
-        <div class="bg-white rounded-xl shadow-sm mt-8">
+        <div class="bg-white rounded-xl shadow-sm">
             <div class="p-5 border-b border-gray-100 flex items-center justify-between">
                 <h2 class="text-sm font-semibold text-gray-900 uppercase tracking-wider flex items-center gap-2">
                     <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 24 24">
@@ -249,6 +251,42 @@
                     <p class="text-sm text-gray-400">Bu eseri henuz kimse favoriye eklemedi.</p>
                 </div>
             @endif
+        </div>
+
+        <!-- Bağlantılı Siparişler -->
+        <div class="bg-white rounded-xl shadow-sm">
+            <div class="p-5 border-b border-gray-100 flex items-center justify-between">
+                <h2 class="text-sm font-semibold text-gray-900">Bağlantılı Siparişler</h2>
+                <span class="text-xs text-gray-400 font-normal">{{ $relatedOrders->count() }} sipariş</span>
+            </div>
+            @if($relatedOrders->isNotEmpty())
+                <div class="divide-y divide-gray-100">
+                    @foreach($relatedOrders as $order)
+                        @php
+                            $badge = match ($order->status_color) {
+                                'green' => 'bg-green-100 text-green-800', 'blue' => 'bg-blue-100 text-blue-800',
+                                'purple' => 'bg-purple-100 text-purple-800', 'yellow' => 'bg-yellow-100 text-yellow-800',
+                                'red' => 'bg-red-100 text-red-800', default => 'bg-gray-100 text-gray-700',
+                            };
+                        @endphp
+                        <a href="{{ route('admin.orders.show', $order->id) }}" class="block px-5 py-3 hover:bg-gray-50 {{ $order->trashed() ? 'opacity-60' : '' }}">
+                            <div class="flex items-center justify-between gap-3">
+                                <span class="text-sm font-medium text-gray-900">#{{ $order->id }} · {{ $order->customer_name }}</span>
+                                <span class="shrink-0 inline-block px-2 py-0.5 text-[11px] rounded-full {{ $badge }}">{{ $order->status_label }}</span>
+                            </div>
+                            <div class="flex items-center justify-between gap-3 mt-1 text-xs text-gray-500">
+                                <span>{{ number_format($order->total_tl, 0, ',', '.') }} TL{{ $order->trashed() ? ' · silinmiş' : '' }}</span>
+                                <span>{{ $order->created_at?->format('d.m.Y H:i') }}</span>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            @else
+                <div class="px-5 py-8 text-center">
+                    <p class="text-sm text-gray-400">Bu eser henüz bir siparişte yer almadı.</p>
+                </div>
+            @endif
+        </div>
         </div>
     </div>
 </x-admin.layouts.app>

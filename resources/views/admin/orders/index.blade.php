@@ -8,7 +8,7 @@
         <form method="GET" action="{{ route('admin.orders.index') }}" class="flex flex-wrap gap-3 items-end">
             <div class="flex-1 min-w-[200px]">
                 <label class="block text-xs text-gray-500 mb-1">Ara</label>
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Siparis no, isim veya e-posta..."
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Sipariş no, ID, isim veya e-posta..."
                        class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary">
             </div>
             <div class="min-w-[160px]">
@@ -19,6 +19,7 @@
                     <option value="has" @selected(request('invoice') === 'has')>Faturalı</option>
                 </select>
             </div>
+            <x-admin.artist-filter :artists="$artists" />
             <div class="min-w-[160px]">
                 <label class="block text-xs text-gray-500 mb-1">Durum</label>
                 <select name="status" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary">
@@ -44,7 +45,7 @@
             <button type="submit" class="bg-gray-800 text-white px-4 py-2 rounded text-sm hover:bg-gray-700 transition">
                 Filtrele
             </button>
-            @if(request('search') || request('status') || request('with_trashed'))
+            @if(request('search') || request('status') || request('with_trashed') || request('artist_id') || request('invoice'))
                 <a href="{{ route('admin.orders.index') }}" class="text-sm text-gray-500 hover:text-gray-700 py-2">
                     Temizle
                 </a>
@@ -57,6 +58,7 @@
             <table class="w-full">
                 <thead class="bg-gray-50">
                     <tr>
+                        <x-admin.th sort="id" first="desc" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</x-admin.th>
                         <x-admin.th sort="order_number" first="desc" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Siparis No</x-admin.th>
                         <x-admin.th sort="customer" first="asc" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Musteri</x-admin.th>
                         <x-admin.th sort="total" first="desc" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Toplam</x-admin.th>
@@ -68,6 +70,7 @@
                 <tbody class="divide-y divide-gray-200">
                     @forelse($orders as $order)
                         <tr class="hover:bg-gray-50 {{ $order->trashed() ? 'bg-red-50' : '' }}">
+                            <td class="px-6 py-4 text-sm font-medium text-gray-900">#{{ $order->id }}</td>
                             <td class="px-6 py-4">
                                 <p class="font-medium text-gray-900">{{ $order->order_number }}</p>
                                 @if($order->trashed())
@@ -128,14 +131,14 @@
                         {{-- Siparişteki eserler --}}
                         @if($order->items->isNotEmpty())
                             <tr class="!border-t-0 {{ $order->trashed() ? 'bg-red-50' : '' }}">
-                                <td colspan="6" class="px-6 pb-4 pt-0">
+                                <td colspan="7" class="px-6 pb-4 pt-0">
                                     <x-admin.order-items :items="$order->items" />
                                 </td>
                             </tr>
                         @endif
                     @empty
                         <tr>
-                            <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+                            <td colspan="7" class="px-6 py-8 text-center text-gray-500">
                                 Henuz siparis yok.
                             </td>
                         </tr>

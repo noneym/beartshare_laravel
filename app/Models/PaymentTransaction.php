@@ -78,6 +78,7 @@ class PaymentTransaction extends Model
             'pending' => 'yellow',
             'failed' => 'red',
             'refunded' => 'blue',
+            'cancelled' => 'gray',
             default => 'gray',
         };
     }
@@ -92,6 +93,7 @@ class PaymentTransaction extends Model
             'pending' => 'Beklemede',
             'failed' => 'Başarısız',
             'refunded' => 'İade Edildi',
+            'cancelled' => 'İptal Edildi',
             default => 'Bilinmiyor',
         };
     }

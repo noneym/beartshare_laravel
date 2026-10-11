@@ -30,7 +30,7 @@
             ['icon' => 'ph-frame-corners', 'title' => 'Küratöryel seçki', 'text' => 'Galericilik deneyimiyle oluşturulan, özenle seçilmiş yerli ve uluslararası sanatçılar.'],
             ['icon' => 'ph-magnifying-glass', 'title' => 'Güvenilir değerlendirme', 'text' => 'Eserler mevcut bilgi ve belgeler doğrultusunda incelenir; gerektiğinde bağımsız uzman görüşüne başvurulur.'],
             ['icon' => 'ph-lock-simple', 'title' => 'Güvenli ödeme', 'text' => 'SSL korumalı altyapı ile güvenli ve şeffaf ödeme deneyimi.'],
-            ['icon' => 'ph-package', 'title' => 'Sigortalı teslimat', 'text' => 'Her eser profesyonel paketleme standartlarında hazırlanır ve sigortalı kargo ile teslim edilir.'],
+            ['icon' => 'ph-package', 'title' => 'Özenli teslimat', 'text' => 'Her eser profesyonel paketleme standartlarında hazırlanır ve özenle teslim edilir.'],
             ['icon' => 'ph-users', 'title' => 'Koleksiyonerden koleksiyonere', 'text' => 'Koleksiyonunuzdaki eserleri düşük komisyonla, güvenli ve şeffaf şekilde yeni koleksiyonerlerle buluşturun.', 'url' => route('eser-kabulu')],
             ['icon' => 'ph-plus-circle', 'title' => 'ArtPuan® ayrıcalığı', 'text' => 'Alımlarınızdan ve referanslarınızdan ArtPuan® kazanın, sonraki alımlarınızda kullanın.', 'url' => route('artpuan'), 'artpuan' => true],
         ];

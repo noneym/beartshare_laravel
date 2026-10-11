@@ -649,12 +649,8 @@
                         </svg>
                     </div>
                     <h3 class="text-base font-semibold text-brand-black100 mb-2">Özel Paketleme & Kargo</h3>
-                    <p class="text-gray-400 text-xs leading-relaxed mb-4">Eserler profesyonel sanat paketleme yöntemleri ile özel olarak hazırlanır ve sigortalı kargo ile teslim edilir.</p>
+                    <p class="text-gray-400 text-xs leading-relaxed mb-4">Eserler profesyonel sanat paketleme yöntemleri ile özel olarak hazırlanır ve özenle teslim edilir.</p>
                     <div class="flex items-center justify-center gap-2 flex-wrap">
-                        <span class="inline-flex items-center gap-1 text-[10px] text-blue-600 bg-blue-50 px-2.5 py-1 font-medium">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                            Sigortalı Kargo
-                        </span>
                         <span class="inline-flex items-center gap-1 text-[10px] text-blue-600 bg-blue-50 px-2.5 py-1 font-medium">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                             Profesyonel Ambalaj

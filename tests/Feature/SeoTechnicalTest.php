@@ -51,6 +51,20 @@ class SeoTechnicalTest extends TestCase
             ->assertSee('<title>BeArtShare | Yeni Çağın Online Sanat Galerisi</title>', false);
     }
 
+    public function test_sold_artwork_uses_visual_artwork_schema_instead_of_offerless_product(): void
+    {
+        $sold = Artwork::where('is_active', true)->where('is_sold', true)->first();
+        if (! $sold) {
+            $this->markTestSkipped('Satılmış eser yok.');
+        }
+
+        $this->get('/eser/' . $sold->slug)
+            ->assertOk()
+            ->assertSee('"@graph":[{"@type":"VisualArtwork"', false)
+            ->assertSee('"@type":"BreadcrumbList"', false)
+            ->assertDontSee('"@type":"Product"', false);
+    }
+
     public function test_artwork_and_artist_pages_have_breadcrumb_schema(): void
     {
         // Satışta olan eser: iade/kargo bilgisi yalnızca teklif (offers) varken basılır

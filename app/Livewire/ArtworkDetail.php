@@ -203,7 +203,26 @@ class ArtworkDetail extends Component
             ? array_map(fn ($i) => \App\Support\ImageUrl::make($i, 'detail'), $artwork->images)
             : [$imageUrl];
 
-        $product = array_filter([
+        // Satılmış eser: Google, teklifsiz (offers) Product'ı geçersiz sayar; satış fiyatı da yalnızca üyelere
+        // gösterildiği için satılanlar Product yerine VisualArtwork (sanat eseri) olarak işaretlenir.
+        $soldWork = array_filter([
+            '@type' => 'VisualArtwork',
+            'name' => $artwork->title,
+            'description' => $description,
+            'image' => $images,
+            'creator' => array_filter([
+                '@type' => 'Person',
+                'name' => $artistName,
+                'url' => $artwork->artist ? route('artist.detail', $artwork->artist->slug) : null,
+            ]),
+            'artMedium' => $artwork->technique ?: null,
+            'artform' => $category ?: null,
+            'size' => $artwork->dimensions ?: null,
+            'dateCreated' => $year,
+            'url' => url()->current(),
+        ], fn ($v) => $v !== null);
+
+        $main = $artwork->is_sold ? $soldWork : array_filter([
             '@type' => 'Product',
             'name' => $artwork->title,
             'description' => $description,
@@ -216,15 +235,12 @@ class ArtworkDetail extends Component
                 '@type' => 'Brand',
                 'name' => $artistName,
             ],
-            // Satılmış eserin satış fiyatı yalnızca üyelere gösterilir; yapısal veride de yer almaz
-            'offers' => $artwork->is_sold ? null : [
+            'offers' => [
                 '@type' => 'Offer',
                 'url' => url()->current(),
                 'price' => $artwork->price_tl ?? 0,
                 'priceCurrency' => 'TRY',
-                'availability' => $artwork->is_sold
-                    ? 'https://schema.org/SoldOut'
-                    : ($artwork->is_reserved ? 'https://schema.org/LimitedAvailability' : 'https://schema.org/InStock'),
+                'availability' => $artwork->is_reserved ? 'https://schema.org/LimitedAvailability' : 'https://schema.org/InStock',
                 'seller' => [
                     '@type' => 'Organization',
                     'name' => 'BeArtShare',
@@ -265,7 +281,7 @@ class ArtworkDetail extends Component
 
         $jsonLd = json_encode([
             '@context' => 'https://schema.org',
-            '@graph' => [$product, $breadcrumb],
+            '@graph' => [$main, $breadcrumb],
         ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
         return view('livewire.artwork-detail', [

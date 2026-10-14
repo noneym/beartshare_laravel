@@ -54,8 +54,14 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['single'],
+            'channels' => ['single', 'loggerxo'],
             'ignore_exceptions' => false,
+        ],
+
+        // Loggerxo: ships every log line (and reported exceptions) to the Loggerxo project in LOGGERXO_DSN.
+        'loggerxo' => [
+            'driver' => 'loggerxo',
+            'level' => env('LOGGERXO_LOG_LEVEL', 'debug'),
         ],
 
         'single' => [

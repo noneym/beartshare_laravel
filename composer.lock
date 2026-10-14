@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0809255caf47647f3fdc467095136123",
+    "content-hash": "71f6a581bef91037b2e439c079fa44f7",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -2807,6 +2807,63 @@
                 "source": "https://github.com/nikic/PHP-Parser/tree/v5.7.0"
             },
             "time": "2025-12-06T11:56:16+00:00"
+        },
+        {
+            "name": "noneym/loggerxo-laravel",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/noneym/loggerxo-laravel.git",
+                "reference": "e1f04b538a1b853221d8c9827fb1daba1f199805"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/noneym/loggerxo-laravel/zipball/e1f04b538a1b853221d8c9827fb1daba1f199805",
+                "reference": "e1f04b538a1b853221d8c9827fb1daba1f199805",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^7.5",
+                "illuminate/http": "^9.0|^10.0|^11.0|^12.0",
+                "illuminate/log": "^9.0|^10.0|^11.0|^12.0",
+                "illuminate/support": "^9.0|^10.0|^11.0|^12.0",
+                "monolog/monolog": "^2.3|^3.0",
+                "php": "^8.0.2"
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Noneym\\Loggerxo\\LoggerxoServiceProvider"
+                    ],
+                    "aliases": {
+                        "Loggerxo": "Noneym\\Loggerxo\\Facades\\Loggerxo"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Noneym\\Loggerxo\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Loggerxo SDK for Laravel: exceptions, logs, breadcrumbs and performance transactions.",
+            "homepage": "https://loggerxo.com",
+            "keywords": [
+                "error-tracking",
+                "laravel",
+                "loggerxo",
+                "logging",
+                "monitoring"
+            ],
+            "support": {
+                "source": "https://github.com/noneym/loggerxo-laravel/tree/main",
+                "issues": "https://github.com/noneym/loggerxo-laravel/issues"
+            },
+            "time": "2026-10-11T09:18:07+00:00"
         },
         {
             "name": "nunomaduro/termwind",
@@ -8900,7 +8957,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "noneym/loggerxo-laravel": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

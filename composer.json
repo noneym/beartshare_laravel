@@ -14,6 +14,7 @@
         "lbuchs/webauthn": "^2.2",
         "league/flysystem-aws-s3-v3": "^3.0",
         "livewire/livewire": "^3.0",
+        "noneym/loggerxo-laravel": "dev-main",
         "pragmarx/google2fa": "^9.1"
     },
     "require-dev": {
@@ -67,5 +68,11 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": {
+        "loggerxo": {
+            "type": "vcs",
+            "url": "https://github.com/noneym/loggerxo-laravel"
+        }
+    }
 }

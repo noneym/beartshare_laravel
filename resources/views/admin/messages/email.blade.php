@@ -110,6 +110,17 @@
             <!-- Hidden field for form submission -->
             <input type="hidden" name="body" id="emailBody">
 
+            <label class="mt-4 flex items-start gap-2 text-sm text-gray-700">
+                <input type="hidden" name="use_layout" value="0">
+                <input type="checkbox" name="use_layout" id="useLayout" value="1" {{ old('use_layout', '1') ? 'checked' : '' }} onchange="updatePreview()"
+                       class="mt-0.5 rounded border-gray-300 text-primary focus:ring-primary">
+                <span>
+                    BeArtShare çerçevesi otomatik eklensin
+                    <span class="block text-xs text-gray-500">Logo, kart ve altbilgi (adres, iletişim) bildirim e-postalarıyla aynı görünümde eklenir; içeriğe yalnızca metni yazın. Kendi tam HTML tasarımınızı yapıştırıyorsanız kapatın.
+                    Sınıflar: <code>class="label"</code> küçük üst başlık, <code>class="button"</code> kırmızı buton, <code>class="box"</code> bej kutu, <code>class="note"</code> kırmızı uyarı, <code>class="muted"</code> gri metin.</span>
+                </span>
+            </label>
+
             <!-- Degisken Tagleri (Icerik) -->
             <div class="mt-4 pt-4 border-t border-gray-100">
                 <p class="text-xs text-gray-500 mb-2">Degiskenler <span class="text-gray-400">(tikla ekle)</span></p>
@@ -140,7 +151,7 @@
 
             <!-- Quick Templates -->
             <div class="mt-4 pt-4 border-t border-gray-100">
-                <p class="text-xs text-gray-500 mb-2">Hazir Sablon:</p>
+                <p class="text-xs text-gray-500 mb-2">Hazır Şablon:</p>
                 <div class="flex flex-wrap gap-2">
                     <button type="button" onclick="insertTemplate('basic')" class="text-xs px-3 py-1.5 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition">
                         Temel Sablon
@@ -150,6 +161,9 @@
                     </button>
                     <button type="button" onclick="insertTemplate('campaign')" class="text-xs px-3 py-1.5 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition">
                         Kampanya
+                    </button>
+                    <button type="button" onclick="insertTemplate('artpuan')" class="text-xs px-3 py-1.5 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition">
+                        ArtPuan Hatırlatma
                     </button>
                 </div>
             </div>
@@ -200,14 +214,14 @@
                      'alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | ' +
                      'link image table | removeformat code fullscreen | help',
             content_style: `
-                body {
-                    font-family: Arial, sans-serif;
-                    font-size: 14px;
-                    color: #333;
-                    max-width: 600px;
-                    margin: 0 auto;
-                    padding: 16px;
-                }
+                body { font-family: Georgia, 'Times New Roman', serif; font-size: 14px; line-height: 1.7; color: #4a4a4a; max-width: 520px; margin: 0 auto; padding: 16px; }
+                h2 { font-size: 24px; font-weight: normal; color: #14171c; margin: 0 0 10px; }
+                p { margin: 0 0 16px; }
+                .label { font-family: Arial, sans-serif; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: #8a8a8a; }
+                .button { display: inline-block; background: #ae1c27; color: #fff; padding: 13px 30px; text-decoration: none; font-family: Arial, sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; }
+                .box { background: #f9f7f3; border: 1px solid #e6e1d8; padding: 18px 20px; margin: 0 0 20px; }
+                .note { border-left: 3px solid #8b1a1a; padding: 4px 0 4px 14px; color: #8b1a1a; }
+                .muted { color: #8a8a8a; }
                 img { max-width: 100%; height: auto; }
             `,
             promotion: false,
@@ -281,9 +295,19 @@
             return editor ? editor.getContent() : '';
         }
 
-        // Preview
-        function updatePreview() {
-            const content = getCurrentContent();
+        // Preview (çerçeve açıksa sunucudaki ortak e-posta görünümüyle)
+        async function updatePreview() {
+            let content = getCurrentContent();
+            if (document.getElementById('useLayout').checked) {
+                try {
+                    const r = await fetch('{{ route('admin.notification-templates.preview') }}', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                        body: JSON.stringify({ text: content, html: true }),
+                    });
+                    content = (await r.json()).result;
+                } catch (e) { /* çerçevesiz göster */ }
+            }
             const frame = document.getElementById('previewFrame');
             const doc = frame.contentDocument || frame.contentWindow.document;
             doc.open();
@@ -309,60 +333,32 @@
         }
 
         // Templates
+        // Hazır şablonlar: yalnızca içerik; logo / kart / altbilgi çerçevesi gönderimde eklenir
         function insertTemplate(type) {
-            let html = '';
-
-            if (type === 'basic') {
-                html = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-    <div style="background: #1a1a1a; padding: 24px; text-align: center;">
-        <h1 style="color: #fff; font-size: 20px; margin: 0;">BeArtShare</h1>
-    </div>
-    <div style="padding: 32px 24px; background: #fff;">
-        <p style="color: #333; font-size: 14px;">Merhaba,</p>
-        <p style="color: #555; font-size: 14px;">Mesajinizi buraya yazin.</p>
-    </div>
-    <div style="padding: 16px 24px; background: #f8f8f8; text-align: center;">
-        <p style="color: #999; font-size: 11px; margin: 0;">BeArtShare &copy; ${new Date().getFullYear()}</p>
-    </div>
-</div>`;
-            } else if (type === 'announcement') {
-                html = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-    <div style="background: #1a1a1a; padding: 24px; text-align: center;">
-        <h1 style="color: #fff; font-size: 20px; margin: 0;">BeArtShare</h1>
-    </div>
-    <div style="padding: 32px 24px; background: #fff;">
-        <h2 style="color: #333; font-size: 18px; margin: 0 0 16px; text-align: center;">Duyuru Basligi</h2>
-        <p style="color: #555; font-size: 14px; line-height: 1.6;">Duyuru icerigini buraya yazin.</p>
-        <div style="text-align: center; margin: 24px 0;">
-            <a href="https://beartshare.com" style="background: #1a1a1a; color: #fff; padding: 12px 32px; text-decoration: none; font-size: 14px; display: inline-block;">Detayli Bilgi</a>
-        </div>
-    </div>
-    <div style="padding: 16px 24px; background: #f8f8f8; text-align: center;">
-        <p style="color: #999; font-size: 11px; margin: 0;">BeArtShare &copy; ${new Date().getFullYear()}</p>
-    </div>
-</div>`;
-            } else if (type === 'campaign') {
-                html = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-    <div style="background: linear-gradient(135deg, #5C4290 0%, #7C3AED 100%); padding: 40px 24px; text-align: center;">
-        <h1 style="color: #fff; font-size: 28px; margin: 0;">Ozel Kampanya!</h1>
-        <p style="color: rgba(255,255,255,0.8); font-size: 14px; margin: 8px 0 0;">Sinirli sureli firsat</p>
-    </div>
-    <div style="padding: 32px 24px; background: #fff;">
-        <h2 style="color: #333; font-size: 18px; margin: 0 0 16px; text-align: center;">Kampanya Detaylari</h2>
-        <p style="color: #555; font-size: 14px; line-height: 1.6;">Kampanya aciklamasini buraya yazin.</p>
-        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 20px; margin: 20px 0; text-align: center; border-radius: 8px;">
-            <p style="color: #16a34a; font-size: 28px; font-weight: bold; margin: 0;">%20 Indirim</p>
-            <p style="color: #15803d; font-size: 12px; margin: 4px 0 0;">Tum eserlerimizde gecerli</p>
-        </div>
-        <div style="text-align: center; margin: 24px 0;">
-            <a href="https://beartshare.com/eserler" style="background: #7C3AED; color: #fff; padding: 14px 40px; text-decoration: none; font-size: 14px; display: inline-block; border-radius: 4px;">Eserleri Kesfet</a>
-        </div>
-    </div>
-    <div style="padding: 16px 24px; background: #f8f8f8; text-align: center;">
-        <p style="color: #999; font-size: 11px; margin: 0;">BeArtShare &copy; ${new Date().getFullYear()}</p>
-    </div>
-</div>`;
-            }
+            const templates = {
+                basic: `<p class="label">BeArtShare</p>
+<h2>Sayın {isim},</h2>
+<p>Mesajınızı buraya yazın.</p>
+<p>BeArtShare ile eserleri avantajlı fiyatlarla koleksiyonunuza dahil etmek için bizi takip edin!</p>`,
+                announcement: `<p class="label">Duyuru</p>
+<h2>Duyuru Başlığı</h2>
+<p>Sayın {isim},</p>
+<p>Duyuru içeriğini buraya yazın.</p>
+<p><a class="button" href="https://beartshare.com">Detaylı Bilgi</a></p>`,
+                campaign: `<p class="label">Kampanya</p>
+<h2>Sayın {isim},</h2>
+<p>Kampanya açıklamasını buraya yazın.</p>
+<div class="box" style="text-align: center;"><span style="font-size: 28px; color: #14171c;">%20 İndirim</span><br><span class="muted">Tüm eserlerimizde geçerli · Sınırlı süre</span></div>
+<p><a class="button" href="https://beartshare.com/eserler">Eserleri Keşfet</a></p>`,
+                artpuan: `<p class="label">ArtPuan®</p>
+<h2>Sayın {isim},</h2>
+<p>Hesabınızda kullanılmayı bekleyen ArtPuan®'larınız var.</p>
+<div class="box">ArtPuan® bakiyeniz: <strong>{artpuan}</strong></div>
+<p>ArtPuan®'larınızı bir sonraki eser alımınızda indirim olarak kullanabilirsiniz. Arkadaşlarınızı davet ederek de ArtPuan® kazanabilirsiniz: {referans_linki}</p>
+<p><a class="button" href="https://beartshare.com/eserler">Eserleri Keşfet</a></p>`,
+            };
+            const html = templates[type] || '';
+            document.getElementById('useLayout').checked = true;
 
             if (currentMode === 'visual') {
                 const editor = tinymce.get('tinymceEditor');
@@ -370,6 +366,7 @@
             } else {
                 document.getElementById('htmlSource').value = html;
             }
+            updatePreview();
         }
 
         // User filter / select

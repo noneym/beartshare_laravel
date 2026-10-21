@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\User;
 use App\Services\NotificationService;
 use App\Support\MessageTemplate;
+use App\Support\NotificationTemplates;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -22,7 +23,8 @@ class SendBulkEmail implements ShouldQueue
     public int $tries = 1;
     public int $timeout = 60;
 
-    public function __construct(public int $userId, public string $subject, public string $body)
+    /** $layout: gövde, bildirim e-postalarındaki ortak çerçeveyle (logo, kart, altbilgi) sarılır */
+    public function __construct(public int $userId, public string $subject, public string $body, public bool $layout = false)
     {
     }
 
@@ -37,10 +39,12 @@ class SendBulkEmail implements ShouldQueue
             return;
         }
 
+        $body = MessageTemplate::render($this->body, $user);
+
         $sent = $notifications->sendAdminEmail(
             $user->email,
             MessageTemplate::render($this->subject, $user),
-            MessageTemplate::render($this->body, $user),
+            $this->layout ? NotificationTemplates::layout($body) : $body,
             $user->id
         );
 

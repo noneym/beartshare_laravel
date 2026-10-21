@@ -101,6 +101,7 @@ class MessageController extends Controller
             'user_ids.*' => 'exists:users,id',
             'subject' => 'required|string|max:255',
             'body' => 'required|string',
+            'use_layout' => 'nullable|boolean',
         ], [
             'user_ids.required' => 'En az bir kullanici secmelisiniz.',
             'subject.required' => 'Konu alani zorunludur.',
@@ -110,7 +111,7 @@ class MessageController extends Controller
         $users = User::whereIn('id', $validated['user_ids'])->get(['id', 'email']);
         $withEmail = $users->filter(fn ($u) => $u->email);
 
-        $batch = Bus::batch($withEmail->map(fn ($u) => new SendBulkEmail($u->id, $validated['subject'], $validated['body']))->values()->all())
+        $batch = Bus::batch($withEmail->map(fn ($u) => new SendBulkEmail($u->id, $validated['subject'], $validated['body'], $request->boolean('use_layout')))->values()->all())
             ->name('E-posta: ' . Str::limit($validated['subject'], 60))
             ->allowFailures()
             ->dispatch();

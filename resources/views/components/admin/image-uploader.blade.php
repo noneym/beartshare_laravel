@@ -1,9 +1,11 @@
-@props(['name' => 'uploaded_images[]', 'multiple' => true, 'kind' => 'image', 'maxMb' => 99])
+@props(['name' => 'uploaded_images[]', 'multiple' => true, 'kind' => 'image', 'maxMb' => 99, 'attachUrl' => null])
 
 {{--
     Görselleri seçildiği anda tek tek yükler (her dosya ayrı istek: büyük dosyalar form gönderim sınırına takılmaz).
     Her dosya için önizleme + ilerleme çubuğu; yüklenen yol formda gizli alan olarak gönderilir.
     Yükleme sürerken form gönderilemez.
+    attachUrl verilirse (eser düzenleme): yüklenen görsel hemen esere eklenir ve
+    'artwork-image-added' olayıyla mevcut görsellere düşer; formda gizli alan gönderilmez.
 --}}
 <div x-data="{
         items: [],
@@ -29,14 +31,20 @@
             data.append('file', file);
             data.append('kind', @js($kind));
             const xhr = new XMLHttpRequest();
-            xhr.open('POST', @js(route('admin.artworks.upload-image')));
+            xhr.open('POST', @js($attachUrl ?: route('admin.artworks.upload-image')));
             xhr.setRequestHeader('X-CSRF-TOKEN', @js(csrf_token()));
             xhr.setRequestHeader('Accept', 'application/json');
             xhr.upload.onprogress = (ev) => { if (ev.lengthComputable) it.progress = Math.round(ev.loaded / ev.total * 100); };
             xhr.onload = () => {
                 let res = {};
                 try { res = JSON.parse(xhr.responseText); } catch (_) {}
-                if (xhr.status >= 200 && xhr.status < 300 && res.path) { it.status = 'done'; it.progress = 100; it.path = res.path; }
+                if (xhr.status >= 200 && xhr.status < 300 && res.path) {
+                    it.status = 'done'; it.progress = 100; it.path = res.path;
+                    if (@js((bool) $attachUrl)) {
+                        window.dispatchEvent(new CustomEvent('artwork-image-added', { detail: { path: res.path, url: res.url || it.preview } }));
+                        setTimeout(() => { const k = this.items.indexOf(it); if (k > -1) this.items.splice(k, 1); }, 1500);
+                    }
+                }
                 else if (xhr.status === 413) { it.status = 'error'; it.error = 'Dosya sunucu sınırını aşıyor'; }
                 else { it.status = 'error'; it.error = (res.errors && res.errors.file && res.errors.file[0]) || res.message || ('Yükleme hatası (' + xhr.status + ')'); }
             };
@@ -73,10 +81,10 @@
                     </div>
                     <p class="mt-1 text-[11px]"
                        :class="it.status === 'error' ? 'text-red-600' : (it.status === 'done' ? 'text-green-600' : 'text-gray-500')"
-                       x-text="it.status === 'error' ? it.error : (it.status === 'done' ? 'Yüklendi' : ('Yükleniyor… %' + it.progress))"></p>
+                       x-text="it.status === 'error' ? it.error : (it.status === 'done' ? @js($attachUrl ? 'Yüklendi, esere eklendi' : 'Yüklendi') : ('Yükleniyor… %' + it.progress))"></p>
                 </div>
                 <button type="button" @click="remove(i)" title="Kaldır" class="flex-shrink-0 w-7 h-7 rounded-full text-gray-400 hover:bg-red-50 hover:text-red-600 transition">&times;</button>
-                <template x-if="it.status === 'done'">
+                <template x-if="it.status === 'done' && !@js((bool) $attachUrl)">
                     <input type="hidden" name="{{ $name }}" :value="it.path">
                 </template>
             </div>

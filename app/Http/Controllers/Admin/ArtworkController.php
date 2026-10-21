@@ -117,6 +117,35 @@ class ArtworkController extends Controller
     }
 
     /**
+     * Düzenleme sayfası: görsel yüklenir yüklenmez esere eklenir (kaydet gerekmez).
+     */
+    public function attachImage(Request $request, Artwork $artwork)
+    {
+        $request->validate(['file' => 'required|image|max:101376'], [
+            'file.max' => 'Görsel en fazla 99 MB olabilir.',
+            'file.image' => 'Yüklenen dosya bir görsel olmalıdır.',
+        ]);
+
+        $path = $request->file('file')->store('artworks/' . $artwork->id, config('filesystems.uploads'));
+        $artwork->update(['images' => array_values(array_merge($artwork->images ?? [], [$path]))]);
+
+        return response()->json(['path' => $path, 'url' => \App\Support\ImageUrl::make($path, 'thumb')]);
+    }
+
+    /**
+     * Düzenleme sayfası: görsel eserden hemen kaldırılır. Dosya R2'de kalır
+     * (eski aktarımda bazı eserler aynı dosyayı paylaşıyor).
+     */
+    public function detachImage(Request $request, Artwork $artwork)
+    {
+        $path = (string) $request->input('path');
+        $images = array_values(array_filter($artwork->images ?? [], fn ($p) => $p !== $path));
+        $artwork->update(['images' => $images]);
+
+        return response()->json(['ok' => true, 'count' => count($images)]);
+    }
+
+    /**
      * Listeden öne çıkan sıra ağırlığını günceller (AJAX).
      */
     public function updateFeaturedWeight(Request $request, Artwork $artwork)

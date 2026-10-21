@@ -105,8 +105,20 @@
                                 if (to < 0 || to >= this.items.length || from === to) return;
                                 const [it] = this.items.splice(from, 1);
                                 this.items.splice(to, 0, it);
-                            }
-                         }" class="mb-4">
+                            },
+                            // Kaldırma anında kaydedilir (yükleme gibi); sıralama 'Güncelle' ile
+                            remove(i) {
+                                const it = this.items[i];
+                                if (!confirm('Bu görsel eserden kaldırılsın mı?')) return;
+                                fetch(@js(route('admin.artworks.images.detach', $artwork)), {
+                                    method: 'DELETE',
+                                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': @js(csrf_token()) },
+                                    body: JSON.stringify({ path: it.path }),
+                                }).then((r) => { if (r.ok) { const k = this.items.indexOf(it); if (k > -1) this.items.splice(k, 1); } else { alert('Görsel kaldırılamadı.'); } })
+                                  .catch(() => alert('Görsel kaldırılamadı.'));
+                            },
+                         }"
+                         @artwork-image-added.window="items.push($event.detail)" class="mb-4">
                         <template x-if="items.length === 0">
                             <p class="text-gray-500 text-sm">Görsel yok</p>
                         </template>
@@ -121,7 +133,7 @@
                                     <input type="hidden" name="existing_images[]" :value="item.path">
                                     <img :src="item.url" alt="" class="w-28 h-28 object-cover rounded-lg border border-gray-200 cursor-move bg-gray-100">
                                     <span class="absolute top-1 left-1 bg-black/70 text-white text-[10px] px-1.5 py-0.5 rounded" x-text="i === 0 ? 'Ana' : (i + 1)"></span>
-                                    <button type="button" @click="items.splice(i, 1)" title="Kaldır"
+                                    <button type="button" @click="remove(i)" title="Kaldır"
                                             class="absolute top-1 right-1 bg-white/90 text-red-600 w-6 h-6 rounded-full text-sm leading-none shadow hover:bg-red-600 hover:text-white transition">&times;</button>
                                     <div class="flex justify-between mt-1">
                                         <button type="button" @click="move(i, i - 1)" :disabled="i === 0"
@@ -132,12 +144,12 @@
                                 </div>
                             </template>
                         </div>
-                        <p class="text-xs text-gray-500 mt-2">Sürükleyip bırakarak ya da oklarla sıralayın. İlk görsel ana görseldir (kapak fotoğrafı yoksa listelerde de o görünür). Değişiklikler "Güncelle" ile kaydedilir.</p>
+                        <p class="text-xs text-gray-500 mt-2">Sürükleyip bırakarak ya da oklarla sıralayın. İlk görsel ana görseldir (kapak fotoğrafı yoksa listelerde de o görünür). Ekleme ve kaldırma anında kaydedilir; sıralama "Güncelle" ile kaydedilir.</p>
                     </div>
 
                     <label class="block text-sm font-medium text-gray-700 mb-2">Yeni Görsel Ekle</label>
-                    <x-admin.image-uploader name="uploaded_images[]" />
-                    <p class="text-xs text-gray-500 mt-2">Yeni görseller mevcutların sonuna eklenir; kaydettikten sonra yukarıdan sıralayabilirsiniz.</p>
+                    <x-admin.image-uploader :attach-url="route('admin.artworks.images.attach', $artwork)" />
+                    <p class="text-xs text-gray-500 mt-2">Yüklenen görsel kaydetmeye gerek kalmadan eklenir ve yukarıda mevcut görsellerin sonuna düşer.</p>
                     @error('images.*') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                     @error('uploaded_images.*') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                 </div>

@@ -14,7 +14,8 @@ COPY resources ./resources
 COPY app ./app
 RUN npm run build
 
-FROM dunglas/frankenphp:1.7-php8.2-alpine
+# Sürüm sabitlenmez: 1.x serisi yeni PHP yamalarıyla yeniden yayımlanır (1.7 gibi eski seriler güncellenmez)
+FROM dunglas/frankenphp:1-php8.2-alpine
 
 # PHP ayarları
 ARG PHP_MEM_LIMIT=256
@@ -62,11 +63,13 @@ RUN apk del --no-cache \
     freetype-dev libjpeg-turbo-dev libpng-dev libwebp-dev
 
 # PHP konfigürasyonu
+# session.upload_progress kapalı: CVE-2026-109619 önlemi (Laravel PHP'nin yerel oturumunu kullanmaz, etkisi yok)
 RUN echo "memory_limit = ${PHP_MEM_LIMIT}M" > /usr/local/etc/php/conf.d/custom.ini && \
     echo "upload_max_filesize = ${PHP_UPLOAD_MAX_FILESIZE}M" >> /usr/local/etc/php/conf.d/custom.ini && \
     echo "post_max_size = ${PHP_POST_MAX_SIZE}M" >> /usr/local/etc/php/conf.d/custom.ini && \
     echo "max_execution_time = 300" >> /usr/local/etc/php/conf.d/custom.ini && \
-    echo "max_input_time = 300" >> /usr/local/etc/php/conf.d/custom.ini
+    echo "max_input_time = 300" >> /usr/local/etc/php/conf.d/custom.ini && \
+    echo "session.upload_progress.enabled = 0" >> /usr/local/etc/php/conf.d/custom.ini
 
 # OPcache ayarları
 RUN echo "opcache.enable=1" > /usr/local/etc/php/conf.d/opcache.ini && \

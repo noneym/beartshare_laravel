@@ -461,39 +461,20 @@ class NotificationService
         }
     }
 
-    /** Sipariş e-postası: eser listesi ve toplam */
+    /** Sipariş e-postası: eser listesi ve toplam (sınıflar NotificationTemplates::layout'ta stile çevrilir) */
     protected function buildOrderItemsHtml(Order $order): string
     {
         $order->loadMissing('items.artwork');
-        $itemsHtml = '';
+        $rows = '';
         foreach ($order->items as $item) {
             $price = number_format($item->price_tl, 0, ',', '.');
-            $itemsHtml .= "
-                <tr>
-                    <td style='padding: 8px; border-bottom: 1px solid #eee; font-size: 13px;'>" . e($item->artwork_title) . "</td>
-                    <td style='padding: 8px; border-bottom: 1px solid #eee; font-size: 13px;'>" . e($item->artist_name) . "</td>
-                    <td style='padding: 8px; border-bottom: 1px solid #eee; font-size: 13px; text-align: right;'>{$price} TL</td>
-                </tr>";
+            $rows .= "<tr><td style='padding:8px 0;border-bottom:1px solid #e6e1d8;'><strong>" . e($item->artwork_title) . "</strong><br><span class=\"muted\">" . e($item->artist_name) . "</span></td>"
+                . "<td style='padding:8px 0;border-bottom:1px solid #e6e1d8;text-align:right;white-space:nowrap;vertical-align:top;'>{$price} TL</td></tr>";
         }
         $totalTl = number_format($order->total_tl, 0, ',', '.');
 
-        return "
-                <table style='width: 100%; border-collapse: collapse; margin: 16px 0;'>
-                    <thead>
-                        <tr style='background: #f8f8f8;'>
-                            <th style='padding: 8px; text-align: left; font-size: 12px; color: #666;'>Eser</th>
-                            <th style='padding: 8px; text-align: left; font-size: 12px; color: #666;'>Sanatçı</th>
-                            <th style='padding: 8px; text-align: right; font-size: 12px; color: #666;'>Fiyat</th>
-                        </tr>
-                    </thead>
-                    <tbody>{$itemsHtml}</tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan='2' style='padding: 12px 8px; text-align: right; font-weight: bold; font-size: 14px;'>Toplam:</td>
-                            <td style='padding: 12px 8px; text-align: right; font-weight: bold; font-size: 14px;'>{$totalTl} TL</td>
-                        </tr>
-                    </tfoot>
-                </table>";
+        return "<div class=\"box\"><table role='presentation' width='100%' cellpadding='0' cellspacing='0' style='font-size:14px;'>{$rows}"
+            . "<tr><td style='padding:10px 0 0;'><strong>Toplam</strong></td><td style='padding:10px 0 0;text-align:right;white-space:nowrap;'><strong>{$totalTl} TL</strong></td></tr></table></div>";
     }
 
     /** Sipariş e-postası: kullanılan ArtPuan bilgisi (yoksa boş) */
@@ -507,63 +488,29 @@ class NotificationService
         $discountTl = number_format($order->discount_tl, 0, ',', '.');
         $artpuanUsed = number_format($order->artpuan_used, 2, ',', '.');
 
-        return "
-                <div style='background: #f0fdf4; border: 1px solid #bbf7d0; padding: 12px 16px; margin: 12px 0; border-radius: 8px;'>
-                    <p style='color: #15803d; font-size: 13px; margin: 0;'>
-                        &#11088; <strong>{$artpuanUsed} ArtPuan</strong> kullanıldı, <strong>{$discountTl} TL</strong> indirim uygulandı.
-                    </p>
-                    <p style='color: #166534; font-size: 12px; margin: 4px 0 0;'>Ara Toplam: {$subtotalTl} TL &rarr; Ödenecek: <strong>{$totalTl} TL</strong></p>
-                </div>";
+        return "<p><strong>{$artpuanUsed} ArtPuan®</strong> kullanıldı, <strong>{$discountTl} TL</strong> indirim uygulandı. Ara Toplam: {$subtotalTl} TL &rarr; Ödenecek: <strong>{$totalTl} TL</strong></p>";
     }
 
-    /** Sipariş e-postası (havale): ödeme kodu, banka hesapları, uyarılar */
+    /** Sipariş e-postası (havale): transfer kodu, tutar, banka hesapları, dekont bilgisi */
     protected function buildOrderPaymentInfoHtml(Order $order): string
     {
-        $bankPageUrl = url('/banka-hesaplari');
-        $artpuanHtml = $this->buildArtPuanUsedHtml($order);
+        $totalTl = number_format($order->total_tl, 0, ',', '.');
+        $code = e($order->payment_code);
 
         return "
-                <!-- Ödeme Kodu -->
-                <div style='background: #fefce8; border: 2px solid #fde68a; padding: 20px; margin: 20px 0; text-align: center; border-radius: 8px;'>
-                    <p style='color: #92400e; font-size: 12px; margin: 0 0 4px;'>Havale Açıklama Kodunuz</p>
-                    <p style='color: #78350f; font-size: 28px; font-weight: bold; font-family: monospace; margin: 0; letter-spacing: 2px;'>{$order->payment_code}</p>
-                    <p style='color: #a16207; font-size: 11px; margin: 4px 0 0;'>Bu kodu havale/EFT açıklamasına mutlaka yazınız</p>
+                <p class=\"note\">Ödemenizi tamamlarken, açıklama kısmına özel transfer kodunuzu yazmayı unutmayınız. Bu kod, işleminizin doğru ve hızlı bir şekilde tanımlanabilmesi için gereklidir.</p>
+                <div class=\"box\">Ödenecek Tutar: <strong>{$totalTl} TL</strong><br>Özel Transfer Kodunuz: <strong style=\"letter-spacing:1px;\">{$code}</strong></div>
+                {$this->buildArtPuanUsedHtml($order)}
+                <div class=\"box\">
+                    <span class=\"label\">Banka Hesap Bilgileri</span><br><br>
+                    <span class=\"muted\">Hesap Sahibi: BEARTSHARE ONLİNE SANAT GALERİSİ ANONİM ŞİRKETİ</span><br><br>
+                    <strong>Garanti Bankası</strong> — Galatasaray Şubesi<br>
+                    Hesap Numarası: 068 - 6291752<br>
+                    IBAN: <strong>TR62 0006 2000 0680 0006 2917 52</strong><br><br>
+                    <strong>Vakıflar Bankası</strong> — Levent Şubesi<br>
+                    IBAN: <strong>TR68 0001 5001 5800 7321 4175 83</strong>
                 </div>
-
-                {$artpuanHtml}
-
-                <!-- Banka Hesapları -->
-                <div style='margin: 20px 0;'>
-                    <p style='color: #333; font-size: 14px; font-weight: bold; margin: 0 0 4px;'>Banka Hesaplarımız</p>
-                    <p style='color: #888; font-size: 11px; margin: 0 0 12px;'>Hesap Sahibi: BEARTSHARE ONLİNE SANAT GALERİSİ ANONİM ŞİRKETİ</p>
-
-                    <!-- Garanti Bankası -->
-                    <div style='background: #f0fdf4; border: 1px solid #dcfce7; padding: 14px 16px; margin: 0 0 8px; border-radius: 8px;'>
-                        <p style='color: #166534; font-size: 13px; font-weight: bold; margin: 0 0 6px;'>&#127970; Garanti Bankası - Galatasaray Şubesi</p>
-                        <p style='color: #555; font-size: 12px; margin: 0 0 2px;'>Hesap No: <strong>068-6291752</strong></p>
-                        <p style='color: #555; font-size: 12px; margin: 0;'>IBAN: <strong style='font-family: monospace; letter-spacing: 1px;'>TR62 0006 2000 0680 0006 2917 52</strong></p>
-                    </div>
-
-                    <!-- Vakıflar Bankası -->
-                    <div style='background: #eff6ff; border: 1px solid #dbeafe; padding: 14px 16px; border-radius: 8px;'>
-                        <p style='color: #1e3a5f; font-size: 13px; font-weight: bold; margin: 0 0 6px;'>&#127970; Vakıflar Bankası - Levent Şubesi</p>
-                        <p style='color: #555; font-size: 12px; margin: 0;'>IBAN: <strong style='font-family: monospace; letter-spacing: 1px;'>TR68 0001 5001 5800 7321 4175 83</strong></p>
-                    </div>
-
-                    <p style='text-align: center; margin: 12px 0 0;'>
-                        <a href='{$bankPageUrl}' style='color: #d97706; font-size: 12px;'>Tüm banka hesap bilgilerimizi görüntüleyin &rarr;</a>
-                    </p>
-                </div>
-
-                <!-- Uyarılar -->
-                <div style='background: #fef2f2; border: 1px solid #fecaca; padding: 14px 16px; margin: 16px 0; border-radius: 8px;'>
-                    <p style='color: #991b1b; font-size: 13px; font-weight: bold; margin: 0 0 4px;'>&#9200; 30 Dakika Rezervasyon Süresi</p>
-                    <p style='color: #b91c1c; font-size: 12px; margin: 0;'>Seçtiğiniz eserler sipariş oluşturulduktan itibaren 30 dakika boyunca sizin için rezerve edilir. Bu süre içinde ödemenizi gerçekleştirmeniz gerekmektedir.</p>
-                </div>
-
-                <div style='background: #eff6ff; border: 1px solid #bfdbfe; padding: 14px 16px; margin: 0 0 16px; border-radius: 8px;'>
-                    <p style='color: #1e40af; font-size: 13px; font-weight: bold; margin: 0 0 4px;'>&#128231; Ödeme Dekontu</p>
-                    <p style='color: #1d4ed8; font-size: 12px; margin: 0;'>Ödemenizi yaptıktan sonra dekontunuzu <a href='mailto:info@beartshare.com' style='color: #1d4ed8; font-weight: bold;'>info@beartshare.com</a> adresine gönderebilirsiniz.</p>
-                </div>";
+                <p>Seçtiğiniz eserler sipariş oluşturulduktan itibaren 30 dakika boyunca sizin için rezerve edilir; bu süre içinde ödemenizi gerçekleştirmeniz gerekmektedir.</p>
+                <p>Ödemenizi yaptıktan sonra dekontunuzu <a href=\"mailto:info@beartshare.com\" style=\"color:#14171c;\">info@beartshare.com</a> adresine gönderebilirsiniz. Ödemeniz onaylandıktan sonra sipariş süreciniz başlatılacaktır.</p>";
     }
 }

@@ -15,7 +15,7 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $users = User::withCount(['orders', 'favorites', 'referrals'])
+        $users = User::withCount(['orders', 'favorites', 'referrals', 'passkeys'])
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->input('search');
                 $query->where(function ($q) use ($search) {
@@ -41,6 +41,15 @@ class UserController extends Controller
                     default => $query,
                 };
             })
+            // 2FA: yalnızca doğrulanmış (onaylı) SMS / Authenticator kurulumu açık sayılır
+            ->when($request->filled('two_factor'), function ($query) use ($request) {
+                match ($request->input('two_factor')) {
+                    'on' => $query->whereIn('two_factor_method', ['sms', 'totp'])->whereNotNull('two_factor_confirmed_at'),
+                    'passkey' => $query->has('passkeys'),
+                    'off' => $query->where(fn ($q) => $q->whereNull('two_factor_confirmed_at')->orWhereNotIn('two_factor_method', ['sms', 'totp'])->orWhereNull('two_factor_method')),
+                    default => $query,
+                };
+            })
             ->when($request->filled('has_artpuan'), function ($query) use ($request) {
                 match ($request->input('has_artpuan')) {
                     'yes' => $query->where('art_puan', '>', 0),
@@ -52,7 +61,7 @@ class UserController extends Controller
                 // Tablo başlığına tıklayarak sıralama: ?sort=<sütun>&dir=asc|desc
                 $columns = [
                     'id' => 'id', 'name' => 'name', 'phone' => 'phone', 'orders' => 'orders_count',
-                    'artpuan' => 'art_puan', 'referrals' => 'referrals_count', 'role' => 'is_admin', 'created' => 'created_at',
+                    'artpuan' => 'art_puan', 'referrals' => 'referrals_count', 'role' => 'is_admin', 'created' => 'created_at', 'two_factor' => 'two_factor_confirmed_at', 'passkeys' => 'passkeys_count',
                 ];
                 if (isset($columns[$request->input('sort')]) && $request->filled('dir')) {
                     $query->orderBy($columns[$request->input('sort')], $request->input('dir') === 'asc' ? 'asc' : 'desc')

@@ -44,6 +44,16 @@
                 </select>
             </div>
 
+            <div class="min-w-[120px]">
+                <label class="block text-xs text-gray-500 mb-1">2FA</label>
+                <select name="two_factor" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary bg-white">
+                    <option value="">Tumu</option>
+                    <option value="on" {{ request('two_factor') === 'on' ? 'selected' : '' }}>2FA Açık</option>
+                    <option value="off" {{ request('two_factor') === 'off' ? 'selected' : '' }}>2FA Kapalı</option>
+                    <option value="passkey" {{ request('two_factor') === 'passkey' ? 'selected' : '' }}>Passkey Var</option>
+                </select>
+            </div>
+
             <!-- Sort -->
             <div class="min-w-[140px]">
                 <label class="block text-xs text-gray-500 mb-1">Siralama</label>
@@ -61,7 +71,7 @@
                 <button type="submit" class="bg-gray-800 text-white px-4 py-2 rounded text-sm hover:bg-gray-700 transition">
                     Filtrele
                 </button>
-                @if(request()->hasAny(['search', 'role', 'has_orders', 'has_artpuan', 'sort']))
+                @if(request()->hasAny(['search', 'role', 'has_orders', 'has_artpuan', 'two_factor', 'sort']))
                     <a href="{{ route('admin.users.index') }}" class="text-sm text-gray-500 hover:text-gray-700 py-2">
                         Temizle
                     </a>
@@ -92,6 +102,8 @@
                         <x-admin.th sort="artpuan" first="desc" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ArtPuan</x-admin.th>
                         <x-admin.th sort="referrals" first="desc" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Referanslar</x-admin.th>
                         <x-admin.th sort="role" first="desc" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rol</x-admin.th>
+                        <x-admin.th sort="two_factor" first="desc" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">2FA</x-admin.th>
+                        <x-admin.th sort="passkeys" first="desc" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Passkey</x-admin.th>
                         <x-admin.th sort="created" first="desc" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kayit</x-admin.th>
                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Islemler</th>
                     </tr>
@@ -135,6 +147,22 @@
                                     <span class="inline-block px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-600">Kullanici</span>
                                 @endif
                             </td>
+                            <td class="px-6 py-4">
+                                @if($user->hasTwoFactor())
+                                    <span class="inline-block px-2 py-0.5 text-xs rounded-full bg-green-100 text-green-800" title="Açılış: {{ $user->two_factor_confirmed_at->format('d.m.Y H:i') }}">
+                                        {{ $user->two_factor_method === 'totp' ? 'Authenticator' : 'SMS' }}
+                                    </span>
+                                @else
+                                    <span class="text-xs text-gray-400">Kapalı</span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4">
+                                @if($user->passkeys_count > 0)
+                                    <span class="inline-block px-2 py-0.5 text-xs rounded-full bg-blue-100 text-blue-800">{{ $user->passkeys_count }} passkey</span>
+                                @else
+                                    <span class="text-xs text-gray-400">Yok</span>
+                                @endif
+                            </td>
                             <td class="px-6 py-4 text-xs text-gray-500">
                                 {{ $user->created_at->format('d.m.Y') }}
                             </td>
@@ -147,12 +175,12 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="px-6 py-12 text-center">
+                            <td colspan="11" class="px-6 py-12 text-center">
                                 <div class="text-gray-400">
                                     <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
                                     </svg>
-                                    @if(request()->hasAny(['search', 'role', 'has_orders', 'has_artpuan']))
+                                    @if(request()->hasAny(['search', 'role', 'has_orders', 'has_artpuan', 'two_factor']))
                                         <p class="text-sm font-medium text-gray-500">Filtrelere uygun kullanici bulunamadi</p>
                                         <a href="{{ route('admin.users.index') }}" class="text-sm text-blue-600 hover:text-blue-800 mt-1 inline-block">Filtreleri temizle</a>
                                     @else

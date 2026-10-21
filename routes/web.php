@@ -215,6 +215,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('notification-logs',[App\Http\Controllers\Admin\NotificationLogController::class, 'index'])->name('notification-logs.index');
 
     // Yönetici bildirim alıcıları (yeni sipariş / iletişim / eser başvurusu)
+    Route::get('notification-templates', [App\Http\Controllers\Admin\NotificationTemplateController::class, 'index'])->name('notification-templates.index');
+    Route::post('notification-templates/preview', [App\Http\Controllers\Admin\NotificationTemplateController::class, 'preview'])->name('notification-templates.preview');
+    Route::get('notification-templates/{key}', [App\Http\Controllers\Admin\NotificationTemplateController::class, 'edit'])->name('notification-templates.edit');
+    Route::put('notification-templates/{key}', [App\Http\Controllers\Admin\NotificationTemplateController::class, 'update'])->name('notification-templates.update');
+    Route::delete('notification-templates/{key}', [App\Http\Controllers\Admin\NotificationTemplateController::class, 'reset'])->name('notification-templates.reset');
     Route::get('notification-recipients', [App\Http\Controllers\Admin\NotificationRecipientController::class, 'index'])->name('notification-recipients.index');
     Route::post('notification-recipients', [App\Http\Controllers\Admin\NotificationRecipientController::class, 'store'])->name('notification-recipients.store');
     Route::put('notification-recipients/{notificationRecipient}', [App\Http\Controllers\Admin\NotificationRecipientController::class, 'update'])->name('notification-recipients.update');

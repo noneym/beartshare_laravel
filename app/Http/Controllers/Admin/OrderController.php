@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Admin\Concerns\SortsIndex;
 use App\Http\Controllers\Controller;
+use App\Jobs\NotifyFavoriteWatchers;
 use App\Models\Order;
 use App\Models\User;
 use App\Services\NotificationService;
@@ -123,13 +124,17 @@ class OrderController extends Controller
                 'confirmed_at' => now(),
             ]);
 
-            // Eserleri satıldı olarak işaretle
+            // Eserleri satıldı olarak işaretle; favorisinde olan diğer üyelere "satıldı" bildirimi (işlem bitince, kuyruktan)
             foreach ($order->items as $item) {
                 if ($item->artwork) {
+                    $wasSold = (bool) $item->artwork->is_sold;
                     $item->artwork->update([
                         'is_sold' => true,
                         'is_reserved' => false,
                     ]);
+                    if (!$wasSold) {
+                        NotifyFavoriteWatchers::dispatch($item->artwork->id, 'sold', (int) $order->user_id)->afterCommit();
+                    }
                 }
             }
 

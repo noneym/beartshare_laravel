@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Admin\Concerns\SortsIndex;
 use App\Http\Controllers\Controller;
+use App\Jobs\NotifyFavoriteWatchers;
 use App\Models\Artist;
 use App\Models\Artwork;
 use App\Models\Category;
@@ -308,7 +309,20 @@ class ArtworkController extends Controller
         }
         unset($validated['uploaded_images'], $validated['uploaded_cover']);
 
+        $oldPrice = (float) $artwork->price_tl;
+        $wasSold = (bool) $artwork->is_sold;
+
         $artwork->update($validated);
+
+        // Favori bildirimleri (kuyruktan): satıldı işaretlendi / TL fiyatı değişti
+        if (!$wasSold && $artwork->is_sold) {
+            NotifyFavoriteWatchers::dispatch($artwork->id, 'sold');
+        } elseif (!$artwork->is_sold && $artwork->is_active && $oldPrice > 0 && (float) $artwork->price_tl !== $oldPrice) {
+            NotifyFavoriteWatchers::dispatch($artwork->id, 'price_changed', 0, [
+                'OLD_PRICE' => number_format($oldPrice, 0, ',', '.'),
+                'NEW_PRICE' => number_format((float) $artwork->price_tl, 0, ',', '.'),
+            ]);
+        }
 
         return redirect()->route('admin.artworks.index')
             ->with('success', 'Eser başarıyla güncellendi.');

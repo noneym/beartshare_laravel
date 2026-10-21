@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\NotificationTemplates;
 use App\Jobs\NotifyAdminRecipients;
 use App\Models\Artwork;
 use App\Models\NotificationLog;
@@ -27,7 +28,7 @@ class NotificationService
         return NotificationLog::create($data);
     }
 
-    protected function sendSmsAndLog(string $phone, string $message, string $type, ?int $orderId = null, ?int $userId = null): void
+    protected function sendSmsAndLog(string $phone, string $message, string $type, ?int $orderId = null, ?int $userId = null, ?int $artworkId = null): void
     {
         try {
             $result = $this->smsService->send($phone, $message);
@@ -41,6 +42,7 @@ class NotificationService
                 'error' => $result['error'] ?? null,
                 'api_response' => $result['response'] ?? null,
                 'order_id' => $orderId,
+                'artwork_id' => $artworkId,
                 'user_id' => $userId,
             ]);
         } catch (\Exception $e) {
@@ -54,12 +56,13 @@ class NotificationService
                 'status' => 'failed',
                 'error' => $e->getMessage(),
                 'order_id' => $orderId,
+                'artwork_id' => $artworkId,
                 'user_id' => $userId,
             ]);
         }
     }
 
-    protected function sendEmailAndLog(string $to, string $subject, string $htmlBody, string $type, ?int $orderId = null, ?int $userId = null): bool
+    protected function sendEmailAndLog(string $to, string $subject, string $htmlBody, string $type, ?int $orderId = null, ?int $userId = null, ?int $artworkId = null): bool
     {
         try {
             $this->sendEmail($to, $subject, $htmlBody);
@@ -72,6 +75,7 @@ class NotificationService
                 'message' => mb_substr(strip_tags($htmlBody), 0, 500),
                 'status' => 'success',
                 'order_id' => $orderId,
+                'artwork_id' => $artworkId,
                 'user_id' => $userId,
             ]);
 
@@ -88,6 +92,7 @@ class NotificationService
                 'status' => 'failed',
                 'error' => $e->getMessage(),
                 'order_id' => $orderId,
+                'artwork_id' => $artworkId,
                 'user_id' => $userId,
             ]);
 
@@ -145,98 +150,104 @@ class NotificationService
     // ── Bildirim Methodlari ──
 
     /**
-     * Eser rezerve edildiğinde favorisine eklemiş kullanıcılara bildirim gönder.
-     * Satılmış eser için bildirim göndermez; aynı kullanıcıya aynı eser için
-     * tekrar bildirim göndermez.
+     * Favori eser bildirimi: eseri favorisine eklemiş üyelere (hariç tutulan hariç).
+     * event: reserved | sold | price_changed. Rezerve / satıldı aynı üyeye aynı eser için bir kez gider.
      */
-    public function notifyFavoriteWatchers(Artwork $artwork, int $excludeUserId = 0): void
+    public function notifyFavoriteWatchers(Artwork $artwork, int $excludeUserId = 0, string $event = 'reserved', array $extra = []): void
     {
-        if ($artwork->is_sold) {
+        $type = 'favorite_' . $event;
+        if (!isset(NotificationTemplates::DEFINITIONS[$type])) {
+            return;
+        }
+        // Satılmış esere rezerve / fiyat bildirimi gitmez
+        if ($event !== 'sold' && $artwork->is_sold) {
             return;
         }
 
-        $watchers = $artwork->favoritedBy()
-            ->where('users.id', '!=', $excludeUserId)
-            ->get();
+        $artwork->loadMissing('artist');
+        $watchers = $artwork->favoritedBy()->where('users.id', '!=', $excludeUserId)->get();
 
         foreach ($watchers as $watcher) {
-            $alreadyNotified = NotificationLog::where('type', 'favorite_reserved')
-                ->where('user_id', $watcher->id)
-                ->where('message', 'like', '%' . $artwork->title . '%')
-                ->where('status', 'success')
-                ->exists();
-
-            if ($alreadyNotified) {
-                continue;
+            if ($event !== 'price_changed') {
+                $alreadyNotified = NotificationLog::where('type', $type)
+                    ->where('user_id', $watcher->id)
+                    ->where('artwork_id', $artwork->id)
+                    ->where('status', 'success')
+                    ->exists();
+                if ($alreadyNotified) {
+                    continue;
+                }
             }
 
-            $message = "BeArtShare: Favori listenizdeki \"{$artwork->title}\" eseri rezerve edildi.";
+            [$first, $last] = NotificationTemplates::nameParts($watcher->name);
+            $msg = NotificationTemplates::render($type, array_merge([
+                'FIRSTNAME' => $first,
+                'LASTNAME' => $last,
+                'ARTWORK_TITLE' => $artwork->title,
+                'ARTIST_NAME' => $artwork->artist->name ?? '',
+                'ARTWORK_URL' => route('artwork.detail', $artwork->slug),
+                'ARTWORKS_URL' => route('artworks'),
+            ], $extra));
 
-            if ($watcher->phone) {
-                $this->sendSmsAndLog($watcher->phone, $message, 'favorite_reserved', null, $watcher->id);
+            if ($msg['sms'] && $watcher->phone) {
+                $this->sendSmsAndLog($watcher->phone, $msg['sms'], $type, null, $watcher->id, $artwork->id);
             }
-
-            if ($watcher->email) {
-                $this->sendEmailAndLog(
-                    $watcher->email,
-                    'Favori Eseriniz Rezerve Edildi',
-                    $this->buildReservedEmailBody($artwork, $watcher),
-                    'favorite_reserved',
-                    null,
-                    $watcher->id
-                );
+            if ($msg['html'] && $watcher->email) {
+                $this->sendEmailAndLog($watcher->email, $msg['subject'], $msg['html'], $type, null, $watcher->id, $artwork->id);
             }
         }
     }
 
     /**
-     * Sipariş onaylandığında ArtPuan bildirimi gönder (alıcıya)
+     * Sipariş onaylandığında alıcıya bildirim (kazanılan ArtPuan ile)
      */
     public function notifyBuyerArtPuan(User $buyer, float $puanAmount, Order $order): void
     {
-        $formattedPuan = number_format($puanAmount, 2, ',', '.');
-        $message = "BeArtShare: Siparişiniz onaylanmıştır. {$formattedPuan} ArtPuan kazandınız! Sipariş No: {$order->order_number}";
+        [$first, $last] = NotificationTemplates::nameParts($buyer->name);
+        $msg = NotificationTemplates::render('order_confirmed', [
+            'FIRSTNAME' => $first,
+            'LASTNAME' => $last,
+            'ORDER_NUMBER' => $order->order_number,
+            'ORDER_ID' => $order->id,
+            'ARTPUAN' => $this->puan($puanAmount),
+            'ARTPUAN_BALANCE' => $this->puan($buyer->art_puan),
+        ]);
 
-        if ($buyer->phone) {
-            $this->sendSmsAndLog($buyer->phone, $message, 'buyer_artpuan', $order->id, $buyer->id);
+        if ($msg['sms'] && $buyer->phone) {
+            $this->sendSmsAndLog($buyer->phone, $msg['sms'], 'buyer_artpuan', $order->id, $buyer->id);
         }
-
-        if ($buyer->email) {
-            $this->sendEmailAndLog(
-                $buyer->email,
-                'Siparişiniz Onaylandı - ArtPuan Kazandınız!',
-                $this->buildBuyerArtPuanEmailBody($buyer, $puanAmount, $order),
-                'buyer_artpuan',
-                $order->id,
-                $buyer->id
-            );
+        if ($msg['html'] && $buyer->email) {
+            $this->sendEmailAndLog($buyer->email, $msg['subject'], $msg['html'], 'buyer_artpuan', $order->id, $buyer->id);
         }
     }
 
     /**
-     * Sipariş onaylandığında referans sahibine ArtPuan bildirimi gönder
+     * Sipariş onaylandığında referans sahibine ArtPuan bildirimi
      */
     public function notifyReferrerArtPuan(User $referrer, User $buyer, float $puanAmount, Order $order): void
     {
-        $formattedPuan = number_format($puanAmount, 2, ',', '.');
-        $buyerFirstName = explode(' ', $buyer->name)[0];
+        [$first, $last] = NotificationTemplates::nameParts($referrer->name);
+        $msg = NotificationTemplates::render('referrer_artpuan', [
+            'FIRSTNAME' => $first,
+            'LASTNAME' => $last,
+            'BUYER_FIRSTNAME' => NotificationTemplates::nameParts($buyer->name)[0],
+            'ARTPUAN' => $this->puan($puanAmount),
+            'ARTPUAN_BALANCE' => $this->puan($referrer->art_puan),
+            'ORDER_NUMBER' => $order->order_number,
+        ]);
 
-        $message = "BeArtShare: Referansınız {$buyerFirstName} bir satın alma yaptı. {$formattedPuan} ArtPuan kazandınız!";
-
-        if ($referrer->phone) {
-            $this->sendSmsAndLog($referrer->phone, $message, 'referrer_artpuan', $order->id, $referrer->id);
+        if ($msg['sms'] && $referrer->phone) {
+            $this->sendSmsAndLog($referrer->phone, $msg['sms'], 'referrer_artpuan', $order->id, $referrer->id);
         }
-
-        if ($referrer->email) {
-            $this->sendEmailAndLog(
-                $referrer->email,
-                'Referansınızdan ArtPuan Kazandınız!',
-                $this->buildReferrerArtPuanEmailBody($referrer, $buyer, $puanAmount, $order),
-                'referrer_artpuan',
-                $order->id,
-                $referrer->id
-            );
+        if ($msg['html'] && $referrer->email) {
+            $this->sendEmailAndLog($referrer->email, $msg['subject'], $msg['html'], 'referrer_artpuan', $order->id, $referrer->id);
         }
+    }
+
+    /** ArtPuan miktarı: küsurat yoksa tam sayı (650), varsa iki hane (650,50) */
+    protected function puan(float $amount): string
+    {
+        return number_format($amount, fmod($amount, 1.0) == 0.0 ? 0 : 2, ',', '.');
     }
 
     /**
@@ -244,31 +255,32 @@ class NotificationService
      */
     public function notifyOrderCreated(Order $order): void
     {
+        $isTransfer = $order->payment_method === 'havale';
+        $totalTl = number_format($order->total_tl, 0, ',', '.');
         $bankPageUrl = url('/banka-hesaplari');
+        [$first, $last] = NotificationTemplates::nameParts($order->customer_name);
 
-        $message = "BeArtShare: Siparişiniz başarıyla oluşturuldu. Sipariş No: {$order->order_number}. ";
-        if ($order->payment_method === 'havale') {
-            $totalTl = number_format($order->total_tl, 0, ',', '.');
-            $message .= "Ödeme tutarı: {$totalTl} TL. Havale açıklama kodunuz: {$order->payment_code}. ";
-            $message .= "Banka hesaplarımız: {$bankPageUrl} ";
-            $message .= "Eserler 30 dk rezervedir. Dekont için: info@beartshare.com";
-        }
+        $msg = NotificationTemplates::render('order_created', [
+            'FIRSTNAME' => $first,
+            'LASTNAME' => $last,
+            'ORDER_NUMBER' => $order->order_number,
+            'ORDER_ID' => $order->id,
+            'TOTAL' => $totalTl,
+            'PAYMENT_CODE' => $order->payment_code,
+            'BANK_URL' => $bankPageUrl,
+            'BANK_TRANSFER_SMS' => $isTransfer
+                ? "Ödeme tutarı: {$totalTl} TL. Havale açıklama kodunuz: {$order->payment_code}. Banka hesaplarımız: {$bankPageUrl} Eserler 30 dk rezervedir. Dekont için: info@beartshare.com"
+                : '',
+            'PAYMENT_INFO_HTML' => $isTransfer ? $this->buildOrderPaymentInfoHtml($order) : $this->buildArtPuanUsedHtml($order),
+            'ORDER_ITEMS_HTML' => $this->buildOrderItemsHtml($order),
+        ]);
 
         $userId = $order->user_id;
-
-        if ($order->customer_phone) {
-            $this->sendSmsAndLog($order->customer_phone, $message, 'order_created', $order->id, $userId);
+        if ($msg['sms'] && $order->customer_phone) {
+            $this->sendSmsAndLog($order->customer_phone, $msg['sms'], 'order_created', $order->id, $userId);
         }
-
-        if ($order->customer_email) {
-            $this->sendEmailAndLog(
-                $order->customer_email,
-                'Siparişiniz Alındı - ' . $order->order_number,
-                $this->buildOrderCreatedEmailBody($order),
-                'order_created',
-                $order->id,
-                $userId
-            );
+        if ($msg['html'] && $order->customer_email) {
+            $this->sendEmailAndLog($order->customer_email, $msg['subject'], $msg['html'], 'order_created', $order->id, $userId);
         }
 
         $this->notifyAdminsNewOrder($order);
@@ -286,8 +298,14 @@ class NotificationService
         $adminUrl = route('admin.orders.show', $order->id);
         $titles = $order->items->pluck('artwork_title')->filter()->implode(', ');
 
-        $sms = "BeArtShare yeni sipariş: {$order->order_number} - {$order->customer_name} - {$total} ({$method})"
-            . ($titles ? " - " . \Illuminate\Support\Str::limit($titles, 60) : '');
+        $sms = NotificationTemplates::render('admin_new_order', [
+            'ORDER_NUMBER' => $order->order_number,
+            'ORDER_ID' => $order->id,
+            'CUSTOMER_NAME' => $order->customer_name,
+            'TOTAL' => number_format($order->total_tl, 0, ',', '.'),
+            'PAYMENT_METHOD' => $method,
+            'ARTWORK_TITLES' => \Illuminate\Support\Str::limit($titles, 60),
+        ])['sms'] ?? '';
 
         $rows = '';
         foreach ($order->items as $item) {
@@ -401,220 +419,110 @@ class NotificationService
     }
 
     /**
-     * Şifre sıfırlama bağlantısı e-postası
+     * Şifre sıfırlama bağlantısı e-postası (şablon kapatılamaz: kapalıysa da gönderilir)
      */
     public function sendPasswordReset(User $user, string $url): bool
     {
-        $minutes = config('auth.passwords.users.expire', 60);
-        $name = e($user->name);
-        $html = "
-        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
-            <div style='background: #1a1a1a; padding: 24px; text-align: center;'>
-                <h1 style='color: #fff; font-size: 20px; margin: 0;'>BeArtShare</h1>
-            </div>
-            <div style='padding: 32px 24px; background: #fff;'>
-                <p style='color: #333; font-size: 14px;'>Merhaba {$name},</p>
-                <p style='color: #555; font-size: 14px;'>
-                    Hesabınız için bir şifre sıfırlama talebi aldık. Yeni şifrenizi belirlemek için aşağıdaki butona tıklayın.
-                </p>
-                <div style='text-align: center; margin: 32px 0;'>
-                    <a href='{$url}' style='background: #1a1a1a; color: #fff; padding: 12px 32px; text-decoration: none; font-size: 14px; display: inline-block;'>Şifremi Sıfırla</a>
-                </div>
-                <p style='color: #888; font-size: 12px;'>
-                    Bu bağlantı {$minutes} dakika geçerlidir. Bu talebi siz yapmadıysanız bu e-postayı yok sayabilirsiniz; şifreniz değişmez.
-                </p>
-                <p style='color: #aaa; font-size: 11px; word-break: break-all;'>
-                    Buton çalışmazsa bu adresi tarayıcınıza yapıştırın:<br>{$url}
-                </p>
-            </div>
-        </div>";
+        [$first, $last] = NotificationTemplates::nameParts($user->name);
+        $vars = [
+            'FIRSTNAME' => $first,
+            'LASTNAME' => $last,
+            'RESET_URL' => $url,
+            'MINUTES' => config('auth.passwords.users.expire', 60),
+        ];
+        $t = NotificationTemplates::get('password_reset');
+        $html = NotificationTemplates::layout(NotificationTemplates::fill($t['email_body'], $vars, true));
+        $subject = NotificationTemplates::fill($t['email_subject'], $vars, false);
 
-        return $this->sendEmailAndLog($user->email, 'Şifre Sıfırlama - BeArtShare', $html, 'password_reset', null, $user->id);
+        return $this->sendEmailAndLog($user->email, $subject, $html, 'password_reset', null, $user->id);
     }
 
     // ── E-posta Şablonları ──
-
-    protected function buildReservedEmailBody(Artwork $artwork, User $watcher): string
-    {
-        $artworkUrl = route('artwork.detail', $artwork->slug);
-        return "
-        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
-            <div style='background: #1a1a1a; padding: 24px; text-align: center;'>
-                <h1 style='color: #fff; font-size: 20px; margin: 0;'>BeArtShare</h1>
-            </div>
-            <div style='padding: 32px 24px; background: #fff;'>
-                <p style='color: #333; font-size: 14px;'>Merhaba {$watcher->name},</p>
-                <p style='color: #555; font-size: 14px;'>
-                    Favori listenizde bulunan <strong>\"{$artwork->title}\"</strong> adlı eser rezerve edilmiştir.
-                </p>
-                <p style='color: #555; font-size: 14px;'>
-                    Koleksiyonumuzdaki diğer eserleri incelemek için sitemizi ziyaret edebilirsiniz.
-                </p>
-                <div style='text-align: center; margin: 24px 0;'>
-                    <a href='" . url('/eserler') . "' style='background: #1a1a1a; color: #fff; padding: 12px 32px; text-decoration: none; font-size: 14px;'>Eserleri Keşfet</a>
-                </div>
-            </div>
-            <div style='padding: 16px 24px; background: #f8f8f8; text-align: center;'>
-                <p style='color: #999; font-size: 11px; margin: 0;'>BeArtShare &copy; " . date('Y') . "</p>
-            </div>
-        </div>";
-    }
-
-    protected function buildBuyerArtPuanEmailBody(User $buyer, float $puanAmount, Order $order): string
-    {
-        $formattedPuan = number_format($puanAmount, 2, ',', '.');
-        $totalPuan = number_format($buyer->art_puan, 2, ',', '.');
-        return "
-        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
-            <div style='background: #1a1a1a; padding: 24px; text-align: center;'>
-                <h1 style='color: #fff; font-size: 20px; margin: 0;'>BeArtShare</h1>
-            </div>
-            <div style='padding: 32px 24px; background: #fff;'>
-                <p style='color: #333; font-size: 14px;'>Merhaba {$buyer->name},</p>
-                <p style='color: #555; font-size: 14px;'>
-                    <strong>{$order->order_number}</strong> numaralı siparişiniz onaylanmıştır.
-                </p>
-                <div style='background: #f0fdf4; border: 1px solid #bbf7d0; padding: 16px; margin: 16px 0; text-align: center;'>
-                    <p style='color: #16a34a; font-size: 24px; font-weight: bold; margin: 0;'>{$formattedPuan} ArtPuan</p>
-                    <p style='color: #15803d; font-size: 12px; margin: 4px 0 0;'>kazandınız!</p>
-                </div>
-                <p style='color: #555; font-size: 14px;'>
-                    Toplam ArtPuan bakiyeniz: <strong>{$totalPuan} AP</strong>
-                </p>
-            </div>
-            <div style='padding: 16px 24px; background: #f8f8f8; text-align: center;'>
-                <p style='color: #999; font-size: 11px; margin: 0;'>BeArtShare &copy; " . date('Y') . "</p>
-            </div>
-        </div>";
-    }
-
-    protected function buildReferrerArtPuanEmailBody(User $referrer, User $buyer, float $puanAmount, Order $order): string
-    {
-        $formattedPuan = number_format($puanAmount, 2, ',', '.');
-        $totalPuan = number_format($referrer->art_puan, 2, ',', '.');
-        $buyerFirstName = explode(' ', $buyer->name)[0];
-
-        return "
-        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
-            <div style='background: #1a1a1a; padding: 24px; text-align: center;'>
-                <h1 style='color: #fff; font-size: 20px; margin: 0;'>BeArtShare</h1>
-            </div>
-            <div style='padding: 32px 24px; background: #fff;'>
-                <p style='color: #333; font-size: 14px;'>Merhaba {$referrer->name},</p>
-                <p style='color: #555; font-size: 14px;'>
-                    Referansınız <strong>{$buyerFirstName}</strong> bir satın alma gerçekleştirdi.
-                </p>
-                <div style='background: #f0fdf4; border: 1px solid #bbf7d0; padding: 16px; margin: 16px 0; text-align: center;'>
-                    <p style='color: #16a34a; font-size: 24px; font-weight: bold; margin: 0;'>{$formattedPuan} ArtPuan</p>
-                    <p style='color: #15803d; font-size: 12px; margin: 4px 0 0;'>kazandınız!</p>
-                </div>
-                <p style='color: #555; font-size: 14px;'>
-                    Toplam ArtPuan bakiyeniz: <strong>{$totalPuan} AP</strong>
-                </p>
-            </div>
-            <div style='padding: 16px 24px; background: #f8f8f8; text-align: center;'>
-                <p style='color: #999; font-size: 11px; margin: 0;'>BeArtShare &copy; " . date('Y') . "</p>
-            </div>
-        </div>";
-    }
 
     /**
      * Manuel ArtPuan ekleme bildirimi
      */
     public function notifyManualArtPuan(User $user, float $puanAmount, string $description, array $channels = ['sms', 'email']): void
     {
-        $formattedPuan = number_format($puanAmount, 2, ',', '.');
-        $totalPuan = number_format($user->art_puan, 2, ',', '.');
+        [$first, $last] = NotificationTemplates::nameParts($user->name);
+        $msg = NotificationTemplates::render('manual_artpuan', [
+            'FIRSTNAME' => $first,
+            'LASTNAME' => $last,
+            'ARTPUAN' => $this->puan($puanAmount),
+            'DESCRIPTION' => $description,
+            'ARTPUAN_BALANCE' => $this->puan($user->art_puan),
+        ]);
 
-        // SMS gönder
-        if (in_array('sms', $channels) && $user->phone) {
-            $message = "BeArtShare: Hesabınıza {$formattedPuan} ArtPuan eklendi. Açıklama: {$description}. Toplam bakiyeniz: {$totalPuan} AP";
-            $this->sendSmsAndLog($user->phone, $message, 'manual_artpuan', null, $user->id);
+        if (in_array('sms', $channels) && $msg['sms'] && $user->phone) {
+            $this->sendSmsAndLog($user->phone, $msg['sms'], 'manual_artpuan', null, $user->id);
         }
-
-        // E-posta gönder
-        if (in_array('email', $channels) && $user->email) {
-            $this->sendEmailAndLog(
-                $user->email,
-                'ArtPuan Hesabınıza Eklendi!',
-                $this->buildManualArtPuanEmailBody($user, $puanAmount, $description),
-                'manual_artpuan',
-                null,
-                $user->id
-            );
+        if (in_array('email', $channels) && $msg['html'] && $user->email) {
+            $this->sendEmailAndLog($user->email, $msg['subject'], $msg['html'], 'manual_artpuan', null, $user->id);
         }
     }
 
-    protected function buildManualArtPuanEmailBody(User $user, float $puanAmount, string $description): string
+    /** Sipariş e-postası: eser listesi ve toplam */
+    protected function buildOrderItemsHtml(Order $order): string
     {
-        $formattedPuan = number_format($puanAmount, 2, ',', '.');
-        $totalPuan = number_format($user->art_puan, 2, ',', '.');
-
-        return "
-        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
-            <div style='background: #1a1a1a; padding: 24px; text-align: center;'>
-                <h1 style='color: #fff; font-size: 20px; margin: 0;'>BeArtShare</h1>
-            </div>
-            <div style='padding: 32px 24px; background: #fff;'>
-                <p style='color: #333; font-size: 14px;'>Merhaba {$user->name},</p>
-                <p style='color: #555; font-size: 14px;'>
-                    Hesabınıza ArtPuan eklenmiştir!
-                </p>
-                <div style='background: #f0fdf4; border: 1px solid #bbf7d0; padding: 16px; margin: 16px 0; text-align: center;'>
-                    <p style='color: #16a34a; font-size: 24px; font-weight: bold; margin: 0;'>{$formattedPuan} ArtPuan</p>
-                    <p style='color: #15803d; font-size: 12px; margin: 4px 0 0;'>eklendi!</p>
-                </div>
-                <p style='color: #555; font-size: 14px;'>
-                    <strong>Açıklama:</strong> {$description}
-                </p>
-                <p style='color: #555; font-size: 14px;'>
-                    Toplam ArtPuan bakiyeniz: <strong>{$totalPuan} AP</strong>
-                </p>
-                <p style='color: #888; font-size: 12px; margin-top: 24px;'>
-                    ArtPuan'larınızı sonraki alışverişlerinizde kullanabilirsiniz.
-                </p>
-            </div>
-            <div style='padding: 16px 24px; background: #f8f8f8; text-align: center;'>
-                <p style='color: #999; font-size: 11px; margin: 0;'>BeArtShare &copy; " . date('Y') . "</p>
-            </div>
-        </div>";
-    }
-
-    protected function buildOrderCreatedEmailBody(Order $order): string
-    {
-        $order->load('items.artwork');
+        $order->loadMissing('items.artwork');
         $itemsHtml = '';
         foreach ($order->items as $item) {
             $price = number_format($item->price_tl, 0, ',', '.');
             $itemsHtml .= "
                 <tr>
-                    <td style='padding: 8px; border-bottom: 1px solid #eee; font-size: 13px;'>{$item->artwork_title}</td>
-                    <td style='padding: 8px; border-bottom: 1px solid #eee; font-size: 13px;'>{$item->artist_name}</td>
+                    <td style='padding: 8px; border-bottom: 1px solid #eee; font-size: 13px;'>" . e($item->artwork_title) . "</td>
+                    <td style='padding: 8px; border-bottom: 1px solid #eee; font-size: 13px;'>" . e($item->artist_name) . "</td>
                     <td style='padding: 8px; border-bottom: 1px solid #eee; font-size: 13px; text-align: right;'>{$price} TL</td>
                 </tr>";
         }
-
         $totalTl = number_format($order->total_tl, 0, ',', '.');
-        $bankPageUrl = url('/banka-hesaplari');
 
-        // ArtPuan indirim bilgisi
-        $artpuanHtml = '';
-        if ($order->artpuan_used > 0) {
-            $subtotalTl = number_format($order->total_tl + ($order->discount_tl ?? 0), 0, ',', '.');
-            $discountTl = number_format($order->discount_tl, 0, ',', '.');
-            $artpuanUsed = number_format($order->artpuan_used, 2, ',', '.');
-            $artpuanHtml = "
+        return "
+                <table style='width: 100%; border-collapse: collapse; margin: 16px 0;'>
+                    <thead>
+                        <tr style='background: #f8f8f8;'>
+                            <th style='padding: 8px; text-align: left; font-size: 12px; color: #666;'>Eser</th>
+                            <th style='padding: 8px; text-align: left; font-size: 12px; color: #666;'>Sanatçı</th>
+                            <th style='padding: 8px; text-align: right; font-size: 12px; color: #666;'>Fiyat</th>
+                        </tr>
+                    </thead>
+                    <tbody>{$itemsHtml}</tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan='2' style='padding: 12px 8px; text-align: right; font-weight: bold; font-size: 14px;'>Toplam:</td>
+                            <td style='padding: 12px 8px; text-align: right; font-weight: bold; font-size: 14px;'>{$totalTl} TL</td>
+                        </tr>
+                    </tfoot>
+                </table>";
+    }
+
+    /** Sipariş e-postası: kullanılan ArtPuan bilgisi (yoksa boş) */
+    protected function buildArtPuanUsedHtml(Order $order): string
+    {
+        if ($order->artpuan_used <= 0) {
+            return '';
+        }
+        $totalTl = number_format($order->total_tl, 0, ',', '.');
+        $subtotalTl = number_format($order->total_tl + ($order->discount_tl ?? 0), 0, ',', '.');
+        $discountTl = number_format($order->discount_tl, 0, ',', '.');
+        $artpuanUsed = number_format($order->artpuan_used, 2, ',', '.');
+
+        return "
                 <div style='background: #f0fdf4; border: 1px solid #bbf7d0; padding: 12px 16px; margin: 12px 0; border-radius: 8px;'>
                     <p style='color: #15803d; font-size: 13px; margin: 0;'>
                         &#11088; <strong>{$artpuanUsed} ArtPuan</strong> kullanıldı, <strong>{$discountTl} TL</strong> indirim uygulandı.
                     </p>
                     <p style='color: #166534; font-size: 12px; margin: 4px 0 0;'>Ara Toplam: {$subtotalTl} TL &rarr; Ödenecek: <strong>{$totalTl} TL</strong></p>
                 </div>";
-        }
+    }
 
-        $paymentInfo = '';
-        if ($order->payment_method === 'havale') {
-            $paymentInfo = "
+    /** Sipariş e-postası (havale): ödeme kodu, banka hesapları, uyarılar */
+    protected function buildOrderPaymentInfoHtml(Order $order): string
+    {
+        $bankPageUrl = url('/banka-hesaplari');
+        $artpuanHtml = $this->buildArtPuanUsedHtml($order);
+
+        return "
                 <!-- Ödeme Kodu -->
                 <div style='background: #fefce8; border: 2px solid #fde68a; padding: 20px; margin: 20px 0; text-align: center; border-radius: 8px;'>
                     <p style='color: #92400e; font-size: 12px; margin: 0 0 4px;'>Havale Açıklama Kodunuz</p>
@@ -657,41 +565,5 @@ class NotificationService
                     <p style='color: #1e40af; font-size: 13px; font-weight: bold; margin: 0 0 4px;'>&#128231; Ödeme Dekontu</p>
                     <p style='color: #1d4ed8; font-size: 12px; margin: 0;'>Ödemenizi yaptıktan sonra dekontunuzu <a href='mailto:info@beartshare.com' style='color: #1d4ed8; font-weight: bold;'>info@beartshare.com</a> adresine gönderebilirsiniz.</p>
                 </div>";
-        }
-
-        return "
-        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
-            <div style='background: #1a1a1a; padding: 24px; text-align: center;'>
-                <h1 style='color: #fff; font-size: 20px; margin: 0;'>BeArtShare</h1>
-            </div>
-            <div style='padding: 32px 24px; background: #fff;'>
-                <p style='color: #333; font-size: 14px;'>Merhaba {$order->customer_name},</p>
-                <p style='color: #555; font-size: 14px;'>
-                    <strong>{$order->order_number}</strong> numaralı siparişiniz başarıyla oluşturulmuştur. Teşekkür ederiz!
-                </p>
-
-                {$paymentInfo}
-
-                <table style='width: 100%; border-collapse: collapse; margin: 16px 0;'>
-                    <thead>
-                        <tr style='background: #f8f8f8;'>
-                            <th style='padding: 8px; text-align: left; font-size: 12px; color: #666;'>Eser</th>
-                            <th style='padding: 8px; text-align: left; font-size: 12px; color: #666;'>Sanatçı</th>
-                            <th style='padding: 8px; text-align: right; font-size: 12px; color: #666;'>Fiyat</th>
-                        </tr>
-                    </thead>
-                    <tbody>{$itemsHtml}</tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan='2' style='padding: 12px 8px; text-align: right; font-weight: bold; font-size: 14px;'>Toplam:</td>
-                            <td style='padding: 12px 8px; text-align: right; font-weight: bold; font-size: 14px;'>{$totalTl} TL</td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-            <div style='padding: 16px 24px; background: #f8f8f8; text-align: center;'>
-                <p style='color: #999; font-size: 11px; margin: 0;'>BeArtShare &copy; " . date('Y') . "</p>
-            </div>
-        </div>";
     }
 }

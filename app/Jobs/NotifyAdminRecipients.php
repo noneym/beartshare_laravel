@@ -45,7 +45,8 @@ class NotifyAdminRecipients implements ShouldQueue
             if ($recipient->wantsEmail() && strcasecmp($recipient->email, (string) $this->skipEmail) !== 0) {
                 $notifications->sendRecipientEmail($recipient->email, $this->subject, $this->htmlBody, "admin_{$this->event}", $this->orderId, $this->replyTo, $this->replyName);
             }
-            if ($recipient->wantsSms()) {
+            // SMS şablonu admin'den kapatıldıysa metin boş gelir
+            if ($recipient->wantsSms() && trim($this->smsText) !== '') {
                 $notifications->sendSmsWithLog($recipient->phone, $this->smsText, "admin_{$this->event}", $this->orderId);
             }
         }

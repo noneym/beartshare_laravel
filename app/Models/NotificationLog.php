@@ -20,6 +20,7 @@ class NotificationLog extends Model
         'error',
         'api_response',
         'order_id',
+        'artwork_id',
         'user_id',
     ];
 

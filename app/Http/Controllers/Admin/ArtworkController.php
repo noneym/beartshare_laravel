@@ -97,6 +97,26 @@ class ArtworkController extends Controller
     }
 
     /**
+     * Eser görselini formdan bağımsız, tek tek yükler (ilerleme çubuğu için AJAX).
+     * Dönen yol formda uploaded_images[] / uploaded_cover olarak gönderilir.
+     */
+    public function uploadImage(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|image|max:101376',
+            'kind' => 'nullable|in:image,cover',
+        ], [
+            'file.max' => 'Görsel en fazla 99 MB olabilir.',
+            'file.image' => 'Yüklenen dosya bir görsel olmalıdır.',
+        ]);
+
+        $folder = $request->input('kind') === 'cover' ? 'artworks/covers' : 'artworks/uploads';
+        $path = $request->file('file')->store($folder, config('filesystems.uploads'));
+
+        return response()->json(['path' => $path]);
+    }
+
+    /**
      * Listeden öne çıkan sıra ağırlığını günceller (AJAX).
      */
     public function updateFeaturedWeight(Request $request, Artwork $artwork)
@@ -137,8 +157,12 @@ class ArtworkController extends Controller
             'owner_name' => 'nullable|string|max:255',
             'admin_notes' => 'nullable|string|max:5000',
             'sale_note' => 'nullable|string|max:5000',
-            'images.*' => 'nullable|image|max:4096',
-            'cover' => 'nullable|image|max:4096',
+            'images.*' => 'nullable|image|max:101376',
+            'cover' => 'nullable|image|max:101376',
+            // Formdan önce tek tek yüklenen görseller (uploadImage): yalnızca o klasördeki yollar kabul edilir
+            'uploaded_images' => 'nullable|array',
+            'uploaded_images.*' => ['string', 'regex:#^artworks/uploads/[A-Za-z0-9]{40}\.[a-z0-9]{2,5}$#'],
+            'uploaded_cover' => ['nullable', 'string', 'regex:#^artworks/covers/[A-Za-z0-9]{40}\.[a-z0-9]{2,5}$#'],
         ]);
 
         $validated['allow_credit_card'] = $request->boolean('allow_credit_card');
@@ -148,17 +172,22 @@ class ArtworkController extends Controller
         $validated['featured_weight'] = (int) ($validated['featured_weight'] ?? 0);
         $validated['price_usd'] = $this->usdPrice($validated);
 
+        $images = (array) ($validated['uploaded_images'] ?? []);
         if ($request->hasFile('images')) {
-            $images = [];
             foreach ($request->file('images') as $image) {
                 $images[] = $image->store('artworks', config('filesystems.uploads'));
             }
-            $validated['images'] = $images;
+        }
+        if ($images) {
+            $validated['images'] = array_values($images);
         }
 
-        if ($request->hasFile('cover')) {
+        if (!empty($validated['uploaded_cover'])) {
+            $validated['cover_image'] = $validated['uploaded_cover'];
+        } elseif ($request->hasFile('cover')) {
             $validated['cover_image'] = $request->file('cover')->store('artworks/covers', config('filesystems.uploads'));
         }
+        unset($validated['uploaded_images'], $validated['uploaded_cover']);
 
         Artwork::create($validated);
 
@@ -204,8 +233,12 @@ class ArtworkController extends Controller
             'owner_name' => 'nullable|string|max:255',
             'admin_notes' => 'nullable|string|max:5000',
             'sale_note' => 'nullable|string|max:5000',
-            'images.*' => 'nullable|image|max:4096',
-            'cover' => 'nullable|image|max:4096',
+            'images.*' => 'nullable|image|max:101376',
+            'cover' => 'nullable|image|max:101376',
+            // Formdan önce tek tek yüklenen görseller (uploadImage): yalnızca o klasördeki yollar kabul edilir
+            'uploaded_images' => 'nullable|array',
+            'uploaded_images.*' => ['string', 'regex:#^artworks/uploads/[A-Za-z0-9]{40}\.[a-z0-9]{2,5}$#'],
+            'uploaded_cover' => ['nullable', 'string', 'regex:#^artworks/covers/[A-Za-z0-9]{40}\.[a-z0-9]{2,5}$#'],
         ]);
 
         $validated['allow_credit_card'] = $request->boolean('allow_credit_card');
@@ -225,6 +258,10 @@ class ArtworkController extends Controller
             $validated['images'] = $images;
         }
 
+        foreach ((array) ($validated['uploaded_images'] ?? []) as $path) {
+            $images[] = $path;
+            $validated['images'] = $images;
+        }
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
                 $images[] = $image->store('artworks', config('filesystems.uploads'));
@@ -233,11 +270,14 @@ class ArtworkController extends Controller
         }
 
         // Kapak fotoğrafı (isteğe bağlı): yeni yükleme değiştirir, işaretlenirse kaldırılır
-        if ($request->hasFile('cover')) {
+        if (!empty($validated['uploaded_cover'])) {
+            $validated['cover_image'] = $validated['uploaded_cover'];
+        } elseif ($request->hasFile('cover')) {
             $validated['cover_image'] = $request->file('cover')->store('artworks/covers', config('filesystems.uploads'));
         } elseif ($request->boolean('remove_cover')) {
             $validated['cover_image'] = null;
         }
+        unset($validated['uploaded_images'], $validated['uploaded_cover']);
 
         $artwork->update($validated);
 

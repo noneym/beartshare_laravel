@@ -86,15 +86,16 @@
                 @include('admin.partials.price-format-script')
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Gorseller</label>
-                    <input type="file" name="images[]" multiple accept="image/*" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary">
-                    <p class="text-sm text-gray-500 mt-1">Birden fazla gorsel secebilirsiniz</p>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Görseller</label>
+                    <x-admin.image-uploader name="uploaded_images[]" />
+                    <p class="text-xs text-gray-500 mt-2">Görseller seçildiği sırayla eklenir; ilki ana görsel olur.</p>
                     @error('images.*') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+                    @error('uploaded_images.*') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Kapak Fotoğrafı <span class="text-gray-400 font-normal">(isteğe bağlı)</span></label>
-                    <input type="file" name="cover" accept="image/*" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary">
+                    <x-admin.image-uploader name="uploaded_cover" :multiple="false" kind="cover" />
                     <p class="text-sm text-gray-500 mt-1">Yüklenirse eser listelerinde (ana sayfa, eserler, sanatçı, favoriler) ilk görselin yerine bu gösterilir. Eser sayfasındaki görseller değişmez.</p>
                     @error('cover') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                 </div>

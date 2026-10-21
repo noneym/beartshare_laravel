@@ -18,8 +18,8 @@ FROM dunglas/frankenphp:1.7-php8.2-alpine
 
 # PHP ayarları
 ARG PHP_MEM_LIMIT=256
-ARG PHP_UPLOAD_MAX_FILESIZE=50
-ARG PHP_POST_MAX_SIZE=50
+ARG PHP_UPLOAD_MAX_FILESIZE=100
+ARG PHP_POST_MAX_SIZE=100
 
 LABEL maintainer="BeArtShare <info@beartshare.com>"
 
@@ -65,8 +65,8 @@ RUN apk del --no-cache \
 RUN echo "memory_limit = ${PHP_MEM_LIMIT}M" > /usr/local/etc/php/conf.d/custom.ini && \
     echo "upload_max_filesize = ${PHP_UPLOAD_MAX_FILESIZE}M" >> /usr/local/etc/php/conf.d/custom.ini && \
     echo "post_max_size = ${PHP_POST_MAX_SIZE}M" >> /usr/local/etc/php/conf.d/custom.ini && \
-    echo "max_execution_time = 120" >> /usr/local/etc/php/conf.d/custom.ini && \
-    echo "max_input_time = 120" >> /usr/local/etc/php/conf.d/custom.ini
+    echo "max_execution_time = 300" >> /usr/local/etc/php/conf.d/custom.ini && \
+    echo "max_input_time = 300" >> /usr/local/etc/php/conf.d/custom.ini
 
 # OPcache ayarları
 RUN echo "opcache.enable=1" > /usr/local/etc/php/conf.d/opcache.ini && \

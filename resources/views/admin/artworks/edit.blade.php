@@ -135,10 +135,11 @@
                         <p class="text-xs text-gray-500 mt-2">Sürükleyip bırakarak ya da oklarla sıralayın. İlk görsel ana görseldir (kapak fotoğrafı yoksa listelerde de o görünür). Değişiklikler "Güncelle" ile kaydedilir.</p>
                     </div>
 
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Yeni Gorsel Ekle</label>
-                    <input type="file" name="images[]" multiple accept="image/*" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary">
-                    <p class="text-sm text-gray-500 mt-1">Birden fazla gorsel secebilirsiniz</p>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Yeni Görsel Ekle</label>
+                    <x-admin.image-uploader name="uploaded_images[]" />
+                    <p class="text-xs text-gray-500 mt-2">Yeni görseller mevcutların sonuna eklenir; kaydettikten sonra yukarıdan sıralayabilirsiniz.</p>
                     @error('images.*') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+                    @error('uploaded_images.*') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <div x-data="{ remove: false }">
@@ -152,7 +153,7 @@
                             </label>
                         </div>
                     @endif
-                    <input type="file" name="cover" accept="image/*" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary">
+                    <x-admin.image-uploader name="uploaded_cover" :multiple="false" kind="cover" />
                     <p class="text-sm text-gray-500 mt-1">Yüklenirse eser listelerinde (ana sayfa, eserler, sanatçı, favoriler) ilk görselin yerine bu gösterilir. Eser sayfasındaki görseller değişmez.</p>
                     @error('cover') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                 </div>

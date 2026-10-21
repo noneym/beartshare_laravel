@@ -158,6 +158,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('/', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
     Route::resource('artists', App\Http\Controllers\Admin\ArtistController::class)->except(['show']);
     Route::resource('artworks', App\Http\Controllers\Admin\ArtworkController::class)->except(['show']);
+    Route::post('artworks/upload-image', [App\Http\Controllers\Admin\ArtworkController::class, 'uploadImage'])->name('artworks.upload-image');
     Route::patch('artworks/{artwork}/featured-weight', [App\Http\Controllers\Admin\ArtworkController::class, 'updateFeaturedWeight'])->name('artworks.featured-weight');
     Route::resource('categories', App\Http\Controllers\Admin\CategoryController::class)->except(['show']);
     Route::patch('categories/{category}/toggle-active', [App\Http\Controllers\Admin\CategoryController::class, 'toggleActive'])->name('categories.toggle-active');

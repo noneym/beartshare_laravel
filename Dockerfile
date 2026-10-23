@@ -4,7 +4,7 @@
 
 # Vite asset'leri (ör. 3D galeri / three.js) ayrı aşamada derlenir;
 # son imaja yalnızca public/build girer, Node imajda kalmaz.
-FROM node:20-alpine AS assets
+FROM node:22-alpine AS assets
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
